@@ -12,6 +12,7 @@ class Calendar extends StatefulWidget {
 
 class _State extends State<Calendar> {
   late final ValueNotifier<List<Event>> _selectedEvents;
+  Map<DateTime, List<Event>> selectedEvents = {};
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
@@ -25,7 +26,7 @@ class _State extends State<Calendar> {
   @override
   void initState() {
     super.initState();
-
+    selectedEvents = {};
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
   }
@@ -37,13 +38,10 @@ class _State extends State<Calendar> {
   }
 
   List<Event> _getEventsForDay(DateTime day) {
-    // Implementation example
-    var kEvents = {};
-    return kEvents[day] ?? [];
+    return selectedEvents[day] ?? [];
   }
 
   List<Event> _getEventsForRange(DateTime start, DateTime end) {
-    // Implementation example
     final days = daysInRange(start, end);
 
     return [
@@ -58,7 +56,7 @@ class _State extends State<Calendar> {
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
-        _rangeStart = null; // Important to clean those
+        _rangeStart = null;
         _rangeEnd = null;
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
@@ -90,13 +88,13 @@ class _State extends State<Calendar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('TableCalendar - Events'),
+        title: Text('GymLife Calendar'),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text("Add Event"),
+            title: Text("Add Workout"),
             content: TextFormField(
               controller: _eventController,
             ),
@@ -110,12 +108,12 @@ class _State extends State<Calendar> {
                 onPressed: () {
                   if (_eventController.text.isEmpty) {
                   } else {
-                    if (_selectedEvents.value != null) {
-                      _selectedEvents.value.add(
+                    if (selectedEvents[_selectedDay] != null) {
+                      selectedEvents[_selectedDay]!.add(
                         Event(title: _eventController.text),
                       );
                     } else {
-                      _selectedEvents.value = [
+                      selectedEvents[_selectedDay!] = [
                         Event(title: _eventController.text)
                       ];
                     }
@@ -129,7 +127,7 @@ class _State extends State<Calendar> {
             ],
           ),
         ),
-        label: Text("Add Event"),
+        label: Text("Add Workout"),
         icon: Icon(Icons.add),
       ),
       body: Column(
