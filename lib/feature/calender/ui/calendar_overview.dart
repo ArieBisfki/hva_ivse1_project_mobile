@@ -20,6 +20,7 @@ class _State extends State<Calendar> {
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
+  bool _addWorkoutButton = true;
 
   TextEditingController _eventController = TextEditingController();
 
@@ -49,9 +50,16 @@ class _State extends State<Calendar> {
     ];
   }
 
-  daysInRange(DateTime start, DateTime end) {}
+  daysInRange(DateTime start, DateTime end) {
+    List<DateTime> days = [];
+    for (int i = 0; i <= end.difference(start).inDays; i++) {
+      days.add(start.add(Duration(days: i)));
+    }
+    return days;
+  }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    _addWorkoutButton = true;
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
@@ -67,6 +75,7 @@ class _State extends State<Calendar> {
 
   void _onRangeSelected(DateTime? start, DateTime? end, DateTime focusedDay) {
     setState(() {
+      _addWorkoutButton = false;
       _selectedDay = null;
       _focusedDay = focusedDay;
       _rangeStart = start;
@@ -90,46 +99,48 @@ class _State extends State<Calendar> {
       appBar: AppBar(
         title: Text('GymLife Calendar'),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text("Add Workout"),
-            content: TextFormField(
-              controller: _eventController,
-            ),
-            actions: [
-              TextButton(
-                child: Text("Cancel"),
-                onPressed: () => Navigator.pop(context),
+      floatingActionButton: _addWorkoutButton
+          ? FloatingActionButton.extended(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text("Add Workout"),
+                  content: TextFormField(
+                    controller: _eventController,
+                  ),
+                  actions: [
+                    TextButton(
+                      child: Text("Cancel"),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    TextButton(
+                      child: Text("Ok"),
+                      onPressed: () {
+                        if (_eventController.text.isEmpty) {
+                        } else {
+                          if (selectedEvents[_selectedDay] != null) {
+                            selectedEvents[_selectedDay]!.add(
+                              Event(title: _eventController.text),
+                            );
+                          } else {
+                            selectedEvents[_selectedDay!] = [
+                              Event(title: _eventController.text)
+                            ];
+                          }
+                        }
+                        Navigator.pop(context);
+                        _eventController.clear();
+                        setState(() {});
+                        return;
+                      },
+                    ),
+                  ],
+                ),
               ),
-              TextButton(
-                child: Text("Ok"),
-                onPressed: () {
-                  if (_eventController.text.isEmpty) {
-                  } else {
-                    if (selectedEvents[_selectedDay] != null) {
-                      selectedEvents[_selectedDay]!.add(
-                        Event(title: _eventController.text),
-                      );
-                    } else {
-                      selectedEvents[_selectedDay!] = [
-                        Event(title: _eventController.text)
-                      ];
-                    }
-                  }
-                  Navigator.pop(context);
-                  _eventController.clear();
-                  setState(() {});
-                  return;
-                },
-              ),
-            ],
-          ),
-        ),
-        label: Text("Add Workout"),
-        icon: Icon(Icons.add),
-      ),
+              label: Text("Add Workout"),
+              icon: Icon(Icons.add),
+            )
+          : SizedBox(),
       body: Column(
         children: [
           TableCalendar<Event>(
