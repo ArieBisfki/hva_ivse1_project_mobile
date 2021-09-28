@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ivse1_gymlife/common/route/routes.dart';
 import 'package:ivse1_gymlife/feature/calender/ui/calendar_overview.dart';
+import 'package:ivse1_gymlife/feature/workout/ui/workout.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -9,6 +10,8 @@ class RouteGenerator {
     switch (settings.name) {
       case Routes.landing:
         return MaterialPageRoute<dynamic>(builder: (_) => Calendar());
+      case Routes.workout:
+        return MaterialPageRoute<dynamic>(builder: (_) => Workout());
       default:
         return MaterialPageRoute<dynamic>(builder: (_) => Calendar());
     }
