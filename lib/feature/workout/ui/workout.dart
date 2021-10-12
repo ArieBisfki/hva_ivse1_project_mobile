@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import '../../../workout_data.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-class Workout extends StatefulWidget {
+class WorkoutPage extends StatefulWidget {
   @override
-  State<Workout> createState() => _WorkoutState();
+  State<WorkoutPage> createState() => _WorkoutPageState();
 }
 
-class _WorkoutState extends State<Workout> {
+class _WorkoutPageState extends State<WorkoutPage> {
   addExercise() {
     workout.add({
       'leading': ['images/bench.jpg', '10 x'],

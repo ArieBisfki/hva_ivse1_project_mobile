@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
+import 'package:ivse1_gymlife/common/http/response.dart';
+import 'package:ivse1_gymlife/feature/calender/models/workout.dart';
 import 'package:ivse1_gymlife/feature/calender/recources/calendar_repository.dart';
 
 part 'calendar_event.dart';
@@ -13,7 +15,6 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
 
   CalendarState get initialState => CalendarInitial();
 
-  // crazy example
   @override
   Stream<CalendarState> mapEventToState(
     CalendarEvent event,
@@ -24,10 +25,43 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     if (event is GetCalendarEvent) {
       yield CalendarDataState(StateLoading());
 
-      // make DataResponse data = repo call
+      final DataResponse<List<Workout>> result =
+          calendarRepository.getWorkouts();
 
-      // make switch to handle data.status errors or yield succes states
-      // default is unknows state
+      switch (result.status) {
+        case Status.Error:
+          yield CalendarDataState(StateError(result.message.toString()));
+          break;
+        case Status.Loading:
+          yield CalendarDataState(StateLoading());
+          break;
+        case Status.Success:
+          if (result.data == null || result.data!.isEmpty) {
+            yield CalendarDataState(StateEmpty());
+          } else {
+            yield CalendarDataState(StateSuccess(result));
+          }
+          break;
+        default:
+          print('Unknow state in ${toString()}: ${state.toString()}');
+      }
+    }
+    if (event is NewCalendarEvent) {
+      final DataResponse<Workout> result =
+          await calendarRepository.createWorkout(event.workout);
+
+      switch (result.status) {
+        case Status.Error:
+          yield CalendarDataState(StateError(result.message.toString()));
+          break;
+        case Status.Loading:
+          yield CalendarDataState(StateLoading());
+          break;
+        case Status.Success:
+          yield CalendarDataState(StateSuccess<Workout>(result.data));
+          break;
+        default:
+      }
     }
   }
 }

@@ -12,7 +12,7 @@ class Calendar extends StatefulWidget {
 }
 
 class _State extends State<Calendar> {
-  late final ValueNotifier<List<Event>> _selectedEvents;
+  late ValueNotifier<List<Event>> _selectedEvents;
   Map<DateTime, List<Event>> selectedEvents = {};
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
@@ -111,7 +111,7 @@ class _State extends State<Calendar> {
 
   deleteWorkout(String title) {
     if (selectedEvents[_selectedDay] != null) {
-      selectedEvents[_selectedDay]!.remove(Event(title: title));
+      //TODO delete function
     }
 
     _selectedEvents.value = _getEventsForDay(_selectedDay!);
@@ -216,6 +216,9 @@ class _State extends State<Calendar> {
                     itemBuilder: (context, index) {
                       return Card(
                         child: ListTile(
+                          onTap: () {
+                            Navigator.pushNamed(context, "/workout");
+                          },
                           title: Text('${value[index]}'),
                           trailing: IconButton(
                             icon: Icon(Icons.delete),
@@ -225,28 +228,6 @@ class _State extends State<Calendar> {
                           ),
                         ),
                       );
-                      // return Container(
-                      //   margin: const EdgeInsets.symmetric(
-                      //     horizontal: 12.0,
-                      //     vertical: 4.0,
-                      //   ),
-                      //   decoration: BoxDecoration(
-                      //     border: Border.all(),
-                      //     borderRadius: BorderRadius.circular(12.0),
-                      //   ),
-                      //   child: ListTile(
-                      //     onTap: () {
-                      //       Navigator.pushNamed(context, "/workout");
-                      //     },
-                      //     title: Text('${value[index]}'),
-                      //     trailing: Row(
-                      //       children: [
-                      //         IconButton(
-                      //             onPressed: () {}, icon: Icon(Icons.delete)),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // );
                     },
                   );
                 },

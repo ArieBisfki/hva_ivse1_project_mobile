@@ -12,7 +12,7 @@ class RouteGenerator {
       case Routes.landing:
         return MaterialPageRoute<dynamic>(builder: (_) => Calendar());
       case Routes.workout:
-        return MaterialPageRoute<dynamic>(builder: (_) => Workout());
+        return MaterialPageRoute<dynamic>(builder: (_) => WorkoutPage());
       case Routes.workoutcategory:
         return MaterialPageRoute<dynamic>(
             builder: (_) => WorkoutCategoryScreen());

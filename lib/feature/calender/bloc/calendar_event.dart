@@ -11,3 +11,11 @@ class GetCalendarEvent extends CalendarEvent {
 class ResetCalendar extends CalendarEvent {
   List<Object> get props => [];
 }
+
+class NewCalendarEvent extends CalendarEvent {
+  const NewCalendarEvent(this.workout);
+
+  final Workout workout;
+
+  List<Object> get props => [workout];
+}

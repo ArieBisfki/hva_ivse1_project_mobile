@@ -1,0 +1,17 @@
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+
+class LocalDatabase {
+  Future<Database> initializeDB() async {
+    String path = await getDatabasesPath();
+    return openDatabase(
+      join(path, 'gymlife.db'),
+      onCreate: (database, version) async {
+        await database.execute(
+          "CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL,age INTEGER NOT NULL, country TEXT NOT NULL, email TEXT)",
+        );
+      },
+      version: 1,
+    );
+  }
+}
