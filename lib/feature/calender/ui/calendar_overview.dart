@@ -96,12 +96,22 @@ class _State extends State<Calendar> {
 
   // Add event to date
   dialAction(String title) {
+    // TODO add to device
     if (selectedEvents[_selectedDay] != null) {
       selectedEvents[_selectedDay]!.add(
         Event(title: title),
       );
     } else {
       selectedEvents[_selectedDay!] = [Event(title: title)];
+    }
+
+    _selectedEvents.value = _getEventsForDay(_selectedDay!);
+    setState(() {});
+  }
+
+  deleteWorkout(String title) {
+    if (selectedEvents[_selectedDay] != null) {
+      selectedEvents[_selectedDay]!.remove(Event(title: title));
     }
 
     _selectedEvents.value = _getEventsForDay(_selectedDay!);
@@ -204,22 +214,39 @@ class _State extends State<Calendar> {
                   return ListView.builder(
                     itemCount: value.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 4.0,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
+                      return Card(
                         child: ListTile(
-                          onTap: () {
-                            Navigator.pushNamed(context, "/workout");
-                          },
                           title: Text('${value[index]}'),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              deleteWorkout(value[index].title);
+                            },
+                          ),
                         ),
                       );
+                      // return Container(
+                      //   margin: const EdgeInsets.symmetric(
+                      //     horizontal: 12.0,
+                      //     vertical: 4.0,
+                      //   ),
+                      //   decoration: BoxDecoration(
+                      //     border: Border.all(),
+                      //     borderRadius: BorderRadius.circular(12.0),
+                      //   ),
+                      //   child: ListTile(
+                      //     onTap: () {
+                      //       Navigator.pushNamed(context, "/workout");
+                      //     },
+                      //     title: Text('${value[index]}'),
+                      //     trailing: Row(
+                      //       children: [
+                      //         IconButton(
+                      //             onPressed: () {}, icon: Icon(Icons.delete)),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // );
                     },
                   );
                 },
