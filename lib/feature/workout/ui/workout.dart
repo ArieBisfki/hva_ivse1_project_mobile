@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-
 import '../../../workout_data.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
-class Workout extends StatelessWidget {
+class Workout extends StatefulWidget {
+  @override
+  State<Workout> createState() => _WorkoutState();
+}
+
+class _WorkoutState extends State<Workout> {
+  addExercise() {
+    workout.add({
+      'leading': ['images/bench.jpg', '10 x'],
+      'title': 'TEST MET KAI',
+      'subtitle': 'subtitle',
+      'trailing': Icon(Icons.chevron_right, size: 25)
+    });
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            // Add your onPressed code here!
+            addExercise();
           },
           child: const Icon(Icons.navigation),
           backgroundColor: Colors.blue,
@@ -50,22 +63,37 @@ class Workout extends StatelessWidget {
                   physics: BouncingScrollPhysics(),
                   itemCount: workout.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      isThreeLine: true,
-                      leading: Container(
-                        width: 90.0,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(workout[index]['leading'][0]),
-                            fit: BoxFit.cover,
+                    return Slidable(
+                      actionPane: SlidableDrawerActionPane(),
+                      actionExtentRatio: 0.25,
+                      child: Container(
+                        color: Colors.white,
+                        child: ListTile(
+                          isThreeLine: true,
+                          leading: Container(
+                            width: 90.0,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(workout[index]['leading'][0]),
+                                fit: BoxFit.cover,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
                           ),
-                          borderRadius: BorderRadius.circular(10.0),
+                          title: Text(workout[index]['title']),
+                          subtitle: Text(
+                              '${workout[index]['subtitle']}\n${workout[index]['leading'][1]}'),
+                          trailing: workout[index]['trailing'],
                         ),
                       ),
-                      title: Text(workout[index]['title']),
-                      subtitle: Text(
-                          '${workout[index]['subtitle']}\n${workout[index]['leading'][1]}'),
-                      trailing: workout[index]['trailing'],
+                      actions: <Widget>[
+                        IconSlideAction(
+                          caption: 'Delete',
+                          color: Colors.red,
+                          icon: Icons.delete,
+                          //onTap: () => _showSnackBar('Delete'),
+                        ),
+                      ],
                     );
                   },
                 ),
