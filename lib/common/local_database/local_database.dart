@@ -8,7 +8,7 @@ class LocalDatabase {
       join(path, 'gymlife.db'),
       onCreate: (database, version) async {
         await database.execute(
-          "CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL,age INTEGER NOT NULL, country TEXT NOT NULL, email TEXT)",
+          "CREATE TABLE workouts()",
         );
       },
       version: 1,

@@ -21,8 +21,10 @@ class _AppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<CalendarApiProvider>(
-          create: (BuildContext context) => CalendarApiProvider(),
+        RepositoryProvider<CalendarRepository>(
+          create: (BuildContext context) => CalendarRepository(
+            apiProvider: CalendarApiProvider(),
+          ),
           lazy: true,
         ),
       ],
@@ -39,7 +41,7 @@ class _AppState extends State<MyApp> {
           //navigatorObservers: [RouteObserver<PageRoute>()],
           debugShowCheckedModeBanner: false,
           onGenerateRoute: RouteGenerator.generateRoute,
-          initialRoute: Routes.workoutcategory,
+          initialRoute: Routes.landing,
         ),
       ),
     );

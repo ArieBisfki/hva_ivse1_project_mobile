@@ -25,9 +25,9 @@ class CalendarRepository {
 
   getWorkouts() async {
     try {
-      final dynamic response = await apiProvider.getWorkouts();
+      final Iterable<dynamic> response = await apiProvider.getWorkouts();
 
-      if (response == null) {
+      if (response.isEmpty) {
         return DataResponse<List<Workout>>.connectivityError();
       }
 

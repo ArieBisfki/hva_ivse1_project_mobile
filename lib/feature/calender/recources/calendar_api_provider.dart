@@ -5,11 +5,11 @@ import 'package:sqflite/sqflite.dart';
 class CalendarApiProvider {
   Future<List<Workout>> getWorkouts() async {
     final Database db = await LocalDatabase().initializeDB();
-    final List<Map<String, Object?>> queryResult = await db.query('users');
+    final List<Map<String, Object?>> queryResult = await db.query('workouts');
     return queryResult.map((e) => Workout.fromMap(e)).toList();
   }
 
-  // Future<Workout> getWorkout(int id) async {
+  // Future<Workout> getWorkout(int id) async { // TODO
   //   final Database db = await LocalDatabase().initializeDB();
   //   final Workout queryResult = await db.query(table);
   //   return queryResult;

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:ivse1_gymlife/common/base/data_state.dart';
+import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'event.dart';
 
@@ -110,16 +113,49 @@ class _State extends State<Calendar> {
   }
 
   deleteWorkout(String title) {
-    if (selectedEvents[_selectedDay] != null) {
-      //TODO delete function
-    }
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Are you sure?'),
+            content: Text('The planned workout will be deleted'),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    if (selectedEvents[_selectedDay] != null) {
+                      //TODO delete function
+                    }
 
-    _selectedEvents.value = _getEventsForDay(_selectedDay!);
-    setState(() {});
+                    _selectedEvents.value = _getEventsForDay(_selectedDay!);
+                    setState(() {});
+                    Navigator.pop(context);
+                  },
+                  child: Text('yes')),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('no'),
+              )
+            ],
+          );
+        });
   }
 
   @override
   Widget build(BuildContext context) {
+    // return BlocConsumer<CalendarBloc, CalendarState>(
+    //   listener: (context, state) {
+    //     if (state is CalendarDataState &&
+    //         state.dataState is StateSuccess<List<Workout>>) {
+    //       BlocProvider.of<CalendarBloc>(context).add(GetCalendarEvent());
+    //     } -- TODO dit is maybe niet nodig
+    //   },
+    //   builder: (context, state) {
+    //     if (state is CalendarInitial) {
+    //       BlocProvider.of<CalendarBloc>(context).add(GetCalendarEvent());
+    //     }
+    //     if (state is CalendarDataState && state.dataState is StateSuccess) {
     return WillPopScope(
       onWillPop: () async {
         if (isDialOpen.value) {
@@ -237,5 +273,9 @@ class _State extends State<Calendar> {
         ),
       ),
     );
+    //}
+    //return const SizedBox.shrink();
+//},
+    //);
   }
 }
