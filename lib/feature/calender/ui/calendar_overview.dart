@@ -99,11 +99,12 @@ class _State extends State<Calendar> {
 
   // Add event to date
   dialAction(String title) {
-    // TODO add to device
     if (selectedEvents[_selectedDay] != null) {
       selectedEvents[_selectedDay]!.add(
         Event(title: title),
       );
+      //BlocProvider.of<CalendarBloc>(context).add(NewCalendarEvent(-workout-));
+
     } else {
       selectedEvents[_selectedDay!] = [Event(title: title)];
     }
@@ -144,138 +145,152 @@ class _State extends State<Calendar> {
 
   @override
   Widget build(BuildContext context) {
-    // return BlocConsumer<CalendarBloc, CalendarState>(
-    //   listener: (context, state) {
-    //     if (state is CalendarDataState &&
-    //         state.dataState is StateSuccess<List<Workout>>) {
-    //       BlocProvider.of<CalendarBloc>(context).add(GetCalendarEvent());
-    //     } -- TODO dit is maybe niet nodig
-    //   },
-    //   builder: (context, state) {
-    //     if (state is CalendarInitial) {
-    //       BlocProvider.of<CalendarBloc>(context).add(GetCalendarEvent());
-    //     }
-    //     if (state is CalendarDataState && state.dataState is StateSuccess) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (isDialOpen.value) {
-          isDialOpen.value = false;
-          return false;
+    return BlocConsumer<CalendarBloc, CalendarState>(
+      listener: (context, state) {
+        if (state is CalendarDataState && state.dataState is StateSuccess ||
+            state is CalendarDataState && state.dataState is StateEmpty) {
+          // retrieve data from database
+          BlocProvider.of<CalendarBloc>(context).add(GetWorkoutsEvent());
         }
-        return true;
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('GymLife Calendar'),
-        ),
-        floatingActionButton: _addWorkoutButton
-            ? SpeedDial(
-                icon: Icons.add,
-                activeIcon: Icons.close,
-                spacing: 3,
-                childPadding: const EdgeInsets.all(5),
-                spaceBetweenChildren: 4,
-                buttonSize: 56,
-                openCloseDial: isDialOpen,
-                iconTheme: IconThemeData(size: 24),
-                childrenButtonSize: 56.0,
-                direction: SpeedDialDirection.up,
-                overlayColor: Colors.black,
-                overlayOpacity: 0.5,
-                elevation: 8.0,
-                isOpenOnStart: false,
-                animationSpeed: 200,
+      builder: (context, state) {
+        if (state is CalendarInitial) {
+          BlocProvider.of<CalendarBloc>(context).add(GetCalendarEvent());
+        } else if (state is WorkoutsLoadedState) {
+          return WillPopScope(
+            onWillPop: () async {
+              if (isDialOpen.value) {
+                isDialOpen.value = false;
+                return false;
+              }
+              return true;
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text('GymLife Calendar'),
+              ),
+              floatingActionButton: _addWorkoutButton
+                  ? SpeedDial(
+                      icon: Icons.add,
+                      activeIcon: Icons.close,
+                      spacing: 3,
+                      childPadding: const EdgeInsets.all(5),
+                      spaceBetweenChildren: 4,
+                      buttonSize: 56,
+                      openCloseDial: isDialOpen,
+                      iconTheme: IconThemeData(size: 24),
+                      childrenButtonSize: 56.0,
+                      direction: SpeedDialDirection.up,
+                      overlayColor: Colors.black,
+                      overlayOpacity: 0.5,
+                      elevation: 8.0,
+                      isOpenOnStart: false,
+                      animationSpeed: 200,
+                      children: [
+                        SpeedDialChild(
+                          child: const Icon(Icons.accessibility),
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          label: 'Weights',
+                          onTap: () => dialAction("Weights"),
+                        ),
+                        SpeedDialChild(
+                          child: const Icon(Icons.accessible_sharp),
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          label: 'Crossfit(Comming soon)',
+                          //onTap: () => dialAction("Crossfit"),
+                          onTap: () => {},
+                        ),
+                        SpeedDialChild(
+                          child: const Icon(Icons.person),
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          label: 'Cardio(Comming soon)',
+                          visible: true,
+                          //onTap: () => dialAction("Cardio"),
+                          onTap: () => {},
+                        ),
+                      ],
+                    )
+                  : SizedBox(),
+              body: Column(
                 children: [
-                  SpeedDialChild(
-                    child: const Icon(Icons.accessibility),
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    label: 'Weights',
-                    onTap: () => dialAction("Weights"),
+                  TableCalendar<Event>(
+                    firstDay: DateTime.utc(2010, 10, 16),
+                    lastDay: DateTime.utc(2030, 3, 14),
+                    focusedDay: _focusedDay,
+                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                    rangeStartDay: _rangeStart,
+                    rangeEndDay: _rangeEnd,
+                    calendarFormat: _calendarFormat,
+                    rangeSelectionMode: _rangeSelectionMode,
+                    eventLoader: _getEventsForDay,
+                    startingDayOfWeek: StartingDayOfWeek.monday,
+                    calendarStyle: CalendarStyle(
+                      outsideDaysVisible: false,
+                    ),
+                    onDaySelected: _onDaySelected,
+                    onRangeSelected: _onRangeSelected,
+                    onFormatChanged: (format) {
+                      if (_calendarFormat != format) {
+                        setState(() {
+                          _calendarFormat = format;
+                        });
+                      }
+                    },
+                    onPageChanged: (focusedDay) {
+                      _focusedDay = focusedDay;
+                    },
                   ),
-                  SpeedDialChild(
-                    child: const Icon(Icons.accessible_sharp),
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    label: 'Crossfit(Comming soon)',
-                    //onTap: () => dialAction("Crossfit"),
-                    onTap: () => {},
-                  ),
-                  SpeedDialChild(
-                    child: const Icon(Icons.person),
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    label: 'Cardio(Comming soon)',
-                    visible: true,
-                    //onTap: () => dialAction("Cardio"),
-                    onTap: () => {},
+                  const SizedBox(height: 8.0),
+                  Expanded(
+                    child: ValueListenableBuilder<List<Event>>(
+                      valueListenable: _selectedEvents,
+                      builder: (context, value, _) {
+                        return ListView.builder(
+                          itemCount: value.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              child: ListTile(
+                                onTap: () {
+                                  Navigator.pushNamed(context, "/workout");
+                                },
+                                title: Text('${value[index]}'),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () {
+                                    deleteWorkout(value[index].title);
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ],
-              )
-            : SizedBox(),
-        body: Column(
-          children: [
-            TableCalendar<Event>(
-              firstDay: DateTime.utc(2010, 10, 16),
-              lastDay: DateTime.utc(2030, 3, 14),
-              focusedDay: _focusedDay,
-              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              rangeStartDay: _rangeStart,
-              rangeEndDay: _rangeEnd,
-              calendarFormat: _calendarFormat,
-              rangeSelectionMode: _rangeSelectionMode,
-              eventLoader: _getEventsForDay,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              calendarStyle: CalendarStyle(
-                outsideDaysVisible: false,
-              ),
-              onDaySelected: _onDaySelected,
-              onRangeSelected: _onRangeSelected,
-              onFormatChanged: (format) {
-                if (_calendarFormat != format) {
-                  setState(() {
-                    _calendarFormat = format;
-                  });
-                }
-              },
-              onPageChanged: (focusedDay) {
-                _focusedDay = focusedDay;
-              },
-            ),
-            const SizedBox(height: 8.0),
-            Expanded(
-              child: ValueListenableBuilder<List<Event>>(
-                valueListenable: _selectedEvents,
-                builder: (context, value, _) {
-                  return ListView.builder(
-                    itemCount: value.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        child: ListTile(
-                          onTap: () {
-                            Navigator.pushNamed(context, "/workout");
-                          },
-                          title: Text('${value[index]}'),
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              deleteWorkout(value[index].title);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
               ),
             ),
-          ],
-        ),
-      ),
+          );
+        } else if (state is CalendarDataState &&
+            state.dataState is StateLoading) {
+          return SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: 250,
+            child: const SizedBox.shrink(),
+          );
+        } else if (state is CalendarDataState &&
+            state.dataState is StateError) {
+          return SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: 250,
+            child: const SizedBox.shrink(),
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
-    //}
-    //return const SizedBox.shrink();
-//},
-    //);
   }
 }

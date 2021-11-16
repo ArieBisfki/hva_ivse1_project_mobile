@@ -2,18 +2,23 @@ import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
 import 'package:ivse1_gymlife/common/http/response.dart';
-import 'package:ivse1_gymlife/feature/calender/models/workout.dart';
-import 'package:ivse1_gymlife/feature/calender/recources/calendar_repository.dart';
+import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
+import 'package:ivse1_gymlife/feature/calender/recources/calendar_repository_device.dart';
 
 part 'calendar_event.dart';
 part 'calendar_state.dart';
 
 class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
-  final CalendarRepository calendarRepository;
+  final CalendarRepositoryDevice calendarRepository;
 
   CalendarBloc({required this.calendarRepository}) : super(CalendarInitial());
 
   CalendarState get initialState => CalendarInitial();
+
+  List<WorkoutLog> _workouts = [];
+
+  /// Returns workout items from memory
+  List<WorkoutLog> get workouts => _workouts;
 
   @override
   Stream<CalendarState> mapEventToState(
@@ -25,8 +30,10 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     if (event is GetCalendarEvent) {
       yield CalendarDataState(StateLoading());
 
-      final DataResponse<List<Workout>> result =
-          calendarRepository.getWorkouts();
+      final DataResponse<List<WorkoutLog>> result =
+          await calendarRepository.getWorkouts();
+
+      _workouts = result.data!;
 
       switch (result.status) {
         case Status.Error:
@@ -46,8 +53,11 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
           print('Unknow state in ${toString()}: ${state.toString()}');
       }
     }
+    if (event is GetWorkoutsEvent) {
+      yield WorkoutsLoadedState(_workouts);
+    }
     if (event is NewCalendarEvent) {
-      final DataResponse<Workout> result =
+      final DataResponse<WorkoutLog> result =
           await calendarRepository.createWorkout(event.workout);
 
       switch (result.status) {
@@ -58,7 +68,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
           yield CalendarDataState(StateLoading());
           break;
         case Status.Success:
-          yield CalendarDataState(StateSuccess<Workout>(result.data));
+          yield CalendarDataState(StateSuccess<WorkoutLog>(result.data));
           break;
         default:
       }

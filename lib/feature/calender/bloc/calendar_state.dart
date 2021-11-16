@@ -17,3 +17,12 @@ class CalendarDataState extends CalendarState {
   @override
   List<Object> get props => [dataState];
 }
+
+class WorkoutsLoadedState extends CalendarState {
+  const WorkoutsLoadedState(this.data);
+
+  final List<WorkoutLog> data;
+
+  @override
+  List<Object> get props => [data];
+}

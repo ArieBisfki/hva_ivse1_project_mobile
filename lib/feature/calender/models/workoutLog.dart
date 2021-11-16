@@ -1,17 +1,17 @@
 import 'exercise_log.dart';
 
-class Workout {
-  Workout({
+class WorkoutLog {
+  WorkoutLog({
     required this.exerciseLog,
     required this.id,
     required this.date,
   });
 
   final int id;
-  final ExerciseLog exerciseLog;
+  final List<ExerciseLog> exerciseLog;
   final DateTime date;
 
-  Workout.fromMap(Map<String, dynamic> res)
+  WorkoutLog.fromMap(Map<String, dynamic> res)
       : id = res["id"],
         exerciseLog = res["exerciseLog"],
         date = res["date"];

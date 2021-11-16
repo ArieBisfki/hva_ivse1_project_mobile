@@ -1,12 +1,12 @@
 import 'package:ivse1_gymlife/common/local_database/local_database.dart';
-import 'package:ivse1_gymlife/feature/calender/models/workout.dart';
+import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:sqflite/sqflite.dart';
 
-class CalendarApiProvider {
-  Future<List<Workout>> getWorkouts() async {
+class CalendarDbAdapter {
+  Future<List<WorkoutLog>> getWorkouts() async {
     final Database db = await LocalDatabase().initializeDB();
     final List<Map<String, Object?>> queryResult = await db.query('workouts');
-    return queryResult.map((e) => Workout.fromMap(e)).toList();
+    return queryResult.map((e) => WorkoutLog.fromMap(e)).toList();
   }
 
   // Future<Workout> getWorkout(int id) async { // TODO
@@ -15,7 +15,7 @@ class CalendarApiProvider {
   //   return queryResult;
   // }
 
-  Future addWorkout(Workout workout) async {
+  Future addWorkout(WorkoutLog workout) async {
     final Database db = await LocalDatabase().initializeDB();
     db.insert('workout', workout.toMap as Map<String, dynamic>);
   }
