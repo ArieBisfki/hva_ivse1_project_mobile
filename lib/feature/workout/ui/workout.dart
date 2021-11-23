@@ -1,11 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../workout_data.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+
 
 class WorkoutPage extends StatefulWidget {
   @override
   State<WorkoutPage> createState() => _WorkoutPageState();
 }
+
+final snackBar = SnackBar(content: Text('Exercise deleted'));
 
 class _WorkoutPageState extends State<WorkoutPage> {
   addExercise() {
@@ -48,7 +52,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '(Name of your workout)',
+                      '(Name of workout)',
                       style: TextStyle(fontSize: 17.0),
                     ),
                     Text(
@@ -64,8 +68,24 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   itemCount: workout.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Slidable(
-                      actionPane: SlidableDrawerActionPane(),
-                      actionExtentRatio: 0.25,
+                        key: UniqueKey(),
+                        actionPane: SlidableDrawerActionPane(),
+                        actionExtentRatio: 0.25,
+                        dismissal: SlidableDismissal(
+                          child: SlidableDrawerDismissal(),
+                          onDismissed: (actionType) {
+                          _showSnackBar(
+                          context,
+                          actionType == SlideActionType.primary
+                          ? 'Deleted'
+                              : 'Dimiss Archive');
+                          setState(() {
+                            workout.removeAt(index);
+                          });
+                        },
+                        onWillDismiss: (direction) => promptUser(),
+                      ),
+
                       child: Container(
                         color: Colors.white,
                         child: ListTile(
@@ -88,11 +108,12 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       actions: <Widget>[
                         IconSlideAction(
-                          caption: 'Delete',
+                          caption: 'Swipe to delete →',
                           color: Colors.red,
                           icon: Icons.delete,
-                          //onTap: () => _showSnackBar('Delete'),
+                          onTap: () => _showSnackBar(context, 'Deleted'),
                         ),
+
                       ],
                     );
                   },
@@ -101,5 +122,43 @@ class _WorkoutPageState extends State<WorkoutPage> {
             ],
           ),
         ));
+  }
+
+
+  ///Shows the snackbar messages
+  void _showSnackBar(BuildContext context, String text){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  }
+
+  ///To confirm the delete
+  Future<bool> promptUser() async {
+    String action;
+    action = "delete";
+
+    return await showCupertinoDialog<bool>(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        content: Text("Are you sure you want to $action?"),
+        actions: <Widget>[
+          CupertinoDialogAction(
+            child: Text("Ok"),
+            onPressed: () {
+              // Dismiss the dialog and
+              // also dismiss the swiped item
+              Navigator.of(context).pop(true);
+            },
+          ),
+          CupertinoDialogAction(
+            child: Text('Cancel'),
+            onPressed: () {
+              // Dismiss the dialog but don't
+              // dismiss the swiped item
+              return Navigator.of(context).pop(false);
+            },
+          )
+        ],
+      ),
+    ) ??
+        false; // In case the user dismisses the dialog by clicking away from it
   }
 }
