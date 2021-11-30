@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 
 final List<Map<String, dynamic>> workout = [
   {
@@ -62,3 +63,79 @@ final List<Map<String, dynamic>> workout = [
     'trailing': Icon(Icons.chevron_right, size: 25),
   },
 ];
+
+final List<Map<String, dynamic>> chestWorkout = [
+  {
+    'leading': ['images/bench.jpg', '10 x'],
+    'title': 'Bench press',
+    'subtitle': 'subtitle',
+    'trailing': Icon(Icons.chevron_right, size: 25),
+    'exerciseType' : ExerciseType.chest,
+  },
+  {
+    'leading': ['images/bench.jpg', '11 x'],
+    'title': 'Bench press',
+    'subtitle': 'subtitle',
+    'trailing': Icon(Icons.chevron_right, size: 25),
+    'exerciseType' : ExerciseType.chest,
+  },
+  {
+    'leading': ['images/bench.jpg', '12 x'],
+    'title': 'Bench press',
+    'subtitle': 'subtitle',
+    'trailing': Icon(Icons.chevron_right, size: 25),
+    'exerciseType' : ExerciseType.chest,
+  },
+
+];
+
+final List<Map<String, dynamic>> legWorkout = [
+  {
+    'leading': ['images/bench.jpg', '10 x'],
+    'title': 'Bench press',
+    'subtitle': 'subtitle',
+    'trailing': Icon(Icons.chevron_right, size: 25),
+    'exerciseType' : ExerciseType.legs,
+  },
+  {
+    'leading': ['images/deadlift.jpg', '11 x'],
+    'title': 'Bench press',
+    'subtitle': 'subtitle',
+    'trailing': Icon(Icons.chevron_right, size: 25),
+    'exerciseType' : ExerciseType.legs,
+  },
+  {
+    'leading': ['images/bench.jpg', '12 x'],
+    'title': 'Bench press',
+    'subtitle': 'subtitle',
+    'trailing': Icon(Icons.chevron_right, size: 25),
+    'exerciseType' : ExerciseType.legs,
+  },
+
+];
+
+final List<Map<String, dynamic>> backWorkout = [
+  {
+    'leading': ['images/deadlift.jpg', '10 x'],
+    'title': 'Bench press',
+    'subtitle': 'subtitle',
+    'trailing': Icon(Icons.chevron_right, size: 25),
+    'exerciseType' : ExerciseType.back,
+  },
+  {
+    'leading': ['images/deadlift.jpg', '11 x'],
+    'title': 'Bench press',
+    'subtitle': 'subtitle',
+    'trailing': Icon(Icons.chevron_right, size: 25),
+    'exerciseType' : ExerciseType.back,
+  },
+  {
+    'leading': ['images/deadlift.jpg', '12 x'],
+    'title': 'Bench press',
+    'subtitle': 'subtitle',
+    'trailing': Icon(Icons.chevron_right, size: 25),
+    'exerciseType' : ExerciseType.back,
+  },
+
+];
+

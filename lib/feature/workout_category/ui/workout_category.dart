@@ -10,7 +10,7 @@ class WorkoutCategoryScreen extends StatefulWidget {
 }
 
 class _WorkoutCategoryScreenState extends State<WorkoutCategoryScreen> {
-  List<String> someList = ["Chest", "Back", "Legs", "Core", "Shoulders"];
+  List<String> someList = ["Chest", "Back", "Legs", "Core", "Shoulders", "Arms"];
 
   List<Widget> _createChildren() {
     return new List<Widget>.generate(someList.length, (int index) {
@@ -22,7 +22,7 @@ class _WorkoutCategoryScreenState extends State<WorkoutCategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Workout Categories'),
+        title: Text('Exercise Categories'),
         actions: [],
       ),
       body: SingleChildScrollView(
@@ -37,6 +37,7 @@ class _WorkoutCategoryScreenState extends State<WorkoutCategoryScreen> {
                 ),
               ),
               children: _createChildren(),
+
             ),
           ),
         ),

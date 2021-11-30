@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ivse1_gymlife/common/route/routes.dart';
 import '../../../workout_data.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -25,12 +26,15 @@ class _WorkoutPageState extends State<WorkoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-            addExercise();
+            // addExercise();
+            Navigator.pushNamed(context, Routes.workoutcategory);
           },
-          child: const Icon(Icons.navigation),
+          label: const Text('Add exercise'),
+          icon: const Icon(Icons.add),
           backgroundColor: Colors.blue,
+
         ),
         body: Container(
           width: MediaQuery.of(context).size.width,
