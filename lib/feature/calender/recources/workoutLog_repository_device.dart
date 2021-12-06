@@ -1,13 +1,13 @@
 import 'package:ivse1_gymlife/common/http/response.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
-import 'package:ivse1_gymlife/feature/calender/recources/calendar_db_adapter.dart';
+import 'package:ivse1_gymlife/feature/calender/recources/workoutLog_db_adapter.dart';
 
-import 'Icalendar_repository_device.dart';
+import 'IworkoutLog_repository_device.dart';
 
-class CalendarRepositoryDevice implements ICalendarRepositoryDevice {
-  CalendarRepositoryDevice({required this.dbAdapter});
+class WorkoutLogRepositoryDevice implements IWorkoutLogRepositoryDevice {
+  WorkoutLogRepositoryDevice({required this.dbAdapter});
 
-  final CalendarDbAdapter dbAdapter;
+  final WorkoutLogDbAdapter dbAdapter;
 
   @override
   Future<DataResponse<WorkoutLog>> createWorkout(
@@ -36,10 +36,12 @@ class CalendarRepositoryDevice implements ICalendarRepositoryDevice {
       }
 
       final List<WorkoutLog> workouts =
-          response.map((dynamic item) => WorkoutLog.fromMap(item)).toList();
+          response.map((item) => item as WorkoutLog).toList();
 
       return DataResponse<List<WorkoutLog>>.success(workouts);
     } catch (e) {
+      print(e);
+
       return DataResponse<List<WorkoutLog>>.error('Error', error: e);
     }
   }

@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
 import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
+import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'event.dart';
+import 'dart:convert';
 
 class Calendar extends StatefulWidget {
   Calendar({Key? key}) : super(key: key);
@@ -17,6 +21,8 @@ class Calendar extends StatefulWidget {
 class _State extends State<Calendar> {
   late ValueNotifier<List<Event>> _selectedEvents;
   Map<DateTime, List<Event>> selectedEvents = {};
+  late ValueNotifier<List<WorkoutLog>> _selectedWorkouts;
+  Map<DateTime, List<WorkoutLog>> selectedWorkouts = {};
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
@@ -32,8 +38,10 @@ class _State extends State<Calendar> {
   void initState() {
     super.initState();
     selectedEvents = {};
+    selectedWorkouts = {};
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    _selectedWorkouts = ValueNotifier(_getEventsForDay2(_selectedDay!));
   }
 
   @override
@@ -46,12 +54,33 @@ class _State extends State<Calendar> {
     return selectedEvents[day] ?? [];
   }
 
+  List<WorkoutLog> _getEventsForDay2(DateTime day) {
+    return selectedWorkouts[day] ?? [];
+  }
+
   List<Event> _getEventsForRange(DateTime start, DateTime end) {
     final days = daysInRange(start, end);
 
     return [
       for (final d in days) ..._getEventsForDay(d),
     ];
+  }
+
+  List<WorkoutLog> _getEventsForRange2(DateTime start, DateTime end) {
+    final days = daysInRange(start, end);
+
+    return [
+      for (final d in days) ..._getEventsForDay2(d),
+    ];
+  }
+
+  WorkoutLog getWorkoutItem() {
+    // create with empty workout format
+    Exercise exercise = new Exercise(id: 1, category: 1, name: "Kastzijn");
+    ExerciseLog exLog = new ExerciseLog(exercise: exercise);
+    WorkoutLog workoutLog = new WorkoutLog(
+        exerciseLogs: [exLog], id: null, date: _selectedDay!.toIso8601String());
+    return workoutLog;
   }
 
   daysInRange(DateTime start, DateTime end) {
@@ -77,6 +106,21 @@ class _State extends State<Calendar> {
     }
   }
 
+  void _onDaySelected2(DateTime selectedDay, DateTime focusedDay) {
+    _addWorkoutButton = true;
+    if (!isSameDay(_selectedDay, selectedDay)) {
+      setState(() {
+        _selectedDay = selectedDay;
+        _focusedDay = focusedDay;
+        _rangeStart = null;
+        _rangeEnd = null;
+        _rangeSelectionMode = RangeSelectionMode.toggledOff;
+      });
+
+      _selectedWorkouts.value = _getEventsForDay2(selectedDay);
+    }
+  }
+
   void _onRangeSelected(DateTime? start, DateTime? end, DateTime focusedDay) {
     setState(() {
       _addWorkoutButton = false;
@@ -97,19 +141,60 @@ class _State extends State<Calendar> {
     }
   }
 
+  void _onRangeSelected2(DateTime? start, DateTime? end, DateTime focusedDay) {
+    setState(() {
+      _addWorkoutButton = false;
+      _selectedDay = null;
+      _focusedDay = focusedDay;
+      _rangeStart = start;
+      _rangeEnd = end;
+      _rangeSelectionMode = RangeSelectionMode.toggledOn;
+    });
+
+    // `start` or `end` could be null
+    if (start != null && end != null) {
+      _selectedWorkouts.value = _getEventsForRange2(start, end);
+    } else if (start != null) {
+      _selectedWorkouts.value = _getEventsForDay2(start);
+    } else if (end != null) {
+      _selectedWorkouts.value = _getEventsForDay2(end);
+    }
+  }
+
   // Add event to date
   dialAction(String title) {
     if (selectedEvents[_selectedDay] != null) {
       selectedEvents[_selectedDay]!.add(
         Event(title: title),
       );
-      //BlocProvider.of<CalendarBloc>(context).add(NewCalendarEvent(-workout-));
-
+      // lege workout maken van de gekozen dial
+      BlocProvider.of<CalendarBloc>(context)
+          .add(NewCalendarEvent(getWorkoutItem()));
     } else {
       selectedEvents[_selectedDay!] = [Event(title: title)];
+      BlocProvider.of<CalendarBloc>(context)
+          .add(NewCalendarEvent(getWorkoutItem()));
     }
 
     _selectedEvents.value = _getEventsForDay(_selectedDay!);
+    setState(() {});
+  }
+
+  dialAction2(String title) {
+    if (selectedWorkouts[_selectedDay] != null) {
+      selectedWorkouts[_selectedDay]!.add(
+        getWorkoutItem(),
+      );
+      // lege workout maken van de gekozen dial
+      BlocProvider.of<CalendarBloc>(context)
+          .add(NewCalendarEvent(getWorkoutItem()));
+    } else {
+      selectedEvents[_selectedDay!] = [Event(title: title)];
+      BlocProvider.of<CalendarBloc>(context)
+          .add(NewCalendarEvent(getWorkoutItem()));
+    }
+
+    _selectedWorkouts.value = _getEventsForDay2(_selectedDay!);
     setState(() {});
   }
 
@@ -157,6 +242,17 @@ class _State extends State<Calendar> {
         if (state is CalendarInitial) {
           BlocProvider.of<CalendarBloc>(context).add(GetCalendarEvent());
         } else if (state is WorkoutsLoadedState) {
+          DateTime parsedDate = DateTime.parse('1974-03-20 00:00:00.000');
+
+          Map<DateTime, List<WorkoutLog>> dataLogs = {
+            for (var v in state.data) DateTime.parse(v.date): [v]
+          };
+
+          selectedWorkouts.addAll(dataLogs);
+
+          //state.data.forEach((workoutLog) => selectedWorkouts.addAll());
+
+          print("STATETEST: " + state.data[0].id.toString());
           return WillPopScope(
             onWillPop: () async {
               if (isDialOpen.value) {
@@ -192,7 +288,7 @@ class _State extends State<Calendar> {
                           backgroundColor: Colors.black,
                           foregroundColor: Colors.white,
                           label: 'Weights',
-                          onTap: () => dialAction("Weights"),
+                          onTap: () => dialAction2("Weights"),
                         ),
                         SpeedDialChild(
                           child: const Icon(Icons.accessible_sharp),
@@ -216,22 +312,22 @@ class _State extends State<Calendar> {
                   : SizedBox(),
               body: Column(
                 children: [
-                  TableCalendar<Event>(
-                    firstDay: DateTime.utc(2010, 10, 16),
-                    lastDay: DateTime.utc(2030, 3, 14),
+                  TableCalendar<WorkoutLog>(
+                    firstDay: DateTime.utc(2010, 1, 1),
+                    lastDay: DateTime.utc(2030, 1, 1),
                     focusedDay: _focusedDay,
                     selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
                     rangeStartDay: _rangeStart,
                     rangeEndDay: _rangeEnd,
                     calendarFormat: _calendarFormat,
                     rangeSelectionMode: _rangeSelectionMode,
-                    eventLoader: _getEventsForDay,
+                    eventLoader: _getEventsForDay2,
                     startingDayOfWeek: StartingDayOfWeek.monday,
                     calendarStyle: CalendarStyle(
                       outsideDaysVisible: false,
                     ),
-                    onDaySelected: _onDaySelected,
-                    onRangeSelected: _onRangeSelected,
+                    onDaySelected: _onDaySelected2,
+                    onRangeSelected: _onRangeSelected2,
                     onFormatChanged: (format) {
                       if (_calendarFormat != format) {
                         setState(() {
@@ -244,9 +340,10 @@ class _State extends State<Calendar> {
                     },
                   ),
                   const SizedBox(height: 8.0),
+                  // display list of workouts on a day
                   Expanded(
-                    child: ValueListenableBuilder<List<Event>>(
-                      valueListenable: _selectedEvents,
+                    child: ValueListenableBuilder<List<WorkoutLog>>(
+                      valueListenable: _selectedWorkouts,
                       builder: (context, value, _) {
                         return ListView.builder(
                           itemCount: value.length,
@@ -260,7 +357,7 @@ class _State extends State<Calendar> {
                                 trailing: IconButton(
                                   icon: Icon(Icons.delete),
                                   onPressed: () {
-                                    deleteWorkout(value[index].title);
+                                    //deleteWorkout(value[index].title);
                                   },
                                 ),
                               ),

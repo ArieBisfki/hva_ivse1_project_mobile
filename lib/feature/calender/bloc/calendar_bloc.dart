@@ -3,13 +3,13 @@ import 'package:bloc/bloc.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
 import 'package:ivse1_gymlife/common/http/response.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
-import 'package:ivse1_gymlife/feature/calender/recources/calendar_repository_device.dart';
+import 'package:ivse1_gymlife/feature/calender/recources/workoutLog_repository_device.dart';
 
 part 'calendar_event.dart';
 part 'calendar_state.dart';
 
 class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
-  final CalendarRepositoryDevice calendarRepository;
+  final WorkoutLogRepositoryDevice calendarRepository;
 
   CalendarBloc({required this.calendarRepository}) : super(CalendarInitial());
 
@@ -33,7 +33,9 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       final DataResponse<List<WorkoutLog>> result =
           await calendarRepository.getWorkouts();
 
-      _workouts = result.data!;
+      if (result.data != null) {
+        _workouts = result.data!;
+      }
 
       switch (result.status) {
         case Status.Error:

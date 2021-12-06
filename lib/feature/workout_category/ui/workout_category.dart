@@ -22,7 +22,7 @@ class _WorkoutCategoryScreenState extends State<WorkoutCategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Workout Categories'),
+        title: Text('Exercise Categories'),
         actions: [],
       ),
       body: SingleChildScrollView(
