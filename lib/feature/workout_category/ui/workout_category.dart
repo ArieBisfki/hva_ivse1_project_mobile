@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:ivse1_gymlife/common/route/routes.dart';
 
 class WorkoutCategoryScreen extends StatefulWidget {
   const WorkoutCategoryScreen({Key? key}) : super(key: key);
@@ -10,11 +11,28 @@ class WorkoutCategoryScreen extends StatefulWidget {
 }
 
 class _WorkoutCategoryScreenState extends State<WorkoutCategoryScreen> {
-  List<String> someList = ["Chest", "Back", "Legs", "Core", "Shoulders", "Arms"];
+  List<String> someList = [
+    "Chest",
+    "Back",
+    "Legs",
+    "Core",
+    "Shoulders",
+    "Arms"
+  ];
 
   List<Widget> _createChildren() {
     return new List<Widget>.generate(someList.length, (int index) {
-      return Card(child: ListTile(title: Text(someList[index].toString())));
+
+      return Card(
+        child: InkWell(
+          onTap: () {
+            Navigator.pushNamed(context, Routes.exercisepicker);
+          },
+          child: ListTile(
+               title: Text(someList[index].toString())
+          ),
+        ),
+      );
     });
   }
 
@@ -37,7 +55,6 @@ class _WorkoutCategoryScreenState extends State<WorkoutCategoryScreen> {
                 ),
               ),
               children: _createChildren(),
-
             ),
           ),
         ),
