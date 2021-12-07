@@ -2,9 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 
 class WorkoutLogsOverview extends StatelessWidget {
-  const WorkoutLogsOverview(this._selectedWorkouts, {Key? key})
+  const WorkoutLogsOverview(this._selectedWorkouts, this.context, {Key? key})
       : super(key: key);
   final ValueNotifier<List<WorkoutLog>> _selectedWorkouts;
+  final BuildContext context;
+
+  deleteWorkout(WorkoutLog workout) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Are you sure?'),
+            content: Text('The planned workout will be deleted'),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    // TODO delete function
+                    // TODO nullsafe
+                    print("ID TO DELETE: " + workout.id.toString());
+                    Navigator.pop(context);
+                  },
+                  child: Text('yes')),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('no'),
+              )
+            ],
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +53,7 @@ class WorkoutLogsOverview extends StatelessWidget {
                     icon: Icon(Icons.delete),
                     onPressed: () {
                       // TODO give title
-                      // deleteWorkout(value[index].id.toString());
+                      deleteWorkout(value[index]);
                     },
                   ),
                 ),

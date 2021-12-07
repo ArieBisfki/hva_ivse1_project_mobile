@@ -45,4 +45,42 @@ class WorkoutLogRepositoryDevice implements IWorkoutLogRepositoryDevice {
       return DataResponse<List<WorkoutLog>>.error('Error', error: e);
     }
   }
+
+  @override
+  Future<DataResponse<WorkoutLog>> deleteWorkout(WorkoutLog workout) async {
+    try {
+      final Iterable<dynamic> response = await dbAdapter.deleteWorkout(workout);
+
+      if (response.isEmpty) {
+        return DataResponse<WorkoutLog>.connectivityError();
+      }
+
+      final WorkoutLog workoutRes = response as WorkoutLog;
+
+      return DataResponse<WorkoutLog>.success(workoutRes);
+    } catch (e) {
+      print(e);
+
+      return DataResponse<WorkoutLog>.error('Error', error: e);
+    }
+  }
+
+  @override
+  Future<DataResponse<WorkoutLog>> getWorkout(int id) async {
+    try {
+      final dynamic response = await dbAdapter.getWorkout(id);
+
+      if (response.isEmpty) {
+        return DataResponse<WorkoutLog>.connectivityError();
+      }
+
+      final WorkoutLog workoutRes = response as WorkoutLog;
+
+      return DataResponse<WorkoutLog>.success(workoutRes);
+    } catch (e) {
+      print(e);
+
+      return DataResponse<WorkoutLog>.error('Error', error: e);
+    }
+  }
 }

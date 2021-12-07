@@ -5,6 +5,7 @@ import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
+import 'package:ivse1_gymlife/feature/calender/ui/workoutLogs_overview.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -123,32 +124,6 @@ class _State extends State<Calendar> {
     setState(() {});
   }
 
-  deleteWorkout(String title) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Are you sure?'),
-            content: Text('The planned workout will be deleted'),
-            actions: <Widget>[
-              TextButton(
-                  onPressed: () {
-                    //TODO delete function
-                    setState(() {});
-                    Navigator.pop(context);
-                  },
-                  child: Text('yes')),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('no'),
-              )
-            ],
-          );
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CalendarBloc, CalendarState>(
@@ -254,34 +229,7 @@ class _State extends State<Calendar> {
                   ),
                   const SizedBox(height: 8.0),
                   // display list of workouts on a day
-                  // TODO seperate class/widget?
-                  Expanded(
-                    child: ValueListenableBuilder<List<WorkoutLog>>(
-                      valueListenable: _selectedWorkouts,
-                      builder: (context, value, _) {
-                        return ListView.builder(
-                          itemCount: value.length,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              child: ListTile(
-                                onTap: () {
-                                  Navigator.pushNamed(context, "/workout");
-                                },
-                                title: Text('${value[index].id}'),
-                                trailing: IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () {
-                                    // TODO give title
-                                    deleteWorkout(value[index].id.toString());
-                                  },
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
+                  WorkoutLogsOverview(_selectedWorkouts, context),
                 ],
               ),
             ),
