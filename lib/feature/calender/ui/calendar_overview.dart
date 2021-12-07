@@ -8,9 +8,6 @@ import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'event.dart';
-import 'dart:convert';
-
 class Calendar extends StatefulWidget {
   Calendar({Key? key}) : super(key: key);
 
@@ -19,8 +16,6 @@ class Calendar extends StatefulWidget {
 }
 
 class _State extends State<Calendar> {
-  late ValueNotifier<List<Event>> _selectedEvents;
-  Map<DateTime, List<Event>> selectedEvents = {};
   late ValueNotifier<List<WorkoutLog>> _selectedWorkouts;
   Map<DateTime, List<WorkoutLog>> selectedWorkouts = {};
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -37,40 +32,26 @@ class _State extends State<Calendar> {
   @override
   void initState() {
     super.initState();
-    selectedEvents = {};
     selectedWorkouts = {};
     _selectedDay = _focusedDay;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
-    _selectedWorkouts = ValueNotifier(_getEventsForDay2(_selectedDay!));
+    _selectedWorkouts = ValueNotifier(_getEventsForDay(_selectedDay!));
   }
 
   @override
   void dispose() {
-    _selectedEvents.dispose();
+    _selectedWorkouts.dispose();
     super.dispose();
   }
 
-  List<Event> _getEventsForDay(DateTime day) {
-    return selectedEvents[day] ?? [];
-  }
-
-  List<WorkoutLog> _getEventsForDay2(DateTime day) {
+  List<WorkoutLog> _getEventsForDay(DateTime day) {
     return selectedWorkouts[day] ?? [];
   }
 
-  List<Event> _getEventsForRange(DateTime start, DateTime end) {
+  List<WorkoutLog> _getEventsForRange(DateTime start, DateTime end) {
     final days = daysInRange(start, end);
 
     return [
       for (final d in days) ..._getEventsForDay(d),
-    ];
-  }
-
-  List<WorkoutLog> _getEventsForRange2(DateTime start, DateTime end) {
-    final days = daysInRange(start, end);
-
-    return [
-      for (final d in days) ..._getEventsForDay2(d),
     ];
   }
 
@@ -102,22 +83,7 @@ class _State extends State<Calendar> {
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
-      _selectedEvents.value = _getEventsForDay(selectedDay);
-    }
-  }
-
-  void _onDaySelected2(DateTime selectedDay, DateTime focusedDay) {
-    _addWorkoutButton = true;
-    if (!isSameDay(_selectedDay, selectedDay)) {
-      setState(() {
-        _selectedDay = selectedDay;
-        _focusedDay = focusedDay;
-        _rangeStart = null;
-        _rangeEnd = null;
-        _rangeSelectionMode = RangeSelectionMode.toggledOff;
-      });
-
-      _selectedWorkouts.value = _getEventsForDay2(selectedDay);
+      _selectedWorkouts.value = _getEventsForDay(selectedDay);
     }
   }
 
@@ -133,54 +99,16 @@ class _State extends State<Calendar> {
 
     // `start` or `end` could be null
     if (start != null && end != null) {
-      _selectedEvents.value = _getEventsForRange(start, end);
+      _selectedWorkouts.value = _getEventsForRange(start, end);
     } else if (start != null) {
-      _selectedEvents.value = _getEventsForDay(start);
+      _selectedWorkouts.value = _getEventsForDay(start);
     } else if (end != null) {
-      _selectedEvents.value = _getEventsForDay(end);
-    }
-  }
-
-  void _onRangeSelected2(DateTime? start, DateTime? end, DateTime focusedDay) {
-    setState(() {
-      _addWorkoutButton = false;
-      _selectedDay = null;
-      _focusedDay = focusedDay;
-      _rangeStart = start;
-      _rangeEnd = end;
-      _rangeSelectionMode = RangeSelectionMode.toggledOn;
-    });
-
-    // `start` or `end` could be null
-    if (start != null && end != null) {
-      _selectedWorkouts.value = _getEventsForRange2(start, end);
-    } else if (start != null) {
-      _selectedWorkouts.value = _getEventsForDay2(start);
-    } else if (end != null) {
-      _selectedWorkouts.value = _getEventsForDay2(end);
+      _selectedWorkouts.value = _getEventsForDay(end);
     }
   }
 
   // Add event to date
   dialAction(String title) {
-    if (selectedEvents[_selectedDay] != null) {
-      selectedEvents[_selectedDay]!.add(
-        Event(title: title),
-      );
-      // lege workout maken van de gekozen dial
-      BlocProvider.of<CalendarBloc>(context)
-          .add(NewCalendarEvent(getWorkoutItem()));
-    } else {
-      selectedEvents[_selectedDay!] = [Event(title: title)];
-      BlocProvider.of<CalendarBloc>(context)
-          .add(NewCalendarEvent(getWorkoutItem()));
-    }
-
-    _selectedEvents.value = _getEventsForDay(_selectedDay!);
-    setState(() {});
-  }
-
-  dialAction2(String title) {
     if (selectedWorkouts[_selectedDay] != null) {
       selectedWorkouts[_selectedDay]!.add(
         getWorkoutItem(),
@@ -189,12 +117,15 @@ class _State extends State<Calendar> {
       BlocProvider.of<CalendarBloc>(context)
           .add(NewCalendarEvent(getWorkoutItem()));
     } else {
-      selectedEvents[_selectedDay!] = [Event(title: title)];
+      // TODO check correctness
+      selectedWorkouts[_selectedDay!]!.add(
+        getWorkoutItem(),
+      );
       BlocProvider.of<CalendarBloc>(context)
           .add(NewCalendarEvent(getWorkoutItem()));
     }
 
-    _selectedWorkouts.value = _getEventsForDay2(_selectedDay!);
+    _selectedWorkouts.value = _getEventsForDay(_selectedDay!);
     setState(() {});
   }
 
@@ -208,11 +139,11 @@ class _State extends State<Calendar> {
             actions: <Widget>[
               TextButton(
                   onPressed: () {
-                    if (selectedEvents[_selectedDay] != null) {
+                    if (selectedWorkouts[_selectedDay] != null) {
                       //TODO delete function
                     }
 
-                    _selectedEvents.value = _getEventsForDay(_selectedDay!);
+                    //selectedWorkouts. = _getEventsForDay2(_selectedDay!);
                     setState(() {});
                     Navigator.pop(context);
                   },
@@ -242,17 +173,13 @@ class _State extends State<Calendar> {
         if (state is CalendarInitial) {
           BlocProvider.of<CalendarBloc>(context).add(GetCalendarEvent());
         } else if (state is WorkoutsLoadedState) {
-          DateTime parsedDate = DateTime.parse('1974-03-20 00:00:00.000');
-
+          // TODO seperate method for this?
+          // create map from state data
           Map<DateTime, List<WorkoutLog>> dataLogs = {
             for (var v in state.data) DateTime.parse(v.date): [v]
           };
-
           selectedWorkouts.addAll(dataLogs);
 
-          //state.data.forEach((workoutLog) => selectedWorkouts.addAll());
-
-          print("STATETEST: " + state.data[0].id.toString());
           return WillPopScope(
             onWillPop: () async {
               if (isDialOpen.value) {
@@ -288,7 +215,7 @@ class _State extends State<Calendar> {
                           backgroundColor: Colors.black,
                           foregroundColor: Colors.white,
                           label: 'Weights',
-                          onTap: () => dialAction2("Weights"),
+                          onTap: () => dialAction("Weights"),
                         ),
                         SpeedDialChild(
                           child: const Icon(Icons.accessible_sharp),
@@ -321,13 +248,13 @@ class _State extends State<Calendar> {
                     rangeEndDay: _rangeEnd,
                     calendarFormat: _calendarFormat,
                     rangeSelectionMode: _rangeSelectionMode,
-                    eventLoader: _getEventsForDay2,
+                    eventLoader: _getEventsForDay,
                     startingDayOfWeek: StartingDayOfWeek.monday,
                     calendarStyle: CalendarStyle(
                       outsideDaysVisible: false,
                     ),
-                    onDaySelected: _onDaySelected2,
-                    onRangeSelected: _onRangeSelected2,
+                    onDaySelected: _onDaySelected,
+                    onRangeSelected: _onRangeSelected,
                     onFormatChanged: (format) {
                       if (_calendarFormat != format) {
                         setState(() {
@@ -357,7 +284,7 @@ class _State extends State<Calendar> {
                                 trailing: IconButton(
                                   icon: Icon(Icons.delete),
                                   onPressed: () {
-                                    //deleteWorkout(value[index].title);
+                                    //deleteWorkout(value[index].title); // TODO
                                   },
                                 ),
                               ),
