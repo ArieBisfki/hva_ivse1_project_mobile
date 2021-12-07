@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
 import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
+import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
+import 'package:ivse1_gymlife/feature/calender/ui/workoutLogs_overview.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'event.dart';
 
 class Calendar extends StatefulWidget {
   Calendar({Key? key}) : super(key: key);
@@ -15,8 +17,8 @@ class Calendar extends StatefulWidget {
 }
 
 class _State extends State<Calendar> {
-  late ValueNotifier<List<Event>> _selectedEvents;
-  Map<DateTime, List<Event>> selectedEvents = {};
+  late ValueNotifier<List<WorkoutLog>> _selectedWorkouts;
+  List<WorkoutLog> selectedWorkouts = [];
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
@@ -31,27 +33,40 @@ class _State extends State<Calendar> {
   @override
   void initState() {
     super.initState();
-    selectedEvents = {};
+    selectedWorkouts = [];
     _selectedDay = _focusedDay;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    _selectedWorkouts = ValueNotifier(_getWorkoutLogsForDay(_selectedDay!));
   }
 
   @override
   void dispose() {
-    _selectedEvents.dispose();
+    _selectedWorkouts.dispose();
     super.dispose();
   }
 
-  List<Event> _getEventsForDay(DateTime day) {
-    return selectedEvents[day] ?? [];
+  List<WorkoutLog> _getWorkoutLogsForDay(DateTime day) {
+    // retrieves workouts per day
+    return selectedWorkouts
+        .where((element) => DateTime.parse(element.date) == day)
+        .toList();
   }
 
-  List<Event> _getEventsForRange(DateTime start, DateTime end) {
+  List<WorkoutLog> _getWorkoutLogsForRange(DateTime start, DateTime end) {
     final days = daysInRange(start, end);
 
     return [
-      for (final d in days) ..._getEventsForDay(d),
+      for (final d in days) ..._getWorkoutLogsForDay(d),
     ];
+  }
+
+  WorkoutLog getWorkoutItem() {
+    // create with empty workout format
+    // TODO personalize format
+    Exercise exercise = new Exercise(id: 1, category: 1, name: "Kastzijn");
+    ExerciseLog exLog = new ExerciseLog(exercise: exercise);
+    WorkoutLog workoutLog = new WorkoutLog(
+        exerciseLogs: [exLog], id: null, date: _selectedDay!.toIso8601String());
+    return workoutLog;
   }
 
   daysInRange(DateTime start, DateTime end) {
@@ -73,7 +88,7 @@ class _State extends State<Calendar> {
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
-      _selectedEvents.value = _getEventsForDay(selectedDay);
+      _selectedWorkouts.value = _getWorkoutLogsForDay(selectedDay);
     }
   }
 
@@ -89,58 +104,24 @@ class _State extends State<Calendar> {
 
     // `start` or `end` could be null
     if (start != null && end != null) {
-      _selectedEvents.value = _getEventsForRange(start, end);
+      _selectedWorkouts.value = _getWorkoutLogsForRange(start, end);
     } else if (start != null) {
-      _selectedEvents.value = _getEventsForDay(start);
+      _selectedWorkouts.value = _getWorkoutLogsForDay(start);
     } else if (end != null) {
-      _selectedEvents.value = _getEventsForDay(end);
+      _selectedWorkouts.value = _getWorkoutLogsForDay(end);
     }
   }
 
   // Add event to date
   dialAction(String title) {
-    if (selectedEvents[_selectedDay] != null) {
-      selectedEvents[_selectedDay]!.add(
-        Event(title: title),
-      );
-      //BlocProvider.of<CalendarBloc>(context).add(NewCalendarEvent(-workout-));
+    selectedWorkouts.add(
+      getWorkoutItem(),
+    );
+    BlocProvider.of<CalendarBloc>(context)
+        .add(NewCalendarEvent(getWorkoutItem()));
 
-    } else {
-      selectedEvents[_selectedDay!] = [Event(title: title)];
-    }
-
-    _selectedEvents.value = _getEventsForDay(_selectedDay!);
+    _selectedWorkouts.value = _getWorkoutLogsForDay(_selectedDay!);
     setState(() {});
-  }
-
-  deleteWorkout(String title) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Are you sure?'),
-            content: Text('The planned workout will be deleted'),
-            actions: <Widget>[
-              TextButton(
-                  onPressed: () {
-                    if (selectedEvents[_selectedDay] != null) {
-                      //TODO delete function
-                    }
-
-                    _selectedEvents.value = _getEventsForDay(_selectedDay!);
-                    setState(() {});
-                    Navigator.pop(context);
-                  },
-                  child: Text('yes')),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('no'),
-              )
-            ],
-          );
-        });
   }
 
   @override
@@ -157,6 +138,9 @@ class _State extends State<Calendar> {
         if (state is CalendarInitial) {
           BlocProvider.of<CalendarBloc>(context).add(GetCalendarEvent());
         } else if (state is WorkoutsLoadedState) {
+          // fill local list with state data
+          selectedWorkouts = state.data;
+
           return WillPopScope(
             onWillPop: () async {
               if (isDialOpen.value) {
@@ -216,16 +200,16 @@ class _State extends State<Calendar> {
                   : SizedBox(),
               body: Column(
                 children: [
-                  TableCalendar<Event>(
-                    firstDay: DateTime.utc(2010, 10, 16),
-                    lastDay: DateTime.utc(2030, 3, 14),
+                  TableCalendar<WorkoutLog>(
+                    firstDay: DateTime.utc(2010, 1, 1),
+                    lastDay: DateTime.utc(2030, 1, 1),
                     focusedDay: _focusedDay,
                     selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
                     rangeStartDay: _rangeStart,
                     rangeEndDay: _rangeEnd,
                     calendarFormat: _calendarFormat,
                     rangeSelectionMode: _rangeSelectionMode,
-                    eventLoader: _getEventsForDay,
+                    eventLoader: _getWorkoutLogsForDay,
                     startingDayOfWeek: StartingDayOfWeek.monday,
                     calendarStyle: CalendarStyle(
                       outsideDaysVisible: false,
@@ -244,32 +228,8 @@ class _State extends State<Calendar> {
                     },
                   ),
                   const SizedBox(height: 8.0),
-                  Expanded(
-                    child: ValueListenableBuilder<List<Event>>(
-                      valueListenable: _selectedEvents,
-                      builder: (context, value, _) {
-                        return ListView.builder(
-                          itemCount: value.length,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              child: ListTile(
-                                onTap: () {
-                                  Navigator.pushNamed(context, "/workout");
-                                },
-                                title: Text('${value[index]}'),
-                                trailing: IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () {
-                                    deleteWorkout(value[index].title);
-                                  },
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
+                  // display list of workouts on a day
+                  WorkoutLogsOverview(_selectedWorkouts, context),
                 ],
               ),
             ),

@@ -1,26 +1,29 @@
+import 'dart:convert';
+
 import 'exercise_log.dart';
 
 class WorkoutLog {
   WorkoutLog({
-    required this.exerciseLog,
+    required this.exerciseLogs,
     required this.id,
     required this.date,
   });
 
-  final int id;
-  final List<ExerciseLog> exerciseLog;
-  final DateTime date;
+  final int? id;
+  final List<ExerciseLog> exerciseLogs;
+  final String date;
 
-  WorkoutLog.fromMap(Map<String, dynamic> res)
-      : id = res["id"],
-        exerciseLog = res["exerciseLog"],
-        date = res["date"];
+  WorkoutLog.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        exerciseLogs = (jsonDecode(json['exerciseLogs']) as List)
+            .map((exerciseLog) => ExerciseLog.fromJson(exerciseLog))
+            .toList(),
+        //exerciseLogs = jsonDecode(json["exerciseLogs"]),
+        date = json['date'];
 
-  Map<String, Object?> toMap() {
-    return {
-      'id': id,
-      'exerciseLog': exerciseLog,
-      'date': date,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'exerciseLogs': jsonEncode(exerciseLogs),
+        'date': date,
+      };
 }

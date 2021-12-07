@@ -6,13 +6,14 @@ import 'package:ivse1_gymlife/feature/workout_category/ui/workout_category.dart'
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    //final Object? args = settings.arguments;
+    final Object? args = settings.arguments;
 
     switch (settings.name) {
       case Routes.landing:
         return MaterialPageRoute<dynamic>(builder: (_) => Calendar());
       case Routes.workout:
-        return MaterialPageRoute<dynamic>(builder: (_) => WorkoutPage());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => WorkoutPage()); // TODO give workoutlog
       case Routes.workoutcategory:
         return MaterialPageRoute<dynamic>(
             builder: (_) => WorkoutCategoryScreen());
