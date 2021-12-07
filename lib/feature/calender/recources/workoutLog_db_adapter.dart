@@ -15,9 +15,20 @@ class WorkoutLogDbAdapter {
     db.insert('workouts', workout.toJson());
   }
 
-  // Future<WorkoutLog> getWorkout(int id) async { // TODO
-  //   final Database db = await LocalDatabase().initializeDB();
-  //   final WorkoutLog queryResult = await db.query("workout");
-  //   return queryResult;
+  Future deleteWorkout(WorkoutLog workout) async {
+    final Database db = await LocalDatabase().db;
+    db.delete('workouts', where: "id = ${workout.id}");
+  }
+
+  Future<WorkoutLog> getWorkout(int id) async {
+    final Database db = await LocalDatabase().db;
+    final WorkoutLog queryResult =
+        (await db.query("workouts", where: "id = $id")) as WorkoutLog;
+    return queryResult;
+  }
+
+  // updateWorkout(WorkoutLog workout) async { // TODO
+  //   final Database db = await LocalDatabase().db;
+  //    db.update("workouts", workout, where: "id = ${workout.id}");
   // }
 }

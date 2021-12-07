@@ -17,7 +17,7 @@ class Calendar extends StatefulWidget {
 
 class _State extends State<Calendar> {
   late ValueNotifier<List<WorkoutLog>> _selectedWorkouts;
-  Map<DateTime, List<WorkoutLog>> selectedWorkouts = {};
+  List<WorkoutLog> selectedWorkouts = [];
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
@@ -32,9 +32,9 @@ class _State extends State<Calendar> {
   @override
   void initState() {
     super.initState();
-    selectedWorkouts = {};
+    selectedWorkouts = [];
     _selectedDay = _focusedDay;
-    _selectedWorkouts = ValueNotifier(_getEventsForDay(_selectedDay!));
+    _selectedWorkouts = ValueNotifier(_getWorkoutLogsForDay(_selectedDay!));
   }
 
   @override
@@ -43,20 +43,24 @@ class _State extends State<Calendar> {
     super.dispose();
   }
 
-  List<WorkoutLog> _getEventsForDay(DateTime day) {
-    return selectedWorkouts[day] ?? [];
+  List<WorkoutLog> _getWorkoutLogsForDay(DateTime day) {
+    // retrieves workouts per day
+    return selectedWorkouts
+        .where((element) => DateTime.parse(element.date) == day)
+        .toList();
   }
 
-  List<WorkoutLog> _getEventsForRange(DateTime start, DateTime end) {
+  List<WorkoutLog> _getWorkoutLogsForRange(DateTime start, DateTime end) {
     final days = daysInRange(start, end);
 
     return [
-      for (final d in days) ..._getEventsForDay(d),
+      for (final d in days) ..._getWorkoutLogsForDay(d),
     ];
   }
 
   WorkoutLog getWorkoutItem() {
     // create with empty workout format
+    // TODO personalize format
     Exercise exercise = new Exercise(id: 1, category: 1, name: "Kastzijn");
     ExerciseLog exLog = new ExerciseLog(exercise: exercise);
     WorkoutLog workoutLog = new WorkoutLog(
@@ -83,7 +87,7 @@ class _State extends State<Calendar> {
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
-      _selectedWorkouts.value = _getEventsForDay(selectedDay);
+      _selectedWorkouts.value = _getWorkoutLogsForDay(selectedDay);
     }
   }
 
@@ -99,33 +103,23 @@ class _State extends State<Calendar> {
 
     // `start` or `end` could be null
     if (start != null && end != null) {
-      _selectedWorkouts.value = _getEventsForRange(start, end);
+      _selectedWorkouts.value = _getWorkoutLogsForRange(start, end);
     } else if (start != null) {
-      _selectedWorkouts.value = _getEventsForDay(start);
+      _selectedWorkouts.value = _getWorkoutLogsForDay(start);
     } else if (end != null) {
-      _selectedWorkouts.value = _getEventsForDay(end);
+      _selectedWorkouts.value = _getWorkoutLogsForDay(end);
     }
   }
 
   // Add event to date
   dialAction(String title) {
-    if (selectedWorkouts[_selectedDay] != null) {
-      selectedWorkouts[_selectedDay]!.add(
-        getWorkoutItem(),
-      );
-      // lege workout maken van de gekozen dial
-      BlocProvider.of<CalendarBloc>(context)
-          .add(NewCalendarEvent(getWorkoutItem()));
-    } else {
-      // TODO check correctness
-      selectedWorkouts[_selectedDay!]!.add(
-        getWorkoutItem(),
-      );
-      BlocProvider.of<CalendarBloc>(context)
-          .add(NewCalendarEvent(getWorkoutItem()));
-    }
+    selectedWorkouts.add(
+      getWorkoutItem(),
+    );
+    BlocProvider.of<CalendarBloc>(context)
+        .add(NewCalendarEvent(getWorkoutItem()));
 
-    _selectedWorkouts.value = _getEventsForDay(_selectedDay!);
+    _selectedWorkouts.value = _getWorkoutLogsForDay(_selectedDay!);
     setState(() {});
   }
 
@@ -139,11 +133,7 @@ class _State extends State<Calendar> {
             actions: <Widget>[
               TextButton(
                   onPressed: () {
-                    if (selectedWorkouts[_selectedDay] != null) {
-                      //TODO delete function
-                    }
-
-                    //selectedWorkouts. = _getEventsForDay2(_selectedDay!);
+                    //TODO delete function
                     setState(() {});
                     Navigator.pop(context);
                   },
@@ -173,12 +163,8 @@ class _State extends State<Calendar> {
         if (state is CalendarInitial) {
           BlocProvider.of<CalendarBloc>(context).add(GetCalendarEvent());
         } else if (state is WorkoutsLoadedState) {
-          // TODO seperate method for this?
-          // create map from state data
-          Map<DateTime, List<WorkoutLog>> dataLogs = {
-            for (var v in state.data) DateTime.parse(v.date): [v]
-          };
-          selectedWorkouts.addAll(dataLogs);
+          // fill local list with state data
+          selectedWorkouts = state.data;
 
           return WillPopScope(
             onWillPop: () async {
@@ -248,7 +234,7 @@ class _State extends State<Calendar> {
                     rangeEndDay: _rangeEnd,
                     calendarFormat: _calendarFormat,
                     rangeSelectionMode: _rangeSelectionMode,
-                    eventLoader: _getEventsForDay,
+                    eventLoader: _getWorkoutLogsForDay,
                     startingDayOfWeek: StartingDayOfWeek.monday,
                     calendarStyle: CalendarStyle(
                       outsideDaysVisible: false,
@@ -268,6 +254,7 @@ class _State extends State<Calendar> {
                   ),
                   const SizedBox(height: 8.0),
                   // display list of workouts on a day
+                  // TODO seperate class/widget?
                   Expanded(
                     child: ValueListenableBuilder<List<WorkoutLog>>(
                       valueListenable: _selectedWorkouts,
@@ -280,11 +267,12 @@ class _State extends State<Calendar> {
                                 onTap: () {
                                   Navigator.pushNamed(context, "/workout");
                                 },
-                                title: Text('${value[index]}'),
+                                title: Text('${value[index].id}'),
                                 trailing: IconButton(
                                   icon: Icon(Icons.delete),
                                   onPressed: () {
-                                    //deleteWorkout(value[index].title); // TODO
+                                    // TODO give title
+                                    deleteWorkout(value[index].id.toString());
                                   },
                                 ),
                               ),
