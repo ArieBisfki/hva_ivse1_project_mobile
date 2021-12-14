@@ -75,5 +75,22 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
         default:
       }
     }
+    if (event is DeleteCalendarEvent) {
+      final DataResponse<WorkoutLog> result =
+          await calendarRepository.deleteWorkout(event.workout);
+
+      switch (result.status) {
+        case Status.Error:
+          yield CalendarDataState(StateError(result.message.toString()));
+          break;
+        case Status.Loading:
+          yield CalendarDataState(StateLoading());
+          break;
+        case Status.Success:
+          yield CalendarDataState(StateSuccess<WorkoutLog>(result.data));
+          break;
+        default:
+      }
+    }
   }
 }

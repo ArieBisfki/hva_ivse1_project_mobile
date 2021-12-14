@@ -16,6 +16,8 @@ class Calendar extends StatefulWidget {
   _State createState() => _State();
 }
 
+//TODO when you open the app it doenst show workout list
+
 class _State extends State<Calendar> {
   late ValueNotifier<List<WorkoutLog>> _selectedWorkouts;
   List<WorkoutLog> selectedWorkouts = [];
@@ -119,9 +121,11 @@ class _State extends State<Calendar> {
     );
     BlocProvider.of<CalendarBloc>(context)
         .add(NewCalendarEvent(getWorkoutItem()));
+    BlocProvider.of<CalendarBloc>(context).add(GetWorkoutsEvent());
 
-    _selectedWorkouts.value = _getWorkoutLogsForDay(_selectedDay!);
-    setState(() {});
+    setState(() {
+      //_selectedWorkouts.value = _getWorkoutLogsForDay(_selectedDay!);
+    });
   }
 
   @override
@@ -151,7 +155,21 @@ class _State extends State<Calendar> {
             },
             child: Scaffold(
               appBar: AppBar(
+                automaticallyImplyLeading: false,
+                centerTitle: true,
                 title: Text('GymLife Calendar'),
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.logout,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      Navigator.popAndPushNamed(context, "/login");
+                      // TODO logout for real
+                    },
+                  )
+                ],
               ),
               floatingActionButton: _addWorkoutButton
                   ? SpeedDial(

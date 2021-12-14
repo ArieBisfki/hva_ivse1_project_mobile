@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 
 class WorkoutLogsOverview extends StatelessWidget {
@@ -19,6 +21,8 @@ class WorkoutLogsOverview extends StatelessWidget {
                   onPressed: () {
                     // TODO delete function
                     // TODO nullsafe
+                    BlocProvider.of<CalendarBloc>(context)
+                        .add(DeleteCalendarEvent(workout));
                     print("ID TO DELETE: " + workout.id.toString());
                     Navigator.pop(context);
                   },
@@ -52,7 +56,7 @@ class WorkoutLogsOverview extends StatelessWidget {
                   trailing: IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () {
-                      // TODO give title
+                      // TODO give title to tile
                       deleteWorkout(value[index]);
                     },
                   ),

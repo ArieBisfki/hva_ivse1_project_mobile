@@ -6,7 +6,6 @@ class WorkoutLogDbAdapter {
   Future<List<WorkoutLog>> getWorkouts() async {
     final Database db = await LocalDatabase().db;
     final List<Map<String, Object?>> queryResult = await db.query('workouts');
-    print("query result: " + queryResult.toString());
     return queryResult.map((e) => WorkoutLog.fromJson(e)).toList();
   }
 
@@ -17,6 +16,7 @@ class WorkoutLogDbAdapter {
 
   Future deleteWorkout(WorkoutLog workout) async {
     final Database db = await LocalDatabase().db;
+    // TODO krijgt error op int? -> moet int worden
     db.delete('workouts', where: "id = ${workout.id}");
   }
 
