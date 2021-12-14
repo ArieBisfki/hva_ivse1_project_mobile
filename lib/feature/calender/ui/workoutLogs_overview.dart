@@ -3,34 +3,41 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 
-class WorkoutLogsOverview extends StatelessWidget {
-  const WorkoutLogsOverview(this._selectedWorkouts, this.context, {Key? key})
+import 'calendar_overview.dart';
+
+class WorkoutLogsOverview extends StatefulWidget {
+  const WorkoutLogsOverview(this.workoutLogs, this.context, {Key? key})
       : super(key: key);
-  final ValueNotifier<List<WorkoutLog>> _selectedWorkouts;
+  final List<WorkoutLog> workoutLogs;
   final BuildContext context;
 
+  @override
+  State<WorkoutLogsOverview> createState() => _WorkoutLogsOverviewState();
+}
+
+class _WorkoutLogsOverviewState extends State<WorkoutLogsOverview> {
   deleteWorkout(WorkoutLog workout) {
+    setState(() {
+      BlocProvider.of<CalendarBloc>(widget.context)
+          .add(DeleteCalendarEvent(workout));
+    });
+    Navigator.pop(widget.context);
+  }
+
+  deleteWorkoutDialog(WorkoutLog workout) {
     showDialog(
-        context: context,
+        context: widget.context,
         builder: (context) {
           return AlertDialog(
             title: Text('Are you sure?'),
             content: Text('The planned workout will be deleted'),
             actions: <Widget>[
               TextButton(
-                  onPressed: () {
-                    // TODO delete function
-                    // TODO nullsafe
-                    BlocProvider.of<CalendarBloc>(context)
-                        .add(DeleteCalendarEvent(workout));
-                    print("ID TO DELETE: " + workout.id.toString());
-                    Navigator.pop(context);
-                  },
-                  child: Text('yes')),
+                onPressed: () => deleteWorkout(workout),
+                child: Text('yes'),
+              ),
               TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: () => Navigator.pop(context),
                 child: Text('no'),
               )
             ],
@@ -42,7 +49,7 @@ class WorkoutLogsOverview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: ValueListenableBuilder<List<WorkoutLog>>(
-        valueListenable: _selectedWorkouts,
+        valueListenable: ValueNotifier(widget.workoutLogs),
         builder: (context, value, _) {
           return ListView.builder(
             itemCount: value.length,
@@ -52,12 +59,11 @@ class WorkoutLogsOverview extends StatelessWidget {
                   onTap: () {
                     Navigator.pushNamed(context, "/workout");
                   },
-                  title: Text('${value[index].id}'),
+                  title: Text('Workout ID: ${value[index].id}'),
                   trailing: IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () {
-                      // TODO give title to tile
-                      deleteWorkout(value[index]);
+                      deleteWorkoutDialog(value[index]);
                     },
                   ),
                 ),

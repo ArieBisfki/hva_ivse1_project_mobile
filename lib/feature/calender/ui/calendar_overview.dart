@@ -16,11 +16,10 @@ class Calendar extends StatefulWidget {
   _State createState() => _State();
 }
 
-//TODO when you open the app it doenst show workout list
-
 class _State extends State<Calendar> {
   late ValueNotifier<List<WorkoutLog>> _selectedWorkouts;
   List<WorkoutLog> selectedWorkouts = [];
+  List<WorkoutLog> workoutLogsForDay = [];
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
@@ -31,6 +30,8 @@ class _State extends State<Calendar> {
   bool _addWorkoutButton = true;
 
   var isDialOpen = ValueNotifier<bool>(false);
+
+  List<WorkoutLog> get list => workoutLogsForDay;
 
   @override
   void initState() {
@@ -90,6 +91,7 @@ class _State extends State<Calendar> {
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
+      workoutLogsForDay = _getWorkoutLogsForDay(selectedDay);
       _selectedWorkouts.value = _getWorkoutLogsForDay(selectedDay);
     }
   }
@@ -119,12 +121,14 @@ class _State extends State<Calendar> {
     selectedWorkouts.add(
       getWorkoutItem(),
     );
+
     BlocProvider.of<CalendarBloc>(context)
         .add(NewCalendarEvent(getWorkoutItem()));
     BlocProvider.of<CalendarBloc>(context).add(GetWorkoutsEvent());
 
     setState(() {
-      //_selectedWorkouts.value = _getWorkoutLogsForDay(_selectedDay!);
+      //workoutLogsForDay = _getWorkoutLogsForDay(_selectedDay!);
+      _selectedWorkouts.value = _getWorkoutLogsForDay(_selectedDay!);
     });
   }
 
@@ -144,6 +148,10 @@ class _State extends State<Calendar> {
         } else if (state is WorkoutsLoadedState) {
           // fill local list with state data
           selectedWorkouts = state.data;
+          workoutLogsForDay = state.data
+              .where((element) =>
+                  DateTime.parse(element.date).day == _selectedDay!.day)
+              .toList();
 
           return WillPopScope(
             onWillPop: () async {
@@ -247,7 +255,7 @@ class _State extends State<Calendar> {
                   ),
                   const SizedBox(height: 8.0),
                   // display list of workouts on a day
-                  WorkoutLogsOverview(_selectedWorkouts, context),
+                  WorkoutLogsOverview(workoutLogsForDay, context),
                 ],
               ),
             ),

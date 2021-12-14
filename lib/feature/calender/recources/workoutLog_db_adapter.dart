@@ -11,13 +11,12 @@ class WorkoutLogDbAdapter {
 
   Future addWorkout(WorkoutLog workout) async {
     final Database db = await LocalDatabase().db;
-    db.insert('workouts', workout.toJson());
+    return db.insert('workouts', workout.toJson());
   }
 
   Future deleteWorkout(WorkoutLog workout) async {
     final Database db = await LocalDatabase().db;
-    // TODO krijgt error op int? -> moet int worden
-    db.delete('workouts', where: "id = ${workout.id}");
+    return db.delete('workouts', where: "id = ${workout.id}");
   }
 
   Future<WorkoutLog> getWorkout(int id) async {

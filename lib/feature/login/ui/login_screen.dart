@@ -87,6 +87,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         print(nameController.text);
                         print(passwordController.text);
                         Navigator.popAndPushNamed(context, "/landing");
+                        // pop keyboard
+                        FocusScope.of(context).requestFocus(FocusNode());
                       },
                     )),
                 Container(
