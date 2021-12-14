@@ -3,4 +3,6 @@ class Routes {
   static const String workout = '/workout';
   static const String workoutcategory = '/workout_category';
   static const String login = '/login';
+  static const String signup = '/sign_up';
+  static const String forgotpassword = '/forgot_password';
 }

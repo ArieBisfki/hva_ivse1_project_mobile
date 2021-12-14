@@ -66,7 +66,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     foregroundColor:
                         MaterialStateProperty.all<Color>(Colors.blue),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/forgot_password");
+                  },
                   child: Text(
                     "forgot password",
                     style: TextStyle(color: Colors.blue),
@@ -100,7 +102,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         foregroundColor:
                             MaterialStateProperty.all<Color>(Colors.blue),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, "/sign_up");
+                      },
                       child: Text(
                         "sign up",
                         style: TextStyle(color: Colors.blue),
