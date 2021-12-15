@@ -28,6 +28,7 @@ class _State extends State<Calendar> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
   bool _addWorkoutButton = true;
+  bool _loggedIn = false;
 
   var isDialOpen = ValueNotifier<bool>(false);
 
@@ -167,16 +168,18 @@ class _State extends State<Calendar> {
                 centerTitle: true,
                 title: Text('GymLife Calendar'),
                 actions: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      Icons.logout,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Navigator.popAndPushNamed(context, "/login");
-                      // TODO logout for real
-                    },
-                  )
+                  _loggedIn
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.logout,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.popAndPushNamed(context, "/login");
+                            // TODO logout for real
+                          },
+                        )
+                      : const SizedBox.shrink()
                 ],
               ),
               floatingActionButton: _addWorkoutButton
@@ -256,6 +259,30 @@ class _State extends State<Calendar> {
                   const SizedBox(height: 8.0),
                   // display list of workouts on a day
                   WorkoutLogsOverview(workoutLogsForDay, context),
+                  _loggedIn
+                      ? const SizedBox.shrink()
+                      : Container(
+                          child: Row(
+                            children: <Widget>[
+                              Text('Don\'t have an account?'),
+                              TextButton(
+                                style: ButtonStyle(
+                                  foregroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.blue),
+                                ),
+                                onPressed: () {
+                                  Navigator.pushNamed(context, "/sign_up");
+                                },
+                                child: Text(
+                                  "sign up",
+                                  style: TextStyle(color: Colors.blue),
+                                ),
+                              ),
+                            ],
+                            mainAxisAlignment: MainAxisAlignment.center,
+                          ),
+                        ),
                 ],
               ),
             ),

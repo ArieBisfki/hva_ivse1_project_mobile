@@ -23,16 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: EdgeInsets.all(10),
             child: ListView(
               children: <Widget>[
-                // Container(
-                //     alignment: Alignment.center,
-                //     padding: EdgeInsets.all(10),
-                //     child: Text(
-                //       'Gymlife',
-                //       style: TextStyle(
-                //           color: Colors.blue,
-                //           fontWeight: FontWeight.w500,
-                //           fontSize: 30),
-                //     )),
                 Container(
                     alignment: Alignment.center,
                     padding: EdgeInsets.all(10),
@@ -88,6 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         print(nameController.text);
                         print(passwordController.text);
+                        // TODO give login bool to landing
                         Navigator.popAndPushNamed(context, "/landing");
                         // pop keyboard
                         FocusScope.of(context).requestFocus(FocusNode());
@@ -112,7 +103,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                   mainAxisAlignment: MainAxisAlignment.center,
-                ))
+                )),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.35,
+                ),
+                TextButton(
+                  style: ButtonStyle(
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.blue),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/landing");
+                  },
+                  child: Text(
+                    "Continue without account",
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                ),
               ],
             )));
   }
