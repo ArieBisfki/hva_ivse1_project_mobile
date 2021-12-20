@@ -110,10 +110,13 @@ class _State extends State<Calendar> {
     // `start` or `end` could be null
     if (start != null && end != null) {
       _selectedWorkouts.value = _getWorkoutLogsForRange(start, end);
+      workoutLogsForDay = _getWorkoutLogsForRange(start, end);
     } else if (start != null) {
       _selectedWorkouts.value = _getWorkoutLogsForDay(start);
+      workoutLogsForDay = _getWorkoutLogsForDay(start);
     } else if (end != null) {
       _selectedWorkouts.value = _getWorkoutLogsForDay(end);
+      workoutLogsForDay = _getWorkoutLogsForDay(end);
     }
   }
 
@@ -133,6 +136,28 @@ class _State extends State<Calendar> {
     });
   }
 
+  // update calendar
+  updateCalendar(List<WorkoutLog> state) {
+    // fill local list with state data
+    selectedWorkouts = state;
+
+    if (_selectedDay == null) {
+      // retrieve range of dates
+      if (_rangeEnd != null) {
+        state
+            .where((element) =>
+                DateTime.parse(element.date).isAfter(_rangeStart!) &&
+                DateTime.parse(element.date).isBefore(_rangeEnd!))
+            .toList();
+      }
+    } else {
+      workoutLogsForDay = state
+          .where((element) =>
+              DateTime.parse(element.date).day == _selectedDay!.day)
+          .toList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CalendarBloc, CalendarState>(
@@ -147,12 +172,7 @@ class _State extends State<Calendar> {
         if (state is CalendarInitial) {
           BlocProvider.of<CalendarBloc>(context).add(GetCalendarEvent());
         } else if (state is WorkoutsLoadedState) {
-          // fill local list with state data
-          selectedWorkouts = state.data;
-          workoutLogsForDay = state.data
-              .where((element) =>
-                  DateTime.parse(element.date).day == _selectedDay!.day)
-              .toList();
+          updateCalendar(state.data);
 
           return WillPopScope(
             onWillPop: () async {
