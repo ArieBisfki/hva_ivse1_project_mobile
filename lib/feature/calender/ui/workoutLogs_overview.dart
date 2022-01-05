@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 
-import 'calendar_overview.dart';
-
 class WorkoutLogsOverview extends StatefulWidget {
   const WorkoutLogsOverview(this.workoutLogs, this.context, {Key? key})
       : super(key: key);

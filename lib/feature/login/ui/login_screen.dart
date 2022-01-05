@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:ivse1_gymlife/feature/login/recources/real_api.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -10,6 +12,27 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  // Create storage
+  final storage = new FlutterSecureStorage();
+
+  login() {
+    // token in storage?
+    //-> login with token
+    // RealiAPI.login(token);
+    RealApi api = new RealApi();
+
+    String token = storage.read(key: "accessToken").toString();
+
+    if (true) {
+      //if (token.isEmpty) {
+      api.login("arie_bisfki@live.nl", "Yeetyeet1!");
+    } else {
+      //api.login(token);
+    }
+
+    Navigator.popAndPushNamed(context, "/landing");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,10 +99,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
                       onPressed: () {
-                        print(nameController.text);
-                        print(passwordController.text);
-                        // TODO give login bool to landing
-                        Navigator.popAndPushNamed(context, "/landing");
+                        // login method
+                        login();
                         // pop keyboard
                         FocusScope.of(context).requestFocus(FocusNode());
                       },

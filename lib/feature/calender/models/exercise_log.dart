@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'exercise.dart';
 
 class ExerciseLog {

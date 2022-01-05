@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ivse1_gymlife/feature/login/recources/real_api.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -10,6 +11,35 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController firstnameController = TextEditingController();
+  TextEditingController lastnameController = TextEditingController();
+  TextEditingController prefixController = TextEditingController();
+
+  bool _validate = false;
+
+  register() {
+    RealApi api = new RealApi();
+
+    if (nameController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty &&
+        firstnameController.text.isNotEmpty &&
+        lastnameController.text.isNotEmpty) {
+      api.register(
+        "arie_bisfki@live.nl",
+        "Yeetyeet1!",
+        "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F20%2F-0001%2F11%2F30%2Fgettyimages-3238896.jpg",
+        "Arnold",
+        "S",
+        "",
+      );
+      Navigator.popAndPushNamed(context, "/landing");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Yay! Register succes'),
+      ));
+    } else {
+      _validate = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'User Name',
+                      errorText: _validate ? 'Value Can\'t Be Empty' : null,
                     ),
                   ),
                 ),
@@ -47,6 +78,53 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Password',
+                      errorText: _validate ? 'Value Can\'t Be Empty' : null,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: TextField(
+                    obscureText: true,
+                    //controller: passwordController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Picture (TODO)',
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: TextField(
+                    obscureText: true,
+                    controller: firstnameController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'First name',
+                      errorText: _validate ? 'Value Can\'t Be Empty' : null,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: TextField(
+                    obscureText: true,
+                    controller: lastnameController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Last name',
+                      errorText: _validate ? 'Value Can\'t Be Empty' : null,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: TextField(
+                    obscureText: true,
+                    controller: prefixController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Prefix',
                     ),
                   ),
                 ),
@@ -62,12 +140,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
                       onPressed: () {
-                        print(nameController.text);
-                        print(passwordController.text);
-                        Navigator.popAndPushNamed(context, "/login");
+                        register();
                         // pop keyboard
                         FocusScope.of(context).requestFocus(FocusNode());
-                        // TODO add succes snackbar
                       },
                     ))
               ],
