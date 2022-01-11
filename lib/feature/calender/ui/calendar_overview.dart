@@ -16,6 +16,12 @@ class Calendar extends StatefulWidget {
   _State createState() => _State();
 }
 
+// TODO extract widgets
+// TODO write tests
+// TODO improve code?
+// TODO think about security
+// TODO focus day isnt today
+
 class _State extends State<Calendar> {
   late ValueNotifier<List<WorkoutLog>> _selectedWorkouts;
   List<WorkoutLog> selectedWorkouts = [];
@@ -23,7 +29,7 @@ class _State extends State<Calendar> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
-  DateTime _focusedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now(); // TODO doesnt give today
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
