@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ivse1_gymlife/common/route/routes.dart';
-import '../../../workout_data.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:ivse1_gymlife/common/route/routes.dart';
 
+import '../../../workout_data.dart';
 
 class WorkoutPage extends StatefulWidget {
   @override
@@ -13,16 +13,6 @@ class WorkoutPage extends StatefulWidget {
 final snackBar = SnackBar(content: Text('Exercise deleted'));
 
 class _WorkoutPageState extends State<WorkoutPage> {
-  addExercise() {
-    workout.add({
-      'leading': ['images/bench.jpg', '10 x'],
-      'title': 'TEST MET KAI',
-      'subtitle': 'subtitle',
-      'trailing': Icon(Icons.chevron_right, size: 25)
-    });
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +24,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
           label: const Text('Add exercise'),
           icon: const Icon(Icons.add),
           backgroundColor: Colors.blue,
-
         ),
         body: Container(
           width: MediaQuery.of(context).size.width,
@@ -72,24 +61,23 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   itemCount: workout.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Slidable(
-                        key: UniqueKey(),
-                        actionPane: SlidableDrawerActionPane(),
-                        actionExtentRatio: 0.25,
-                        dismissal: SlidableDismissal(
-                          child: SlidableDrawerDismissal(),
-                          onDismissed: (actionType) {
+                      key: UniqueKey(),
+                      actionPane: SlidableDrawerActionPane(),
+                      actionExtentRatio: 0.25,
+                      dismissal: SlidableDismissal(
+                        child: SlidableDrawerDismissal(),
+                        onDismissed: (actionType) {
                           _showSnackBar(
-                          context,
-                          actionType == SlideActionType.primary
-                          ? 'Deleted'
-                              : 'Dimiss Archive');
+                              context,
+                              actionType == SlideActionType.primary
+                                  ? 'Deleted'
+                                  : 'Dimiss Archive');
                           setState(() {
                             workout.removeAt(index);
                           });
                         },
                         onWillDismiss: (direction) => promptUser(),
                       ),
-
                       child: Container(
                         color: Colors.white,
                         child: ListTile(
@@ -117,7 +105,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
                           icon: Icons.delete,
                           onTap: () => _showSnackBar(context, 'Deleted'),
                         ),
-
                       ],
                     );
                   },
@@ -128,9 +115,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
         ));
   }
 
-
   ///Shows the snackbar messages
-  void _showSnackBar(BuildContext context, String text){
+  void _showSnackBar(BuildContext context, String text) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
@@ -140,29 +126,29 @@ class _WorkoutPageState extends State<WorkoutPage> {
     action = "delete";
 
     return await showCupertinoDialog<bool>(
-      context: context,
-      builder: (context) => CupertinoAlertDialog(
-        content: Text("Are you sure you want to $action?"),
-        actions: <Widget>[
-          CupertinoDialogAction(
-            child: Text("Ok"),
-            onPressed: () {
-              // Dismiss the dialog and
-              // also dismiss the swiped item
-              Navigator.of(context).pop(true);
-            },
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+            content: Text("Are you sure you want to $action?"),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text("Ok"),
+                onPressed: () {
+                  // Dismiss the dialog and
+                  // also dismiss the swiped item
+                  Navigator.of(context).pop(true);
+                },
+              ),
+              CupertinoDialogAction(
+                child: Text('Cancel'),
+                onPressed: () {
+                  // Dismiss the dialog but don't
+                  // dismiss the swiped item
+                  return Navigator.of(context).pop(false);
+                },
+              )
+            ],
           ),
-          CupertinoDialogAction(
-            child: Text('Cancel'),
-            onPressed: () {
-              // Dismiss the dialog but don't
-              // dismiss the swiped item
-              return Navigator.of(context).pop(false);
-            },
-          )
-        ],
-      ),
-    ) ??
+        ) ??
         false; // In case the user dismisses the dialog by clicking away from it
   }
 }
