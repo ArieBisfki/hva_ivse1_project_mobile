@@ -25,9 +25,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         firstnameController.text.isNotEmpty &&
         lastnameController.text.isNotEmpty) {
       api.register(
+        // TODO retrieve values from text controllers
         "arie_bisfki@live.nl",
         "Yeetyeet1!",
-        "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F20%2F-0001%2F11%2F30%2Fgettyimages-3238896.jpg",
+        'images/bench.jpg',
         "Arnold",
         "S",
         "",

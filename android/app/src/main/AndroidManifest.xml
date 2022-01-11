@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.ivse1_gymlife">
+   <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="Gymlife"
         android:icon="@mipmap/ic_launcher">
