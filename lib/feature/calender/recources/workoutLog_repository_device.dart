@@ -10,19 +10,20 @@ class WorkoutLogRepositoryDevice implements IWorkoutLogRepositoryDevice {
   final WorkoutLogDbAdapter dbAdapter;
 
   @override
-  Future<DataResponse<WorkoutLog>> createWorkout(
+  Future<DataResponse<int>> createWorkout(
     WorkoutLog workout,
   ) async {
     try {
-      final dynamic response = await dbAdapter.addWorkout(workout);
+      // returns ID of last inserted row
+      final int response = await dbAdapter.addWorkout(workout);
 
-      if (response == null) {
-        return DataResponse<WorkoutLog>.connectivityError();
+      if (response == 0) {
+        return DataResponse<int>.connectivityError();
       }
 
-      return DataResponse<WorkoutLog>.success(response);
+      return DataResponse<int>.success(response);
     } catch (e) {
-      return DataResponse<WorkoutLog>.error('Error', error: e);
+      return DataResponse<int>.error('Error', error: e);
     }
   }
 
@@ -47,21 +48,20 @@ class WorkoutLogRepositoryDevice implements IWorkoutLogRepositoryDevice {
   }
 
   @override
-  Future<DataResponse<WorkoutLog>> deleteWorkout(WorkoutLog workout) async {
+  Future<DataResponse<int>> deleteWorkout(WorkoutLog workout) async {
     try {
-      final Iterable<dynamic> response = await dbAdapter.deleteWorkout(workout);
+      // returns rows affected, so nothing usable
+      final int response = await dbAdapter.deleteWorkout(workout);
 
-      if (response.isEmpty) {
-        return DataResponse<WorkoutLog>.connectivityError();
+      if (response == 0) {
+        return DataResponse<int>.connectivityError();
       }
 
-      final WorkoutLog workoutRes = response as WorkoutLog;
-
-      return DataResponse<WorkoutLog>.success(workoutRes);
+      return DataResponse<int>.success(response);
     } catch (e) {
       print(e);
 
-      return DataResponse<WorkoutLog>.error('Error', error: e);
+      return DataResponse<int>.error('Error', error: e);
     }
   }
 

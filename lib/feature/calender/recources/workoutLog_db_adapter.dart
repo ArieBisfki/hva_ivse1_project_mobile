@@ -6,18 +6,17 @@ class WorkoutLogDbAdapter {
   Future<List<WorkoutLog>> getWorkouts() async {
     final Database db = await LocalDatabase().db;
     final List<Map<String, Object?>> queryResult = await db.query('workouts');
-    print("query result: " + queryResult.toString());
     return queryResult.map((e) => WorkoutLog.fromJson(e)).toList();
   }
 
   Future addWorkout(WorkoutLog workout) async {
     final Database db = await LocalDatabase().db;
-    db.insert('workouts', workout.toJson());
+    return db.insert('workouts', workout.toJson());
   }
 
   Future deleteWorkout(WorkoutLog workout) async {
     final Database db = await LocalDatabase().db;
-    db.delete('workouts', where: "id = ${workout.id}");
+    return db.delete('workouts', where: "id = ${workout.id}");
   }
 
   Future<WorkoutLog> getWorkout(int id) async {

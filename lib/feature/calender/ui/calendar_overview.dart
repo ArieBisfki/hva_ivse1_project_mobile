@@ -19,6 +19,7 @@ class Calendar extends StatefulWidget {
 class _State extends State<Calendar> {
   late ValueNotifier<List<WorkoutLog>> _selectedWorkouts;
   List<WorkoutLog> selectedWorkouts = [];
+  List<WorkoutLog> workoutLogsForDay = [];
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
@@ -27,8 +28,11 @@ class _State extends State<Calendar> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
   bool _addWorkoutButton = true;
+  bool _loggedIn = false;
 
   var isDialOpen = ValueNotifier<bool>(false);
+
+  List<WorkoutLog> get list => workoutLogsForDay;
 
   @override
   void initState() {
@@ -88,6 +92,7 @@ class _State extends State<Calendar> {
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
+      workoutLogsForDay = _getWorkoutLogsForDay(selectedDay);
       _selectedWorkouts.value = _getWorkoutLogsForDay(selectedDay);
     }
   }
@@ -105,10 +110,13 @@ class _State extends State<Calendar> {
     // `start` or `end` could be null
     if (start != null && end != null) {
       _selectedWorkouts.value = _getWorkoutLogsForRange(start, end);
+      workoutLogsForDay = _getWorkoutLogsForRange(start, end);
     } else if (start != null) {
       _selectedWorkouts.value = _getWorkoutLogsForDay(start);
+      workoutLogsForDay = _getWorkoutLogsForDay(start);
     } else if (end != null) {
       _selectedWorkouts.value = _getWorkoutLogsForDay(end);
+      workoutLogsForDay = _getWorkoutLogsForDay(end);
     }
   }
 
@@ -117,11 +125,37 @@ class _State extends State<Calendar> {
     selectedWorkouts.add(
       getWorkoutItem(),
     );
+
     BlocProvider.of<CalendarBloc>(context)
         .add(NewCalendarEvent(getWorkoutItem()));
+    BlocProvider.of<CalendarBloc>(context).add(GetWorkoutsEvent());
 
-    _selectedWorkouts.value = _getWorkoutLogsForDay(_selectedDay!);
-    setState(() {});
+    setState(() {
+      //workoutLogsForDay = _getWorkoutLogsForDay(_selectedDay!);
+      _selectedWorkouts.value = _getWorkoutLogsForDay(_selectedDay!);
+    });
+  }
+
+  // update calendar
+  updateCalendar(List<WorkoutLog> state) {
+    // fill local list with state data
+    selectedWorkouts = state;
+
+    if (_selectedDay == null) {
+      // retrieve range of dates
+      if (_rangeEnd != null) {
+        state
+            .where((element) =>
+                DateTime.parse(element.date).isAfter(_rangeStart!) &&
+                DateTime.parse(element.date).isBefore(_rangeEnd!))
+            .toList();
+      }
+    } else {
+      workoutLogsForDay = state
+          .where((element) =>
+              DateTime.parse(element.date).day == _selectedDay!.day)
+          .toList();
+    }
   }
 
   @override
@@ -138,8 +172,7 @@ class _State extends State<Calendar> {
         if (state is CalendarInitial) {
           BlocProvider.of<CalendarBloc>(context).add(GetCalendarEvent());
         } else if (state is WorkoutsLoadedState) {
-          // fill local list with state data
-          selectedWorkouts = state.data;
+          updateCalendar(state.data);
 
           return WillPopScope(
             onWillPop: () async {
@@ -151,7 +184,23 @@ class _State extends State<Calendar> {
             },
             child: Scaffold(
               appBar: AppBar(
+                automaticallyImplyLeading: false,
+                centerTitle: true,
                 title: Text('GymLife Calendar'),
+                actions: <Widget>[
+                  _loggedIn
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.logout,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.popAndPushNamed(context, "/login");
+                            // TODO logout for real
+                          },
+                        )
+                      : const SizedBox.shrink()
+                ],
               ),
               floatingActionButton: _addWorkoutButton
                   ? SpeedDial(
@@ -229,7 +278,31 @@ class _State extends State<Calendar> {
                   ),
                   const SizedBox(height: 8.0),
                   // display list of workouts on a day
-                  WorkoutLogsOverview(_selectedWorkouts, context),
+                  WorkoutLogsOverview(workoutLogsForDay, context),
+                  _loggedIn
+                      ? const SizedBox.shrink()
+                      : Container(
+                          child: Row(
+                            children: <Widget>[
+                              Text('Don\'t have an account?'),
+                              TextButton(
+                                style: ButtonStyle(
+                                  foregroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.blue),
+                                ),
+                                onPressed: () {
+                                  Navigator.pushNamed(context, "/sign_up");
+                                },
+                                child: Text(
+                                  "sign up",
+                                  style: TextStyle(color: Colors.blue),
+                                ),
+                              ),
+                            ],
+                            mainAxisAlignment: MainAxisAlignment.center,
+                          ),
+                        ),
                 ],
               ),
             ),

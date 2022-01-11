@@ -59,8 +59,34 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       yield WorkoutsLoadedState(_workouts);
     }
     if (event is NewCalendarEvent) {
-      final DataResponse<WorkoutLog> result =
+      final DataResponse<dynamic> result =
           await calendarRepository.createWorkout(event.workout);
+
+      final DataResponse<List<WorkoutLog>> recall =
+          await calendarRepository.getWorkouts();
+
+      if (recall.data != null) {
+        _workouts = recall.data!;
+      }
+
+      switch (result.status) {
+        case Status.Error:
+          yield CalendarDataState(StateError(result.message.toString()));
+          break;
+        case Status.Loading:
+          yield CalendarDataState(StateLoading());
+          break;
+        case Status.Success:
+          yield CalendarDataState(StateSuccess<WorkoutLog>(result.data));
+          break;
+        default:
+      }
+    }
+    if (event is DeleteCalendarEvent) {
+      final DataResponse<dynamic> result =
+          await calendarRepository.deleteWorkout(event.workout);
+
+      _workouts.remove(event.workout);
 
       switch (result.status) {
         case Status.Error:

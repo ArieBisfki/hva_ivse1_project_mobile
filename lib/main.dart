@@ -38,10 +38,9 @@ class _AppState extends State<MyApp> {
         ],
         child: MaterialApp(
           title: 'GymLife',
-          //navigatorObservers: [RouteObserver<PageRoute>()],
           debugShowCheckedModeBanner: false,
           onGenerateRoute: RouteGenerator.generateRoute,
-          initialRoute: Routes.landing,
+          initialRoute: Routes.login,
         ),
       ),
     );
