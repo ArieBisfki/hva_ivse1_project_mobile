@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:ivse1_gymlife/common/http/response.dart';
 import 'package:ivse1_gymlife/common/route/routes.dart';
+import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
+import 'package:ivse1_gymlife/feature/workout/resources/workout_adapter.dart';
+import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart';
 
 import '../../../workout_data.dart';
 
@@ -13,13 +17,17 @@ class WorkoutPage extends StatefulWidget {
 final snackBar = SnackBar(content: Text('Exercise deleted'));
 
 class _WorkoutPageState extends State<WorkoutPage> {
+
+  ExerciseLogDbAdapter adapter = new ExerciseLogDbAdapter();
+  late final ExerciseLogRepository repo = new ExerciseLogRepository(dbAdapter: adapter);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-            // addExercise();
-            Navigator.pushNamed(context, Routes.workoutcategory);
+            getExerciseItem();
+            // Navigator.pushNamed(context, Routes.workoutcategory);
           },
           label: const Text('Add exercise'),
           icon: const Icon(Icons.add),
@@ -150,5 +158,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
           ),
         ) ??
         false; // In case the user dismisses the dialog by clicking away from it
+  }
+
+  Future<DataResponse<int>> getExerciseItem() {
+    Future<DataResponse<int>> exercise = repo.createExercise(ExerciseData(id: "1", title: "Bench press", sets:3, reps:12, weight: 100, description: "Kast zijn!", image: ''));
+    return exercise;
   }
 }

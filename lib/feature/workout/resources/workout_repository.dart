@@ -1,5 +1,4 @@
 import 'package:ivse1_gymlife/common/http/response.dart';
-import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_adapter.dart';
 

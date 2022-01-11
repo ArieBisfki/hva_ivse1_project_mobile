@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/recources/workoutLog_db_adapter.dart';
+import 'package:ivse1_gymlife/feature/workout/resources/workout_adapter.dart';
+import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart';
 
 import 'common/route/route_generator.dart';
 import 'common/route/routes.dart';
@@ -24,6 +26,12 @@ class _AppState extends State<MyApp> {
         RepositoryProvider<WorkoutLogRepositoryDevice>(
           create: (BuildContext context) => WorkoutLogRepositoryDevice(
             dbAdapter: WorkoutLogDbAdapter(),
+          ),
+          lazy: true,
+        ),
+        RepositoryProvider<ExerciseLogRepository>(
+          create: (BuildContext context) => ExerciseLogRepository(
+            dbAdapter: ExerciseLogDbAdapter(),
           ),
           lazy: true,
         ),
