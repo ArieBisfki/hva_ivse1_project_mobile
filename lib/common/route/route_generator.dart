@@ -13,7 +13,8 @@ class RouteGenerator {
 
     switch (settings.name) {
       case Routes.landing:
-        return MaterialPageRoute<dynamic>(builder: (_) => Calendar());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => Calendar(loggedIn: args is bool ? args : false));
       case Routes.workout:
         return MaterialPageRoute<dynamic>(
             builder: (_) => WorkoutPage()); // TODO give workoutlog
@@ -28,7 +29,8 @@ class RouteGenerator {
         return MaterialPageRoute<dynamic>(
             builder: (_) => ForgotPasswordScreen());
       default:
-        return MaterialPageRoute<dynamic>(builder: (_) => Calendar());
+        return MaterialPageRoute<dynamic>(
+            builder: (_) => Calendar(loggedIn: false));
     }
   }
 }

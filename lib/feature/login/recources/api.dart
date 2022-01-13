@@ -5,10 +5,6 @@ abstract class Api {
     return LoginResponse("", "");
   }
 
-  Future<LoginResponse> loginWithToken(String token) async {
-    return LoginResponse("", "");
-  }
-
   Future<LoginResponse> register(String username, String password, String email,
       String firstname, String lastname, String prefix) async {
     return LoginResponse("", "");

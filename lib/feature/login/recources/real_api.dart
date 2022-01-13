@@ -29,13 +29,13 @@ class RealApi implements Api {
                     "password": password,
                   }));
 
-      late final LoginResponse loginResponse;
+      LoginResponse loginResponse = new LoginResponse("", "");
 
       if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.toString());
+        var jsonResponse = jsonDecode(response.body);
 
-        loginResponse = new LoginResponse(
-            jsonResponse['accessToken'], jsonResponse['refreshToken']);
+        loginResponse.accessToken = jsonResponse['accessToken'];
+        loginResponse.refreshToken = jsonResponse['refreshToken'];
 
         // store token
         storage.write(key: "Bearer", value: loginResponse.accessToken);
@@ -48,12 +48,6 @@ class RealApi implements Api {
     } catch (e) {
       return LoginResponse(e, e); // TODO
     }
-  }
-
-  @override
-  Future<LoginResponse> loginWithToken(String token) {
-    // TODO: implement loginWithToken
-    throw UnimplementedError();
   }
 
   @override
@@ -89,13 +83,13 @@ class RealApi implements Api {
                     "prefix": prefix
                   }));
 
-      late final LoginResponse loginResponse;
+      late final LoginResponse loginResponse = new LoginResponse("", "");
 
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body);
 
-        loginResponse = new LoginResponse(
-            jsonResponse['accessToken'], jsonResponse['refreshToken']);
+        loginResponse.accessToken = jsonResponse['accessToken'];
+        loginResponse.refreshToken = jsonResponse['refreshToken'];
 
         // store token
         storage.write(key: "Bearer", value: loginResponse.accessToken);
@@ -115,13 +109,13 @@ class RealApi implements Api {
       final response = await http
           .post(Uri.parse('$URL/forgotPassword'), body: {"password": password});
 
-      late final LoginResponse loginResponse;
+      late final LoginResponse loginResponse = new LoginResponse("", "");
 
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.toString());
 
-        loginResponse = new LoginResponse(
-            jsonResponse['accessToken'], jsonResponse['refreshToken']);
+        loginResponse.accessToken = jsonResponse['accessToken'];
+        loginResponse.refreshToken = jsonResponse['refreshToken'];
 
         // store token
         storage.write(key: "Bearer", value: loginResponse.accessToken);

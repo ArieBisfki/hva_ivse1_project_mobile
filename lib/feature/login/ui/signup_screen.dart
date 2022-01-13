@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ivse1_gymlife/common/widget/textfield.dart';
+import 'package:ivse1_gymlife/common/widget/costum_textfield.dart';
 import 'package:ivse1_gymlife/feature/login/recources/real_api.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -27,14 +27,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         emailController.text.isNotEmpty &&
         firstnameController.text.isNotEmpty &&
         lastnameController.text.isNotEmpty) {
-      api.register(
-          nameController.text,
-          passwordController.text,
-          emailController.text,
-          firstnameController.text,
-          lastnameController.text,
-          prefixController.text);
-      Navigator.popAndPushNamed(context, "/landing");
+      // TODO snackbar if something went wrong
+      api.register("Kai", "Yeetyeet1!", "Kaivandenbroek@hotmail.com", "Kai",
+          "Broek", "van den");
+      Navigator.popAndPushNamed(context, "/", arguments: true);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Yay! Register succes'),
       ));
@@ -81,10 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     controller: lastnameController,
                     validate: _validate,
                     text: 'Last name'),
-                CostumTextField(
-                    controller: prefixController,
-                    validate: _validate,
-                    text: 'Prefix'),
+                CostumTextField(controller: prefixController, text: 'Prefix'),
                 Container(
                     height: 70,
                     padding: EdgeInsets.fromLTRB(10, 20, 10, 0),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:ivse1_gymlife/common/widget/costum_textfield.dart';
 import 'package:ivse1_gymlife/feature/login/recources/real_api.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,24 +16,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Create storage
   final storage = new FlutterSecureStorage();
+  bool _validate = false;
 
   login() {
-    // token in storage?
-    //-> login with token
-    // RealiAPI.login(token);
     RealApi api = new RealApi();
 
     String token = storage.read(key: "accessToken").toString();
 
-    if (token.isNotEmpty) {
-      //if (token.isEmpty) {
-      api.login("kai", "Yeetyeet1!");
-    } else {
-      api.loginWithToken(token);
-    }
+    if (nameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+      if (token.isNotEmpty) {
+        //if (token.isEmpty) {
+        // TODO snackbar if something went wrong - maybe add statusCode in login response?
+        api.login("Kai", "Yeetyeet1!");
+      } else {
+        //api.login(token); // TODO
+      }
 
-    //TODO add login = true argument to remove "dont have an account"
-    Navigator.popAndPushNamed(context, "/landing");
+      // login is true
+      Navigator.popAndPushNamed(context, "/", arguments: true);
+    } else {
+      _validate = true;
+    }
   }
 
   @override
@@ -57,27 +61,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           'Sign in',
                           style: TextStyle(fontSize: 20),
                         )),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      child: TextField(
+                    CostumTextField(
                         controller: nameController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'User Name',
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                      child: TextField(
-                        obscureText: true,
+                        validate: _validate,
+                        text: "User name"),
+                    CostumTextField(
                         controller: passwordController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Password',
-                        ),
-                      ),
-                    ),
+                        validate: _validate,
+                        obscure: true,
+                        text: "Password"),
                     TextButton(
                       style: ButtonStyle(
                         foregroundColor:

@@ -10,7 +10,9 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Calendar extends StatefulWidget {
-  Calendar({Key? key}) : super(key: key);
+  Calendar({Key? key, required this.loggedIn}) : super(key: key);
+
+  final bool loggedIn;
 
   @override
   _State createState() => _State();
@@ -42,6 +44,7 @@ class _State extends State<Calendar> {
   @override
   void initState() {
     super.initState();
+    _loggedIn = widget.loggedIn;
     selectedWorkouts = [];
     _selectedDay = _focusedDay;
     _selectedWorkouts = ValueNotifier(_getWorkoutLogsForDay(_selectedDay!));
