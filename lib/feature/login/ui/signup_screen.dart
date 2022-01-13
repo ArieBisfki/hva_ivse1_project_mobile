@@ -22,21 +22,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
   register() {
     RealApi api = new RealApi();
 
-    // TODO retrieve values from text controllers
-
     if (nameController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
         emailController.text.isNotEmpty &&
         firstnameController.text.isNotEmpty &&
         lastnameController.text.isNotEmpty) {
       api.register(
-        "kai",
-        "Yeetyeet1!",
-        "kaivandenbroek@hotmail.com",
-        "Arnold",
-        "Terminator",
-        "the",
-      );
+          nameController.text,
+          passwordController.text,
+          emailController.text,
+          firstnameController.text,
+          lastnameController.text,
+          prefixController.text);
       Navigator.popAndPushNamed(context, "/landing");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Yay! Register succes'),
