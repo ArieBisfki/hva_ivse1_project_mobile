@@ -1,20 +1,33 @@
 import 'dart:convert';
 
+import 'package:http_interceptor/http/http.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'package:ivse1_gymlife/feature/login/recources/api.dart';
 import 'package:ivse1_gymlife/feature/login/recources/login_response.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class RealApi implements Api {
-  // Create storage
+  // Create device storage
   final storage = new FlutterSecureStorage();
   static const String URL = "http://10.0.2.2:6060/auth";
 
   @override
   Future<LoginResponse> login(String username, String password) async {
     try {
-      final response = await http.post(Uri.parse('$URL/login'),
-          body: {"email": username, "password": password});
+      Map<String, String> requestHeaders = {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+      };
+
+      final response =
+          await InterceptedHttp.build(interceptors: [LoggerInterceptor()])
+              .post(Uri.parse('$URL/login'),
+                  headers: requestHeaders,
+                  body: jsonEncode({
+                    "username": username,
+                    "password": password,
+                  }));
 
       late final LoginResponse loginResponse;
 
@@ -38,6 +51,12 @@ class RealApi implements Api {
   }
 
   @override
+  Future<LoginResponse> loginWithToken(String token) {
+    // TODO: implement loginWithToken
+    throw UnimplementedError();
+  }
+
+  @override
   forgotPassword(String username) async {
     try {
       final response = await http
@@ -49,59 +68,44 @@ class RealApi implements Api {
   }
 
   @override
-  Future<LoginResponse> register(String username, String password,
-      profilePicture, String firstname, String lastname, String prefix) async {
-    // try {
-    //   final response =
-    //       await http.post(Uri.parse('http://10.0.2.2:6060/auth/register'),
-    //           body: jsonEncode({
-    //             "email": username,
-    //             "password": password,
-    //             "profilePicture": profilePicture,
-    //             "firstName": firstname,
-    //             "lastName": lastname,
-    //             "prefix": prefix
-    //           }));
+  Future<LoginResponse> register(String username, String password, String email,
+      String firstname, String lastname, String prefix) async {
+    try {
+      Map<String, String> requestHeaders = {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+      };
 
-    //   late final LoginResponse loginResponse;
+      final response =
+          await InterceptedHttp.build(interceptors: [LoggerInterceptor()])
+              .post(Uri.parse('$URL/register'),
+                  headers: requestHeaders,
+                  body: jsonEncode({
+                    "username": username,
+                    "password": password,
+                    "email": email,
+                    "firstName": firstname,
+                    "lastName": lastname,
+                    "prefix": prefix
+                  }));
 
-    //   if (response.statusCode == 200) {
-    //     var jsonResponse = jsonDecode(response.body);
+      late final LoginResponse loginResponse;
 
-    //     loginResponse = new LoginResponse(
-    //         jsonResponse['accessToken'], jsonResponse['refreshToken']);
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
 
-    //     // store token
-    //     storage.write(key: "Bearer", value: loginResponse.accessToken);
+        loginResponse = new LoginResponse(
+            jsonResponse['accessToken'], jsonResponse['refreshToken']);
 
-    //     return loginResponse;
-    //   } else {
-    //     return LoginResponse("", "");
-    //   }
-    // } catch (e) {
-    //   return LoginResponse("", e);
-    // }
+        // store token
+        storage.write(key: "Bearer", value: loginResponse.accessToken);
 
-    var request = http.MultipartRequest('POST', Uri.parse('$URL/register'));
-    request.fields.addAll({
-      'email': username,
-      'password': password,
-      //'profilePicture': profilePicture,
-      'firstName': firstname,
-      'lastName': lastname,
-      'prefix': ''
-    });
-    request.files.add(await http.MultipartFile.fromPath(
-        'profilePicture', 'images/bench.jpg'));
-
-    http.StreamedResponse response = await request.send();
-
-    if (response.statusCode == 200) {
-      print(await response.stream.bytesToString());
-      return LoginResponse("", "");
-    } else {
-      print(response.reasonPhrase);
-      return LoginResponse("", "");
+        return loginResponse;
+      } else {
+        return LoginResponse("", "");
+      }
+    } catch (e) {
+      return LoginResponse("", e);
     }
   }
 
@@ -129,5 +133,21 @@ class RealApi implements Api {
     } catch (e) {
       return LoginResponse("", "");
     }
+  }
+}
+
+class LoggerInterceptor implements InterceptorContract {
+  @override
+  Future<RequestData> interceptRequest({required RequestData data}) async {
+    print("----- Request -----");
+    print(data.toString());
+    return data;
+  }
+
+  @override
+  Future<ResponseData> interceptResponse({required ResponseData data}) async {
+    print("----- Response -----");
+    print(data.toString());
+    return data;
   }
 }

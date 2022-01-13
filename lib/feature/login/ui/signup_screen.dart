@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ivse1_gymlife/common/widget/textfield.dart';
 import 'package:ivse1_gymlife/feature/login/recources/real_api.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -11,6 +12,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController firstnameController = TextEditingController();
   TextEditingController lastnameController = TextEditingController();
   TextEditingController prefixController = TextEditingController();
@@ -22,17 +24,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if (nameController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
+        emailController.text.isNotEmpty &&
         firstnameController.text.isNotEmpty &&
         lastnameController.text.isNotEmpty) {
       api.register(
-        // TODO retrieve values from text controllers
-        "arie_bisfki@live.nl",
-        "Yeetyeet1!",
-        'images/bench.jpg',
-        "Arnold",
-        "S",
-        "",
-      );
+          nameController.text,
+          passwordController.text,
+          emailController.text,
+          firstnameController.text,
+          lastnameController.text,
+          prefixController.text);
       Navigator.popAndPushNamed(context, "/landing");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Yay! Register succes'),
@@ -60,75 +61,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       'Sign up',
                       style: TextStyle(fontSize: 20),
                     )),
-                Container(
-                  padding: EdgeInsets.all(10),
-                  child: TextField(
+                CostumTextField(
                     controller: nameController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'User Name',
-                      errorText: _validate ? 'Value Can\'t Be Empty' : null,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: TextField(
-                    obscureText: true,
+                    validate: _validate,
+                    text: 'Email'),
+                CostumTextField(
                     controller: passwordController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Password',
-                      errorText: _validate ? 'Value Can\'t Be Empty' : null,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: TextField(
-                    obscureText: true,
-                    //controller: passwordController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Picture (TODO)',
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: TextField(
-                    obscureText: true,
+                    validate: _validate,
+                    text: 'Password'),
+                CostumTextField(
+                    controller: emailController,
+                    validate: _validate,
+                    text: 'User Name'),
+                CostumTextField(
                     controller: firstnameController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'First name',
-                      errorText: _validate ? 'Value Can\'t Be Empty' : null,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: TextField(
-                    obscureText: true,
+                    validate: _validate,
+                    text: 'First name'),
+                CostumTextField(
                     controller: lastnameController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Last name',
-                      errorText: _validate ? 'Value Can\'t Be Empty' : null,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: TextField(
-                    obscureText: true,
+                    validate: _validate,
+                    text: 'Last name'),
+                CostumTextField(
                     controller: prefixController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Prefix',
-                    ),
-                  ),
-                ),
+                    validate: _validate,
+                    text: 'Prefix'),
                 Container(
                     height: 70,
                     padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
