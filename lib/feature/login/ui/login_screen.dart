@@ -1,6 +1,9 @@
+import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ivse1_gymlife/common/widget/costum_textfield.dart';
+import 'package:ivse1_gymlife/feature/login/models/login_creds_response_E.dart';
+import 'package:ivse1_gymlife/feature/login/models/login_response_S.dart';
 import 'package:ivse1_gymlife/feature/login/recources/real_api.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,23 +19,56 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Create storage
   final storage = new FlutterSecureStorage();
+  final RealApi api = new RealApi();
+
   bool _validate = false;
 
-  login() {
-    RealApi api = new RealApi();
+  @override
+  void initState() {
+    super.initState();
+    //attemptRefreshTokenLogin();
+  }
 
-    String token = storage.read(key: "accessToken").toString();
+  // TODO protected client voor elk scherm aanroepen
 
-    if (nameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      if (token.isNotEmpty) {
-        //if (token.isEmpty) {
-        // TODO snackbar if something went wrong - maybe add statusCode in login response?
-        api.login("Kai", "Yeetyeet1!");
-      } else {
-        //api.login(token); // TODO
+  attemptRefreshTokenLogin() async {
+    final Either<LoginCredsResponseE, LoginResponseS> loginResponse =
+        await api.loginWithRefreshToken();
+    if (api.responseIsError(loginResponse)) {
+      switch (loginResponse) {
+        case Left(LoginCredsResponseE.INVALID_CREDENTIALS):
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Incorrect credentials'),
+          ));
+          return;
+        case Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR):
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Oops! Something went wrong'),
+          ));
+          return;
       }
+      Navigator.popAndPushNamed(context, "/login", arguments: true);
+    }
+  }
 
-      // login is true
+  login() async {
+    if (nameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+      final Either<LoginCredsResponseE, LoginResponseS> loginResponse =
+          await api.login("Kai", "Yeetyeet1!");
+      if (api.responseIsError(loginResponse)) {
+        switch (loginResponse.left) {
+          case LoginCredsResponseE.INVALID_CREDENTIALS:
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Incorrect credentials'),
+            ));
+            return;
+          case LoginCredsResponseE.INTERNAL_SERVER_ERROR:
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Oops! Something went wrong'),
+            ));
+            return;
+        }
+      }
       Navigator.popAndPushNamed(context, "/", arguments: true);
     } else {
       _validate = true;

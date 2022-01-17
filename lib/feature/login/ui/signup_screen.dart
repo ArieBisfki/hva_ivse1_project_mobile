@@ -1,5 +1,8 @@
+import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:ivse1_gymlife/common/widget/costum_textfield.dart';
+import 'package:ivse1_gymlife/feature/login/models/login_creds_response_E.dart';
+import 'package:ivse1_gymlife/feature/login/models/login_response_S.dart';
 import 'package:ivse1_gymlife/feature/login/recources/real_api.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -19,7 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   bool _validate = false;
 
-  register() {
+  register() async {
     RealApi api = new RealApi();
 
     if (nameController.text.isNotEmpty &&
@@ -27,15 +30,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
         emailController.text.isNotEmpty &&
         firstnameController.text.isNotEmpty &&
         lastnameController.text.isNotEmpty) {
-      // TODO snackbar if something went wrong
-      api.register("Kai", "Yeetyeet1!", "Kaivandenbroek@hotmail.com", "Kai",
-          "Broek", "van den");
-      Navigator.popAndPushNamed(context, "/", arguments: true);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Yay! Register succes'),
-      ));
-    } else {
-      _validate = true;
+      final Either<LoginCredsResponseE, LoginResponseS> registerResponse =
+          await api.register("Kai", "Yeetyeet1!", "Kaivandenbroek@hotmail.com",
+              "Kai", "Broek", "van den");
+
+      if (api.responseIsError(registerResponse)) {
+        switch (registerResponse) {
+          case Left(LoginCredsResponseE.INVALID_CREDENTIALS):
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Incorrect credentials'),
+            ));
+            return;
+          case Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR):
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Oops! Something went wrong'),
+            ));
+            return;
+        }
+        Navigator.popAndPushNamed(context, "/", arguments: true);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Yay! Register succes'),
+        ));
+      } else {
+        _validate = true;
+      }
     }
   }
 

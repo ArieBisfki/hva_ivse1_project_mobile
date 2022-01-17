@@ -144,6 +144,13 @@ class _State extends State<Calendar> {
     });
   }
 
+  logout() {
+    BlocProvider.of<CalendarBloc>(context).add(LogoutEvent());
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Logged out'),
+    ));
+  }
+
   // update calendar
   updateCalendar(List<WorkoutLog> state) {
     // fill local list with state data
@@ -204,10 +211,18 @@ class _State extends State<Calendar> {
                           ),
                           onPressed: () {
                             Navigator.popAndPushNamed(context, "/login");
-                            // TODO logout for real
+                            logout();
                           },
                         )
-                      : const SizedBox.shrink()
+                      : IconButton(
+                          icon: Icon(
+                            Icons.arrow_back_rounded,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.popAndPushNamed(context, "/login");
+                          },
+                        )
                 ],
               ),
               floatingActionButton: _addWorkoutButton

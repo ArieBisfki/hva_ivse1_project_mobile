@@ -1,19 +1,26 @@
 import 'dart:convert';
 
+import 'package:either_dart/either.dart';
 import 'package:http_interceptor/http/http.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:ivse1_gymlife/common/util/logger_interceptor.dart';
+import 'package:ivse1_gymlife/feature/login/models/login_creds_response_E.dart';
 import 'package:ivse1_gymlife/feature/login/recources/api.dart';
-import 'package:ivse1_gymlife/feature/login/recources/login_response.dart';
+import 'package:ivse1_gymlife/feature/login/models/login_response_S.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
 
 class RealApi implements Api {
   // Create device storage
   final storage = new FlutterSecureStorage();
   static const String URL = "http://10.0.2.2:6060/auth";
 
+  responseIsError(Either<LoginCredsResponseE, LoginResponseS> response) {
+    return response.isLeft;
+  }
+
   @override
-  Future<LoginResponse> login(String username, String password) async {
+  Future<Either<LoginCredsResponseE, LoginResponseS>> login(
+      String username, String password) async {
     try {
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
@@ -29,41 +36,129 @@ class RealApi implements Api {
                     "password": password,
                   }));
 
-      LoginResponse loginResponse = new LoginResponse("", "");
+      switch (response.statusCode) {
+        case 200:
+          final loginResponse = LoginResponseS("", "", "", "");
+          var jsonResponse = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.body);
+          loginResponse.accessToken = jsonResponse['accessToken'];
+          loginResponse.refreshToken = jsonResponse['refreshToken'];
+          loginResponse.accessTokenExpiresIn =
+              jsonResponse['accessTokenExpiresIn'];
+          loginResponse.refreshTokenExpiresIn =
+              jsonResponse['refreshTokenExpiresIn'];
 
-        loginResponse.accessToken = jsonResponse['accessToken'];
-        loginResponse.refreshToken = jsonResponse['refreshToken'];
-
-        // store token
-        storage.write(key: "Bearer", value: loginResponse.accessToken);
-
-        return loginResponse;
-      } else {
-        //loginResponse = null; // TODO
-        return LoginResponse("", "");
+          // store token
+          storage.write(key: "accessToken", value: loginResponse.accessToken);
+          storage.write(key: "refreshToken", value: loginResponse.refreshToken);
+          storage.write(
+              key: "accessTokenExpiresIn",
+              value: loginResponse.accessTokenExpiresIn);
+          storage.write(
+              key: "refreshTokenExpiresIn",
+              value: loginResponse.refreshTokenExpiresIn);
+          return Right(loginResponse);
+        case 401:
+          return Left(LoginCredsResponseE.INVALID_CREDENTIALS);
+        case 500:
+          return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
+        default:
+          return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
       }
     } catch (e) {
-      return LoginResponse(e, e); // TODO
+      return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
     }
   }
 
   @override
-  forgotPassword(String username) async {
+  loginWithRefreshToken() async {
     try {
-      final response = await http
-          .post(Uri.parse('$URL/forgotPassword'), body: {"email": username});
+      Map<String, String> requestHeaders = {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+      };
 
-      if (response.statusCode == 200) {
-      } else {}
-    } catch (e) {}
+      final String refreshToken = storage.read(key: 'refreshToken').toString();
+
+      final response =
+          await InterceptedHttp.build(interceptors: [LoggerInterceptor()])
+              .post(Uri.parse('$URL/login'),
+                  headers: requestHeaders,
+                  body: jsonEncode({
+                    "refreshToken": refreshToken,
+                  }));
+
+      switch (response.statusCode) {
+        case 200:
+          final loginResponse = LoginResponseS("", "", "", "");
+          var jsonResponse = jsonDecode(response.body);
+
+          loginResponse.accessToken = jsonResponse['accessToken'];
+          loginResponse.refreshToken = jsonResponse['refreshToken'];
+          loginResponse.accessTokenExpiresIn =
+              jsonResponse['accessTokenExpiresIn'];
+          loginResponse.refreshTokenExpiresIn =
+              jsonResponse['refreshTokenExpiresIn'];
+
+          // store token
+          storage.write(key: "accessToken", value: loginResponse.accessToken);
+          storage.write(key: "refreshToken", value: loginResponse.refreshToken);
+          storage.write(
+              key: "accessTokenExpiresIn",
+              value: loginResponse.accessTokenExpiresIn);
+          storage.write(
+              key: "refreshTokenExpiresIn",
+              value: loginResponse.refreshTokenExpiresIn);
+          return Right(loginResponse);
+        case 401:
+          return Left(LoginCredsResponseE.INVALID_CREDENTIALS);
+        case 500:
+          return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
+        default:
+          return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
+      }
+    } catch (e) {
+      return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @override
-  Future<LoginResponse> register(String username, String password, String email,
-      String firstname, String lastname, String prefix) async {
+  forgotPassword(String email) async {
+    try {
+      Map<String, String> requestHeaders = {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+      };
+
+      final response =
+          await InterceptedHttp.build(interceptors: [LoggerInterceptor()]).post(
+              Uri.parse('$URL/forgotPassword'),
+              headers: requestHeaders,
+              body: {"email": email});
+
+      switch (response.statusCode) {
+        case 200:
+          return;
+        case 401:
+          return Left(LoginCredsResponseE.INVALID_CREDENTIALS);
+        case 500:
+          return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
+        default:
+          return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
+      }
+    } catch (e) {
+      return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @override
+  Future<Either<LoginCredsResponseE, LoginResponseS>> register(
+      String username,
+      String password,
+      String email,
+      String firstname,
+      String lastname,
+      String prefix) async {
     try {
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
@@ -83,65 +178,33 @@ class RealApi implements Api {
                     "prefix": prefix
                   }));
 
-      late final LoginResponse loginResponse = new LoginResponse("", "");
+      switch (response.statusCode) {
+        case 200:
+          final loginResponse = LoginResponseS("", "", "", "");
+          var jsonResponse = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.body);
+          loginResponse.accessToken = jsonResponse['accessToken'];
+          loginResponse.refreshToken = jsonResponse['refreshToken'];
+          loginResponse.accessTokenExpiresIn = jsonResponse['refreshToken'];
+          loginResponse.refreshTokenExpiresIn = jsonResponse['refreshToken'];
 
-        loginResponse.accessToken = jsonResponse['accessToken'];
-        loginResponse.refreshToken = jsonResponse['refreshToken'];
-
-        // store token
-        storage.write(key: "Bearer", value: loginResponse.accessToken);
-
-        return loginResponse;
-      } else {
-        return LoginResponse("", "");
+          // store token
+          storage.write(key: "accesstoken", value: loginResponse.accessToken);
+          storage.write(key: "refreshtoken", value: loginResponse.refreshToken);
+          storage.write(
+              key: "refreshtoken", value: loginResponse.accessTokenExpiresIn);
+          storage.write(
+              key: "refreshtoken", value: loginResponse.refreshTokenExpiresIn);
+          return Right(loginResponse);
+        case 401:
+          return Left(LoginCredsResponseE.INVALID_CREDENTIALS);
+        case 500:
+          return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
+        default:
+          return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
       }
     } catch (e) {
-      return LoginResponse("", e);
+      return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
     }
-  }
-
-  @override
-  Future<LoginResponse> resetPassword(String password) async {
-    try {
-      final response = await http
-          .post(Uri.parse('$URL/forgotPassword'), body: {"password": password});
-
-      late final LoginResponse loginResponse = new LoginResponse("", "");
-
-      if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.toString());
-
-        loginResponse.accessToken = jsonResponse['accessToken'];
-        loginResponse.refreshToken = jsonResponse['refreshToken'];
-
-        // store token
-        storage.write(key: "Bearer", value: loginResponse.accessToken);
-
-        return loginResponse;
-      } else {
-        return LoginResponse("", "");
-      }
-    } catch (e) {
-      return LoginResponse("", "");
-    }
-  }
-}
-
-class LoggerInterceptor implements InterceptorContract {
-  @override
-  Future<RequestData> interceptRequest({required RequestData data}) async {
-    print("----- Request -----");
-    print(data.toString());
-    return data;
-  }
-
-  @override
-  Future<ResponseData> interceptResponse({required ResponseData data}) async {
-    print("----- Response -----");
-    print(data.toString());
-    return data;
   }
 }

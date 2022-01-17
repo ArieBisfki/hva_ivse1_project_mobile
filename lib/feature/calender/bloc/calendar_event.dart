@@ -26,6 +26,10 @@ class NewCalendarEvent extends CalendarEvent {
   List<Object> get props => [workout];
 }
 
+class LogoutEvent extends CalendarEvent {
+  List<Object> get props => [];
+}
+
 class DeleteCalendarEvent extends CalendarEvent {
   const DeleteCalendarEvent(this.workout);
 

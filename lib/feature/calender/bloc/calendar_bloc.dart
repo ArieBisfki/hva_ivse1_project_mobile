@@ -1,6 +1,9 @@
+import 'package:either_dart/either.dart';
 import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
+import 'package:ivse1_gymlife/common/http/data_reponse_E.dart';
 import 'package:ivse1_gymlife/common/http/response.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:ivse1_gymlife/feature/calender/recources/workoutLog_repository_device.dart';
@@ -16,6 +19,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
   CalendarState get initialState => CalendarInitial();
 
   List<WorkoutLog> _workouts = [];
+  final storage = new FlutterSecureStorage();
 
   /// Returns workout items from memory
   List<WorkoutLog> get workouts => _workouts;
@@ -61,9 +65,13 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     if (event is NewCalendarEvent) {
       final DataResponse<dynamic> result =
           await calendarRepository.createWorkout(event.workout);
+      // final Either<DataResponseE, DataResponse<>> result =
+      //     await calendarRepository.createWorkout(event.workout);
 
       final DataResponse<List<WorkoutLog>> recall =
           await calendarRepository.getWorkouts();
+      // final Either<DataResponseE, DataResponse<List<WorkoutLog>>> result =
+      //     await calendarRepository.getWorkouts();
 
       if (recall.data != null) {
         _workouts = recall.data!;
@@ -100,6 +108,12 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
           break;
         default:
       }
+    }
+    if (event is LogoutEvent) {
+      storage.delete(key: "accessToken");
+      storage.delete(key: "refreshToken");
+      storage.delete(key: "accessTokenExpiresIn");
+      storage.delete(key: "refreshTokenExpiresIn");
     }
   }
 }
