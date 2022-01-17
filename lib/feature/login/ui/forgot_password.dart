@@ -56,7 +56,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         Navigator.popAndPushNamed(context, "/login");
                         // pop keyboard
                         FocusScope.of(context).requestFocus(FocusNode());
-                        // TODO add succes snackbar
                       },
                     ))
               ],

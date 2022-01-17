@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:either_dart/either.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:ivse1_gymlife/common/http/data_reponse_E.dart';
 import 'package:ivse1_gymlife/common/http/response.dart';
@@ -10,6 +11,7 @@ import 'package:ivse1_gymlife/feature/calender/recources/IworkoutLog_repository_
 
 abstract class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
   static const String URL = "http://10.0.2.2:6060/workout-log";
+  final storage = new FlutterSecureStorage();
 
   Future<Either<DataResponseE, DataResponse<int>>> createWorkout(
     WorkoutLog workout,
@@ -53,6 +55,8 @@ abstract class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
         'Accept': 'application/json',
+        'authorization':
+            'bearer ' + storage.read(key: 'refreshToken').toString(),
       };
 
       final response =
@@ -92,7 +96,4 @@ abstract class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
   Future<Either<DataResponseE, DataResponse<WorkoutLog>>> getWorkout(
     int id,
   );
-
-  // TODO header bij calls
-  // 'Authorization' : 'Bearer authtoken'
 }

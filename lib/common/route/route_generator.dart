@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ivse1_gymlife/common/route/routes.dart';
+import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:ivse1_gymlife/feature/calender/ui/calendar_overview.dart';
 import 'package:ivse1_gymlife/feature/login/ui/forgot_password.dart';
 import 'package:ivse1_gymlife/feature/login/ui/login_screen.dart';
@@ -14,10 +15,15 @@ class RouteGenerator {
     switch (settings.name) {
       case Routes.landing:
         return MaterialPageRoute<dynamic>(
+            // this bool changes a few widgets in the screen
             builder: (_) => Calendar(loggedIn: args is bool ? args : false));
       case Routes.workout:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => WorkoutPage()); // TODO give workoutlog
+            // give empty workoutLog in case a user selects a non-existing workout
+            builder: (_) => WorkoutPage(
+                workoutLog: args is WorkoutLog
+                    ? args
+                    : WorkoutLog(exerciseLogs: [], id: 0, date: "")));
       case Routes.workoutcategory:
         return MaterialPageRoute<dynamic>(
             builder: (_) => WorkoutCategoryScreen());

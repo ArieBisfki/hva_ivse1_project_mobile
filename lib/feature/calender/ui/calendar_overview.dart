@@ -271,7 +271,6 @@ class _State extends State<Calendar> {
                     )
                   : SizedBox(),
               body: Column(
-                // TODO overflowing?
                 children: [
                   TableCalendar<WorkoutLog>(
                     firstDay: DateTime.utc(2010, 1, 1),

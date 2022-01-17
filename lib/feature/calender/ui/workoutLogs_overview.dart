@@ -55,7 +55,8 @@ class _WorkoutLogsOverviewState extends State<WorkoutLogsOverview> {
               return Card(
                 child: ListTile(
                   onTap: () {
-                    Navigator.pushNamed(context, "/workout");
+                    Navigator.pushNamed(context, "/workout",
+                        arguments: value[index]);
                   },
                   title: Text('Workout ID: ${value[index].id}'),
                   trailing: IconButton(

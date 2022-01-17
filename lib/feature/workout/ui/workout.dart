@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import '../../../workout_data.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class WorkoutPage extends StatefulWidget {
+  WorkoutPage({required this.workoutLog});
+  final WorkoutLog workoutLog;
+  // TODO voeg ID en Date toe aan workout lijst
+
   @override
   State<WorkoutPage> createState() => _WorkoutPageState();
 }
