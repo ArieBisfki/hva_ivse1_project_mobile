@@ -26,7 +26,6 @@ class _WorkoutLogsOverviewState extends State<WorkoutLogsOverview> {
     });
     Navigator.pop(widget.context);
   }
-  late final ExerciseData exerciseData;
 
   deleteWorkoutDialog(WorkoutLog workout) {
     showDialog(

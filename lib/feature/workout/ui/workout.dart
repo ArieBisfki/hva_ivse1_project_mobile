@@ -1,20 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
-import '../../../workout_data.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
+import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:ivse1_gymlife/feature/workout/bloc/workout_bloc.dart';
 import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_adapter.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart';
 
-import '../../../workout_data.dart';
-
 class WorkoutPage extends StatefulWidget {
   WorkoutPage({required this.workoutLog});
+
   final WorkoutLog workoutLog;
+
   // TODO voeg ID en Date toe aan workout lijst
 
   @override
@@ -66,7 +64,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
     return exercise;
   }
 
-  dialAction(String title) {
+  addExercisesToList() {
     exercisesForWorkout.add(
       getExerciseItem(),
     );
@@ -139,7 +137,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     ),
                     Expanded(
                       child: ValueListenableBuilder<List<ExerciseData>>(
-                        valueListenable: ValueNotifier(selectedExercise),
+                        valueListenable: ValueNotifier(exercisesForWorkout),
                         builder: (context, value, _) {
                           return ListView.builder(
                             physics: BouncingScrollPhysics(),
@@ -147,14 +145,12 @@ class _WorkoutPageState extends State<WorkoutPage> {
                             itemBuilder: (context, index) {
                               return Card(
                                 child: ListTile(
-                                  onTap: () {
-
-                                  },
+                                  onTap: () {},
                                   title: Text('Workout ID: ${value[index].id}'),
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
                                     onPressed: () {
-                                        _showSnackBar(context, "Deleted");
+                                      _showSnackBar(context, "Deleted");
                                     },
                                   ),
                                 ),
