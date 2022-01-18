@@ -43,20 +43,30 @@ class RealApi implements Api {
 
           loginResponse.accessToken = jsonResponse['accessToken'];
           loginResponse.refreshToken = jsonResponse['refreshToken'];
-          loginResponse.accessTokenExpiresIn =
-              jsonResponse['accessTokenExpiresIn'];
-          loginResponse.refreshTokenExpiresIn =
-              jsonResponse['refreshTokenExpiresIn'];
+          // loginResponse.accessTokenExpiresIn =
+          //     jsonResponse['accessTokenExpiresIn'];
+          // loginResponse.refreshTokenExpiresIn =
+          //     jsonResponse['refreshTokenExpiresIn'];
+
+          // TODO update backend to add expire dates
 
           // store token
-          storage.write(key: "accessToken", value: loginResponse.accessToken);
-          storage.write(key: "refreshToken", value: loginResponse.refreshToken);
           storage.write(
-              key: "accessTokenExpiresIn",
-              value: loginResponse.accessTokenExpiresIn);
+            key: "accessToken",
+            value: loginResponse.accessToken,
+          );
           storage.write(
-              key: "refreshTokenExpiresIn",
-              value: loginResponse.refreshTokenExpiresIn);
+            key: "refreshToken",
+            value: loginResponse.refreshToken,
+          );
+          // storage.write(
+          //   key: "accessTokenExpiresIn",
+          //   value: loginResponse.accessTokenExpiresIn,
+          // );
+          // storage.write(
+          //   key: "refreshTokenExpiresIn",
+          //   value: loginResponse.refreshTokenExpiresIn,
+          // );
           return Right(loginResponse);
         case 401:
           return Left(LoginCredsResponseE.INVALID_CREDENTIALS);

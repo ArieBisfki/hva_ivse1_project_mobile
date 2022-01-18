@@ -34,79 +34,69 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     if (event is GetCalendarEvent) {
       yield CalendarDataState(StateLoading());
 
-      final DataResponse<List<WorkoutLog>> result =
+      final Either<DataResponseE, DataResponse<List<WorkoutLog>>> result =
           await calendarRepository.getWorkouts();
 
-      if (result.data != null) {
-        _workouts = result.data!;
-      }
+      if (result.isRight) {
+        _workouts = result.right.data!;
 
-      switch (result.status) {
-        case Status.Error:
-          yield CalendarDataState(StateError(result.message.toString()));
-          break;
-        case Status.Loading:
-          yield CalendarDataState(StateLoading());
-          break;
-        case Status.Success:
-          if (result.data == null || result.data!.isEmpty) {
-            yield CalendarDataState(StateEmpty());
-          } else {
-            yield CalendarDataState(StateSuccess(result));
-          }
-          break;
-        default:
-          print('Unknow state in ${toString()}: ${state.toString()}');
+        switch (result.right.status) {
+          case Status.Loading:
+            yield CalendarDataState(StateLoading());
+            break;
+          case Status.Success:
+            if (result.right.data == null || result.right.data!.isEmpty) {
+              yield CalendarDataState(StateEmpty());
+            } else {
+              yield CalendarDataState(StateSuccess(result));
+            }
+            break;
+          default:
+            print('Unknow state in ${toString()}: ${state.toString()}');
+        }
       }
     }
     if (event is GetWorkoutsEvent) {
       yield WorkoutsLoadedState(_workouts);
     }
     if (event is NewCalendarEvent) {
-      final DataResponse<dynamic> result =
+      final Either<DataResponseE, DataResponse<dynamic>> result =
           await calendarRepository.createWorkout(event.workout);
-      // final Either<DataResponseE, DataResponse<>> result =
-      //     await calendarRepository.createWorkout(event.workout);
 
-      final DataResponse<List<WorkoutLog>> recall =
+      final Either<DataResponseE, DataResponse<List<WorkoutLog>>> recall =
           await calendarRepository.getWorkouts();
-      // final Either<DataResponseE, DataResponse<List<WorkoutLog>>> result =
-      //     await calendarRepository.getWorkouts();
 
-      if (recall.data != null) {
-        _workouts = recall.data!;
-      }
-
-      switch (result.status) {
-        case Status.Error:
-          yield CalendarDataState(StateError(result.message.toString()));
-          break;
-        case Status.Loading:
-          yield CalendarDataState(StateLoading());
-          break;
-        case Status.Success:
-          yield CalendarDataState(StateSuccess<WorkoutLog>(result.data));
-          break;
-        default:
+      if (recall.isRight) {
+        _workouts = recall.right.data!;
+        switch (result.right.status) {
+          case Status.Loading:
+            yield CalendarDataState(StateLoading());
+            break;
+          case Status.Success:
+            yield CalendarDataState(
+                StateSuccess<WorkoutLog>(result.right.data));
+            break;
+          default:
+        }
       }
     }
     if (event is DeleteCalendarEvent) {
-      final DataResponse<dynamic> result =
+      final Either<DataResponseE, DataResponse<int>> result =
           await calendarRepository.deleteWorkout(event.workout);
 
       _workouts.remove(event.workout);
 
-      switch (result.status) {
-        case Status.Error:
-          yield CalendarDataState(StateError(result.message.toString()));
-          break;
-        case Status.Loading:
-          yield CalendarDataState(StateLoading());
-          break;
-        case Status.Success:
-          yield CalendarDataState(StateSuccess<WorkoutLog>(result.data));
-          break;
-        default:
+      if (result.isRight) {
+        switch (result.right.status) {
+          case Status.Loading:
+            yield CalendarDataState(StateLoading());
+            break;
+          case Status.Success:
+            yield CalendarDataState(
+                StateSuccess<WorkoutLog>(result.right.data));
+            break;
+          default:
+        }
       }
     }
     if (event is LogoutEvent) {
