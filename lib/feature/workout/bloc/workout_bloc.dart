@@ -20,21 +20,22 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
 
   List<ExerciseData> get exercises => _exercises;
 
-  void toggleExercise(ExerciseData exercise) {
-    if (_exercises.contains(exercise)) {
-      _exercises.remove(exercise);
-    } else {
-      _exercises.add(exercise);
-    }
-  }
+  // void toggleExercise(ExerciseData exercise) {
+  //   if (_exercises.contains(exercise)) {
+  //     _exercises.remove(exercise);
+  //   } else {
+  //     _exercises.add(exercise);
+  //   }
+  // }
 
-  Stream<WorkoutState> mapToEventState(
+  @override
+  Stream<WorkoutState> mapEventToState(
     WorkoutEvent event,
   ) async* {
     if (event is ResetExercise) {
       yield WorkoutInitial();
     }
-    if (event is GetExercisesEvent) {
+    if (event is LoadExercisesEvent) {
       yield WorkoutDataState(StateLoading());
 
       final DataResponse<List<ExerciseData>> result =

@@ -4,16 +4,18 @@ abstract class WorkoutEvent extends Equatable {
   const WorkoutEvent();
 }
 
-class GetExerciseEvent extends WorkoutEvent {
-  List<Object> get props => [];
-}
-
 class ResetExercise extends WorkoutEvent {
   List<Object> get props => [];
 }
 
 class GetExercisesEvent extends WorkoutEvent {
   const GetExercisesEvent();
+
+  List<Object> get props => [];
+}
+
+class LoadExercisesEvent extends WorkoutEvent {
+  const LoadExercisesEvent();
 
   List<Object> get props => [];
 }

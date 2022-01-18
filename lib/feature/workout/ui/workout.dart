@@ -71,7 +71,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
 
     BlocProvider.of<WorkoutBloc>(context)
         .add(NewExerciseEvent(getExerciseItem()));
-    BlocProvider.of<WorkoutBloc>(context).add(GetExercisesEvent());
+    BlocProvider.of<WorkoutBloc>(context).add(LoadExercisesEvent());
   }
 
   updateExercise(List<ExerciseData> state) {
@@ -91,7 +91,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
       },
       builder: (context, state) {
         if (state is WorkoutInitial) {
-          BlocProvider.of<WorkoutBloc>(context).add(GetExerciseEvent());
+          BlocProvider.of<WorkoutBloc>(context).add(LoadExercisesEvent());
         } else if (state is ExercisesLoadedState) {
           updateExercise(state.data);
           return WillPopScope(

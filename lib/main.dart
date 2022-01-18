@@ -47,7 +47,7 @@ class _AppState extends State<MyApp> {
           BlocProvider<WorkoutBloc>(
             create: (BuildContext context) => WorkoutBloc(
                 workoutRepository:
-                RepositoryProvider.of<ExerciseLogRepository>(context)),
+                    RepositoryProvider.of<ExerciseLogRepository>(context)),
           ),
         ],
         child: MaterialApp(

@@ -90,6 +90,7 @@ class RealApi implements Api {
 
       final String refreshToken = storage.read(key: 'refreshToken').toString();
 
+// TODO code 500
       final response =
           await InterceptedHttp.build(interceptors: [LoggerInterceptor()])
               .post(Uri.parse('$URL/login'),
