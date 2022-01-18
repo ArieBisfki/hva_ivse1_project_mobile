@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/recources/workoutLog_db_adapter.dart';
+import 'package:ivse1_gymlife/feature/workout/bloc/workout_bloc.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_adapter.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart';
 
@@ -42,6 +43,11 @@ class _AppState extends State<MyApp> {
             create: (BuildContext context) => CalendarBloc(
                 calendarRepository:
                     RepositoryProvider.of<WorkoutLogRepositoryDevice>(context)),
+          ),
+          BlocProvider<WorkoutBloc>(
+            create: (BuildContext context) => WorkoutBloc(
+                workoutRepository:
+                RepositoryProvider.of<ExerciseLogRepository>(context)),
           ),
         ],
         child: MaterialApp(

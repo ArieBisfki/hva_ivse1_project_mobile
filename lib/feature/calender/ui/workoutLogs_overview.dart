@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ivse1_gymlife/common/route/routes.dart';
 import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
+import 'package:ivse1_gymlife/feature/workout/bloc/workout_bloc.dart';
+import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
+import 'package:ivse1_gymlife/feature/workout/ui/workout.dart';
+import 'package:ivse1_gymlife/workout_data.dart';
 
 class WorkoutLogsOverview extends StatefulWidget {
   const WorkoutLogsOverview(this.workoutLogs, this.context, {Key? key})
@@ -21,6 +26,7 @@ class _WorkoutLogsOverviewState extends State<WorkoutLogsOverview> {
     });
     Navigator.pop(widget.context);
   }
+  late final ExerciseData exerciseData;
 
   deleteWorkoutDialog(WorkoutLog workout) {
     showDialog(
@@ -45,6 +51,7 @@ class _WorkoutLogsOverviewState extends State<WorkoutLogsOverview> {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = BlocProvider.of<WorkoutBloc>(context);
     return Expanded(
       child: ValueListenableBuilder<List<WorkoutLog>>(
         valueListenable: ValueNotifier(widget.workoutLogs),
@@ -55,7 +62,7 @@ class _WorkoutLogsOverviewState extends State<WorkoutLogsOverview> {
               return Card(
                 child: ListTile(
                   onTap: () {
-                    Navigator.pushNamed(context, "/workout");
+                      bloc.toggleExercise(exerciseData);
                   },
                   title: Text('Workout ID: ${value[index].id}'),
                   trailing: IconButton(
