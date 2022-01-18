@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
+import '../../../workout_data.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
 import 'package:ivse1_gymlife/feature/workout/bloc/workout_bloc.dart';
@@ -11,7 +13,9 @@ import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart'
 import '../../../workout_data.dart';
 
 class WorkoutPage extends StatefulWidget {
-  WorkoutPage({Key? key}) : super(key: key);
+  WorkoutPage({required this.workoutLog});
+  final WorkoutLog workoutLog;
+  // TODO voeg ID en Date toe aan workout lijst
 
   @override
   _WorkoutPageState createState() => _WorkoutPageState();

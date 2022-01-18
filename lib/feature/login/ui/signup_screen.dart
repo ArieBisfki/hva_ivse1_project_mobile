@@ -1,5 +1,8 @@
+import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
-import 'package:ivse1_gymlife/common/widget/textfield.dart';
+import 'package:ivse1_gymlife/common/widget/costum_textfield.dart';
+import 'package:ivse1_gymlife/feature/login/models/login_creds_response_E.dart';
+import 'package:ivse1_gymlife/feature/login/models/login_response_S.dart';
 import 'package:ivse1_gymlife/feature/login/recources/real_api.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -19,7 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   bool _validate = false;
 
-  register() {
+  register() async {
     RealApi api = new RealApi();
 
     if (nameController.text.isNotEmpty &&
@@ -27,19 +30,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
         emailController.text.isNotEmpty &&
         firstnameController.text.isNotEmpty &&
         lastnameController.text.isNotEmpty) {
-      api.register(
-          nameController.text,
-          passwordController.text,
-          emailController.text,
-          firstnameController.text,
-          lastnameController.text,
-          prefixController.text);
-      Navigator.popAndPushNamed(context, "/landing");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Yay! Register succes'),
-      ));
-    } else {
-      _validate = true;
+      final Either<LoginCredsResponseE, LoginResponseS> registerResponse =
+          await api.register("Kai", "Yeetyeet1!", "Kaivandenbroek@hotmail.com",
+              "Kai", "Broek", "van den");
+
+      if (api.responseIsError(registerResponse)) {
+        switch (registerResponse) {
+          case Left(LoginCredsResponseE.INVALID_CREDENTIALS):
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Incorrect credentials'),
+            ));
+            return;
+          case Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR):
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Oops! Something went wrong'),
+            ));
+            return;
+        }
+        Navigator.popAndPushNamed(context, "/", arguments: true);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Yay! Register succes'),
+        ));
+      } else {
+        _validate = true;
+      }
     }
   }
 
@@ -81,10 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     controller: lastnameController,
                     validate: _validate,
                     text: 'Last name'),
-                CostumTextField(
-                    controller: prefixController,
-                    validate: _validate,
-                    text: 'Prefix'),
+                CostumTextField(controller: prefixController, text: 'Prefix'),
                 Container(
                     height: 70,
                     padding: EdgeInsets.fromLTRB(10, 20, 10, 0),

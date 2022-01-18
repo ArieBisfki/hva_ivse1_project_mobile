@@ -1,5 +1,9 @@
+import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:ivse1_gymlife/common/widget/costum_textfield.dart';
+import 'package:ivse1_gymlife/feature/login/models/login_creds_response_E.dart';
+import 'package:ivse1_gymlife/feature/login/models/login_response_S.dart';
 import 'package:ivse1_gymlife/feature/login/recources/real_api.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,24 +19,60 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Create storage
   final storage = new FlutterSecureStorage();
+  final RealApi api = new RealApi();
 
-  login() {
-    // token in storage?
-    //-> login with token
-    // RealiAPI.login(token);
-    RealApi api = new RealApi();
+  bool _validate = false;
 
-    String token = storage.read(key: "accessToken").toString();
+  @override
+  void initState() {
+    super.initState();
+    //attemptRefreshTokenLogin();
+  }
 
-    if (token.isNotEmpty) {
-      //if (token.isEmpty) {
-      api.login("kai", "Yeetyeet1!");
-    } else {
-      api.loginWithToken(token);
+  // TODO protected client voor elk scherm aanroepen
+
+  attemptRefreshTokenLogin() async {
+    final Either<LoginCredsResponseE, LoginResponseS> loginResponse =
+        await api.loginWithRefreshToken();
+    if (api.responseIsError(loginResponse)) {
+      switch (loginResponse) {
+        case Left(LoginCredsResponseE.INVALID_CREDENTIALS):
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Incorrect credentials'),
+          ));
+          return;
+        case Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR):
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Oops! Something went wrong'),
+          ));
+          return;
+      }
+      Navigator.popAndPushNamed(context, "/login", arguments: true);
     }
+  }
 
-    //TODO add login = true argument to remove "dont have an account"
-    Navigator.popAndPushNamed(context, "/landing");
+  login() async {
+    if (nameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+      final Either<LoginCredsResponseE, LoginResponseS> loginResponse =
+          await api.login("Kai", "Yeetyeet1!");
+      if (api.responseIsError(loginResponse)) {
+        switch (loginResponse.left) {
+          case LoginCredsResponseE.INVALID_CREDENTIALS:
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Incorrect credentials'),
+            ));
+            return;
+          case LoginCredsResponseE.INTERNAL_SERVER_ERROR:
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Oops! Something went wrong'),
+            ));
+            return;
+        }
+      }
+      Navigator.popAndPushNamed(context, "/", arguments: true);
+    } else {
+      _validate = true;
+    }
   }
 
   @override
@@ -57,27 +97,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           'Sign in',
                           style: TextStyle(fontSize: 20),
                         )),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      child: TextField(
+                    CostumTextField(
                         controller: nameController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'User Name',
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                      child: TextField(
-                        obscureText: true,
+                        validate: _validate,
+                        text: "User name"),
+                    CostumTextField(
                         controller: passwordController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Password',
-                        ),
-                      ),
-                    ),
+                        validate: _validate,
+                        obscure: true,
+                        text: "Password"),
                     TextButton(
                       style: ButtonStyle(
                         foregroundColor:

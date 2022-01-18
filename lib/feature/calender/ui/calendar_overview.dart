@@ -10,7 +10,9 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Calendar extends StatefulWidget {
-  Calendar({Key? key}) : super(key: key);
+  Calendar({Key? key, required this.loggedIn}) : super(key: key);
+
+  final bool loggedIn;
 
   @override
   _State createState() => _State();
@@ -42,6 +44,7 @@ class _State extends State<Calendar> {
   @override
   void initState() {
     super.initState();
+    _loggedIn = widget.loggedIn;
     selectedWorkouts = [];
     _selectedDay = _focusedDay;
     _selectedWorkouts = ValueNotifier(_getWorkoutLogsForDay(_selectedDay!));
@@ -141,6 +144,13 @@ class _State extends State<Calendar> {
     });
   }
 
+  logout() {
+    BlocProvider.of<CalendarBloc>(context).add(LogoutEvent());
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Logged out'),
+    ));
+  }
+
   // update calendar
   updateCalendar(List<WorkoutLog> state) {
     // fill local list with state data
@@ -201,10 +211,18 @@ class _State extends State<Calendar> {
                           ),
                           onPressed: () {
                             Navigator.popAndPushNamed(context, "/login");
-                            // TODO logout for real
+                            logout();
                           },
                         )
-                      : const SizedBox.shrink()
+                      : IconButton(
+                          icon: Icon(
+                            Icons.arrow_back_rounded,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.popAndPushNamed(context, "/login");
+                          },
+                        )
                 ],
               ),
               floatingActionButton: _addWorkoutButton
@@ -253,7 +271,6 @@ class _State extends State<Calendar> {
                     )
                   : SizedBox(),
               body: Column(
-                // TODO overflowing?
                 children: [
                   TableCalendar<WorkoutLog>(
                     firstDay: DateTime.utc(2010, 1, 1),
