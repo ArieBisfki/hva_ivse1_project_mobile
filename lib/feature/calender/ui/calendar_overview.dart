@@ -185,7 +185,8 @@ class _State extends State<Calendar> {
       },
       builder: (context, state) {
         if (state is CalendarInitial) {
-          BlocProvider.of<CalendarBloc>(context).add(GetCalendarEvent());
+          BlocProvider.of<CalendarBloc>(context)
+              .add(GetCalendarEvent(widget.loggedIn));
         } else if (state is WorkoutsLoadedState) {
           updateCalendar(state.data);
 

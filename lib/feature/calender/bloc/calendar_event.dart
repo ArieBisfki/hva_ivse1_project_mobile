@@ -5,6 +5,10 @@ abstract class CalendarEvent extends Equatable {
 }
 
 class GetCalendarEvent extends CalendarEvent {
+  GetCalendarEvent(this.loggedIn);
+
+  final bool loggedIn;
+
   List<Object> get props => [];
 }
 

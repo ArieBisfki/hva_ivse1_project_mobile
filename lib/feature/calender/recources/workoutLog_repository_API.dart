@@ -9,7 +9,7 @@ import 'package:ivse1_gymlife/common/util/logger_interceptor.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:ivse1_gymlife/feature/calender/recources/IworkoutLog_repository_API.dart';
 
-abstract class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
+class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
   static const String URL = "http://10.0.2.2:6060/workout-log";
   final storage = new FlutterSecureStorage();
 
@@ -91,9 +91,47 @@ abstract class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
 
   Future<Either<DataResponseE, DataResponse<int>>> deleteWorkout(
     WorkoutLog workout,
-  );
+  ) async {
+    if (workout.id == null) {
+      if (workout.id!.isEven) {
+        return await Right(DataResponse.loading("fake"));
+      }
+    }
+    return Left(DataResponseE.INTERNAL_SERVER_ERROR);
+  }
 
   Future<Either<DataResponseE, DataResponse<WorkoutLog>>> getWorkout(
     int id,
-  );
+  ) async {
+    try {
+      Map<String, String> requestHeaders = {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+        'authorization':
+            'bearer ' + storage.read(key: 'refreshToken').toString(),
+      };
+
+      final response =
+          await InterceptedHttp.build(interceptors: [LoggerInterceptor()]).get(
+        Uri.parse('$URL/$id'),
+        headers: requestHeaders,
+      );
+
+      switch (response.statusCode) {
+        case 200:
+          var jsonResponse = jsonDecode(response.body);
+          WorkoutLog workout = jsonResponse;
+
+          return Right(DataResponse.success(workout));
+        case 401:
+          return Left(DataResponseE.INVALID_CREDENTIALS);
+        case 500:
+          return Left(DataResponseE.INTERNAL_SERVER_ERROR);
+        default:
+          return Left(DataResponseE.INTERNAL_SERVER_ERROR);
+      }
+    } catch (e) {
+      return Left(DataResponseE.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
