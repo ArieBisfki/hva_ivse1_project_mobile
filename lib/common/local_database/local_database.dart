@@ -10,9 +10,9 @@ class LocalDatabase {
         await database.execute(
           "CREATE TABLE workouts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, exerciseLogs TEXT, date TEXT)",
         );
-        await database.execute(
-          "CREATE TABLE exercises(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, category INTEGER, image TEXT, sets INTEGER, reps INTEGER, weight DOUBLE, description TEXT)",
-        );
+        // await database.execute(
+        //   "CREATE TABLE exercises(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, category INTEGER, image TEXT, sets INTEGER, reps INTEGER, weight DOUBLE, description TEXT)",
+        // );
       },
       version: 1,
     );

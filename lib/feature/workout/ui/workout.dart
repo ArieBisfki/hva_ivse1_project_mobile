@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
+import 'package:ivse1_gymlife/common/local_database/local_database.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
@@ -59,7 +60,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
 
   addExercisesToList() {
     exercisesForWorkout.add(
-      getExerciseItem(),
+      getExerciseItem()
     );
 
     BlocProvider.of<WorkoutBloc>(context)
@@ -139,7 +140,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                               return Card(
                                 child: ListTile(
                                   onTap: () {},
-                                  title: Text(getExerciseItem().name.toString()),
+                                  title: Text(getExerciseItem().toString()),
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
                                     onPressed: () {
