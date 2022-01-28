@@ -10,7 +10,7 @@ class ExercisePicker extends StatelessWidget {
     List<Exercise> specificExerciselist = [
       Exercise(
         id: 1, category: 1, name: "Kastzijn",
-        //sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa'
+        sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa'
       )
     ];
 

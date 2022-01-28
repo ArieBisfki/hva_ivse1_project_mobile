@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
 import 'package:ivse1_gymlife/common/local_database/local_database.dart';
+import 'package:ivse1_gymlife/common/route/routes.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
@@ -61,12 +62,13 @@ class _WorkoutPageState extends State<WorkoutPage> {
         id: 1,
         category: 1,
         name: "Kast zijn",
+        sets: 1,
+        description: 'aa',
+        reps: 1,
+        weight: 2,
+        image: 'aa'
       ),
-      // sets: 1,
-      // description: 'aa',
-      // reps: 1,
-      // weight: 2,
-      // image: 'aa'
+
     );
     return exercise;
   }
@@ -156,12 +158,18 @@ class _WorkoutPageState extends State<WorkoutPage> {
                             itemBuilder: (context, index) {
                               return Card(
                                 child: ListTile(
-                                  onTap: () {},
+                                  onTap: () {Navigator.pushNamed(context, Routes.edit_workout,
+                                      arguments: value[index]);},
                                   title: Text(value[index].exercise.name),
+                                  subtitle: Text("Weight: " + value[index].exercise.weight.toString() +
+                                      "\nSets:" + value[index].exercise.sets.toString() +
+                                      "\nReps:" + value[index].exercise.reps.toString() +
+                                      "\nDescription:" + value[index].exercise.description +
+                                      "\nID:" + value[index].exercise.id.toString() ),
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
                                     onPressed: () {
-                                      _showSnackBar(context, "Deleted");
+                                      // _showSnackBar(context, "Deleted");
                                     },
                                   ),
                                 ),
@@ -170,14 +178,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
                           );
                         },
                       ),
-                    ),
-                    TextButton(
-                      style: ButtonStyle(
-                        foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.blue),
-                      ),
-                      onPressed: () => addExercisesToList(),
-                      child: Text('Add exercise to list'),
                     ),
                     FloatingActionButton(
                       onPressed: () => addExercisesToList(),

@@ -75,12 +75,10 @@ class _State extends State<Calendar> {
     // create with empty workout format
     // TODO personalize format
     Exercise exercise = new Exercise(
-      id: 1, category: 1, name: "Kastzijn",
-      //sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa'
+      id: 1, category: 1, name: "Kastzijn", sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa'
     );
     Exercise exercise2 = new Exercise(
-      id: 2, category: 2, name: "bench",
-      //sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa'
+      id: 2, category: 2, name: "bench", sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa'
     );
     ExerciseLog exLog = new ExerciseLog(exercise: exercise);
     ExerciseLog exLog2 = new ExerciseLog(exercise: exercise2);
