@@ -27,12 +27,13 @@ class _WorkoutPageState extends State<WorkoutPage> {
   late final ExerciseLogRepository repo =
       new ExerciseLogRepository(dbAdapter: adapter);
 
-  late ValueNotifier<List<Exercise>> _selectedExercise;
+  late ValueNotifier<List<ExerciseLog>> _selectedExercise;
 
-  List<Exercise> exercisesForWorkout = [];
-  List<Exercise> selectedExercise = [];
+  List<ExerciseLog> exercisesForWorkout = [];
+  List<ExerciseLog> selectedExercise = [];
+  int _workoutLogId = 0;
 
-  List<Exercise> get list => exercisesForWorkout;
+  List<ExerciseLog> get list => exercisesForWorkout;
 
   var isDialOpen = ValueNotifier<bool>(false);
 
@@ -41,9 +42,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
     super.initState();
     selectedExercise = [];
     _selectedExercise = ValueNotifier(_getExerciseForWorkout());
+    _workoutLogId = widget.workoutLog.id!;
   }
 
-  List<Exercise> _getExerciseForWorkout() {
+  List<ExerciseLog> _getExerciseForWorkout() {
     return selectedExercise.toList();
   }
 
@@ -53,22 +55,32 @@ class _WorkoutPageState extends State<WorkoutPage> {
     super.dispose();
   }
 
-  Exercise getExerciseItem() {
-    Exercise exercise = new Exercise(id: 1, category: 1, name: "Kast zijn", sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa');
+  ExerciseLog getExerciseItem() {
+    ExerciseLog exercise = new ExerciseLog(
+      exercise: Exercise(
+        id: 1,
+        category: 1,
+        name: "Kast zijn",
+      ),
+      // sets: 1,
+      // description: 'aa',
+      // reps: 1,
+      // weight: 2,
+      // image: 'aa'
+    );
     return exercise;
   }
 
   addExercisesToList() {
-    exercisesForWorkout.add(
-      getExerciseItem()
-    );
+    exercisesForWorkout.add(getExerciseItem());
 
     BlocProvider.of<WorkoutBloc>(context)
-        .add(NewExerciseEvent(getExerciseItem()));
-    BlocProvider.of<WorkoutBloc>(context).add(LoadExercisesEvent());
+        .add(NewExerciseEvent(getExerciseItem(), _workoutLogId));
+    BlocProvider.of<WorkoutBloc>(context)
+        .add(LoadExercisesEvent(_workoutLogId));
   }
 
-  updateExercise(List<Exercise> state) {
+  updateExercise(List<ExerciseLog> state) {
     selectedExercise = state;
     exercisesForWorkout = state.toList();
   }
@@ -85,7 +97,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
       },
       builder: (context, state) {
         if (state is WorkoutInitial) {
-          BlocProvider.of<WorkoutBloc>(context).add(LoadExercisesEvent());
+          BlocProvider.of<WorkoutBloc>(context)
+              .add(LoadExercisesEvent(_workoutLogId));
         } else if (state is ExercisesLoadedState) {
           updateExercise(state.data);
           return WillPopScope(
@@ -123,7 +136,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
                             style: TextStyle(fontSize: 17.0),
                           ),
                           Text(
-                            '(kind of workout)',
+                            'Type: ' +
+                                widget.workoutLog.exerciseLogs.first.exercise
+                                    .category
+                                    .toString(),
                             style: TextStyle(fontSize: 17.0),
                           )
                         ],
@@ -131,7 +147,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     ),
                     Expanded(
                       child: ValueListenableBuilder<List<ExerciseLog>>(
-                        valueListenable: ValueNotifier(widget.workoutLog.exerciseLogs),
+                        valueListenable:
+                            ValueNotifier(widget.workoutLog.exerciseLogs),
                         builder: (context, value, _) {
                           return ListView.builder(
                             physics: BouncingScrollPhysics(),
@@ -140,7 +157,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                               return Card(
                                 child: ListTile(
                                   onTap: () {},
-                                  title: Text(getExerciseItem().toString()),
+                                  title: Text(value[index].exercise.name),
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
                                     onPressed: () {
@@ -156,13 +173,14 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     ),
                     TextButton(
                       style: ButtonStyle(
-                        foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.blue),
                       ),
                       onPressed: () => addExercisesToList(),
                       child: Text('Add exercise to list'),
                     ),
                     FloatingActionButton(
-                      onPressed:() => addExercisesToList(),
+                      onPressed: () => addExercisesToList(),
                       tooltip: 'Add an exercise',
                       child: Icon(Icons.add),
                     ),

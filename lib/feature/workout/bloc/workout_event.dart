@@ -15,15 +15,18 @@ class GetExercisesEvent extends WorkoutEvent {
 }
 
 class LoadExercisesEvent extends WorkoutEvent {
-  const LoadExercisesEvent();
+  const LoadExercisesEvent(this.workoutLogId);
+
+  final int workoutLogId;
 
   List<Object> get props => [];
 }
 
 class NewExerciseEvent extends WorkoutEvent {
-  const NewExerciseEvent(this.exercise);
+  const NewExerciseEvent(this.exercise, this.workoutLogId);
 
-  final Exercise exercise;
+  final int workoutLogId;
+  final ExerciseLog exercise;
 
   List<Object> get props => [exercise];
 }

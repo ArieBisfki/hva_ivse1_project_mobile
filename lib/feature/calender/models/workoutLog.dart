@@ -18,7 +18,6 @@ class WorkoutLog {
         exerciseLogs = (jsonDecode(json['exerciseLogs']) as List)
             .map((exerciseLog) => ExerciseLog.fromJson(exerciseLog))
             .toList(),
-        //exerciseLogs = jsonDecode(json["exerciseLogs"]),
         date = json['date'];
 
   Map<String, dynamic> toJson() => {

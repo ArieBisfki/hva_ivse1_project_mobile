@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
 import 'package:ivse1_gymlife/common/http/response.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart';
 
@@ -17,9 +18,9 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
 
   WorkoutState get initialState => WorkoutInitial();
 
-  List<Exercise> _exercises = [];
+  List<ExerciseLog> _exercises = [];
 
-  List<Exercise> get exercises => _exercises;
+  List<ExerciseLog> get exercises => _exercises;
 
   // void toggleExercise(Exercise exercise) {
   //   if (_exercises.contains(exercise)) {
@@ -39,8 +40,8 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
     if (event is LoadExercisesEvent) {
       yield WorkoutDataState(StateLoading());
 
-      final DataResponse<List<Exercise>> result =
-          await workoutRepository.getExercises();
+      final DataResponse<List<ExerciseLog>> result =
+          await workoutRepository.getExercises(event.workoutLogId);
 
       if (result.data != null) {
         _exercises = result.data!;
@@ -70,8 +71,8 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
     if (event is NewExerciseEvent) {
       final DataResponse<dynamic> result =
           await workoutRepository.createExercise(event.exercise);
-      final DataResponse<List<Exercise>> recall =
-          await workoutRepository.getExercises();
+      final DataResponse<List<ExerciseLog>> recall =
+          await workoutRepository.getExercises(event.workoutLogId);
 
       if (recall.data != null) {
         _exercises = recall.data!;

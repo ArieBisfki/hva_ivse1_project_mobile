@@ -21,7 +21,7 @@ class WorkoutDataState extends WorkoutState {
 class ExercisesLoadedState extends WorkoutState {
   const ExercisesLoadedState(this.data);
 
-  final List<Exercise> data;
+  final List<ExerciseLog> data;
 
   @override
   List<Object> get props => [data];

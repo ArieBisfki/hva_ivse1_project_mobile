@@ -1,5 +1,7 @@
 import 'package:ivse1_gymlife/common/http/response.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
+import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_adapter.dart';
 
 import 'Iworkout_repository.dart';
@@ -10,7 +12,7 @@ class ExerciseLogRepository implements IWorkoutRepository {
   final ExerciseLogDbAdapter dbAdapter;
 
   @override
-  Future<DataResponse<int>> createExercise(Exercise exercise) async {
+  Future<DataResponse<int>> createExercise(ExerciseLog exercise) async {
     try {
       final int response = await dbAdapter.addExercise(exercise);
 
@@ -42,22 +44,17 @@ class ExerciseLogRepository implements IWorkoutRepository {
   }
 
   @override
-  Future<DataResponse<List<Exercise>>> getExercises() async {
+  Future<DataResponse<List<ExerciseLog>>> getExercises(int id) async {
     try {
-      final Iterable<dynamic> response = await dbAdapter.getExercises();
+      final WorkoutLog response = await dbAdapter.getWorkout(id);
 
-      if (response.isEmpty) {
-        return DataResponse<List<Exercise>>.success([]);
-      }
+      final List<ExerciseLog> exercises = response.exerciseLogs;
 
-      final List<Exercise> exercises =
-          response.map((item) => item as Exercise).toList();
-
-      return DataResponse<List<Exercise>>.success(exercises);
+      return DataResponse<List<ExerciseLog>>.success(exercises);
     } catch (e) {
       print(e);
 
-      return DataResponse<List<Exercise>>.error('Error', error: e);
+      return DataResponse<List<ExerciseLog>>.error('Error', error: e);
     }
   }
 
@@ -79,6 +76,4 @@ class ExerciseLogRepository implements IWorkoutRepository {
       return DataResponse<Exercise>.error('Error', error: e);
     }
   }
-
-
 }

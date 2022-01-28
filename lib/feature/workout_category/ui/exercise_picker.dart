@@ -7,10 +7,16 @@ class ExercisePicker extends StatelessWidget {
   const ExercisePicker({Key? key}) : super(key: key);
 
   List<Widget> _createChildren() {
-    List<Exercise> specificExerciselist = [Exercise(id: 1, category: 1, name: "Kastzijn", sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa')];
+    List<Exercise> specificExerciselist = [
+      Exercise(
+        id: 1, category: 1, name: "Kastzijn",
+        //sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa'
+      )
+    ];
 
     return new List<Widget>.generate(specificExerciselist.length, (int index) {
-      return Card(child: ListTile(title: Text(specificExerciselist[index].toString())));
+      return Card(
+          child: ListTile(title: Text(specificExerciselist[index].toString())));
     });
   }
 
@@ -33,7 +39,6 @@ class ExercisePicker extends StatelessWidget {
                 ),
               ),
               children: _createChildren(),
-
             ),
           ),
         ),
