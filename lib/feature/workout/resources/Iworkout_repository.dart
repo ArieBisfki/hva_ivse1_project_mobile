@@ -1,19 +1,20 @@
 import 'package:ivse1_gymlife/common/http/response.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
 
 abstract class IWorkoutRepository {
   Future<DataResponse<int>> createExercise(
-    ExerciseData exercise,
+    Exercise exercise,
   );
 
-  Future<DataResponse<List<ExerciseData>>> getExercises();
+  Future<DataResponse<List<Exercise>>> getExercises();
 
   Future<DataResponse<int>> deleteExercises(
-      ExerciseData exercise,
+      Exercise exercise,
   );
 
-  Future<DataResponse<ExerciseData>> getExercise(
+  Future<DataResponse<Exercise>> getExercise(
     int id,
   );
 }

@@ -23,7 +23,7 @@ class LoadExercisesEvent extends WorkoutEvent {
 class NewExerciseEvent extends WorkoutEvent {
   const NewExerciseEvent(this.exercise);
 
-  final ExerciseData exercise;
+  final Exercise exercise;
 
   List<Object> get props => [exercise];
 }
@@ -31,7 +31,7 @@ class NewExerciseEvent extends WorkoutEvent {
 class DeleteExerciseEvent extends WorkoutEvent {
   const DeleteExerciseEvent(this.exercise);
 
-  final ExerciseData exercise;
+  final Exercise exercise;
 
   List<Object> get props => [exercise];
 }

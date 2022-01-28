@@ -24,7 +24,7 @@ class RouteGenerator {
             builder: (_) => WorkoutPage(
                 workoutLog: args is WorkoutLog
                     ? args
-                    : WorkoutLog(exerciseLogs: [], id: 0, date: "")));
+                    : WorkoutLog(exerciseLogs: [], id: 0, date: "", ),));
       case Routes.workoutcategory:
         return MaterialPageRoute<dynamic>(
             builder: (_) => WorkoutCategoryScreen());

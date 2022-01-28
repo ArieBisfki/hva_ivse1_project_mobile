@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
 import 'package:ivse1_gymlife/common/http/response.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart';
 
@@ -16,11 +17,11 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
 
   WorkoutState get initialState => WorkoutInitial();
 
-  List<ExerciseData> _exercises = [];
+  List<Exercise> _exercises = [];
 
-  List<ExerciseData> get exercises => _exercises;
+  List<Exercise> get exercises => _exercises;
 
-  // void toggleExercise(ExerciseData exercise) {
+  // void toggleExercise(Exercise exercise) {
   //   if (_exercises.contains(exercise)) {
   //     _exercises.remove(exercise);
   //   } else {
@@ -38,7 +39,7 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
     if (event is LoadExercisesEvent) {
       yield WorkoutDataState(StateLoading());
 
-      final DataResponse<List<ExerciseData>> result =
+      final DataResponse<List<Exercise>> result =
           await workoutRepository.getExercises();
 
       if (result.data != null) {
@@ -69,7 +70,7 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
     if (event is NewExerciseEvent) {
       final DataResponse<dynamic> result =
           await workoutRepository.createExercise(event.exercise);
-      final DataResponse<List<ExerciseData>> recall =
+      final DataResponse<List<Exercise>> recall =
           await workoutRepository.getExercises();
 
       if (recall.data != null) {
@@ -84,7 +85,7 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
           yield WorkoutDataState(StateLoading());
           break;
         case Status.Success:
-          yield WorkoutDataState(StateSuccess<ExerciseData>(result.data));
+          yield WorkoutDataState(StateSuccess<Exercise>(result.data));
           break;
         default:
       }
@@ -103,7 +104,7 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
           yield WorkoutDataState(StateLoading());
           break;
         case Status.Success:
-          yield WorkoutDataState(StateSuccess<ExerciseData>(result.data));
+          yield WorkoutDataState(StateSuccess<Exercise>(result.data));
           break;
         default:
       }

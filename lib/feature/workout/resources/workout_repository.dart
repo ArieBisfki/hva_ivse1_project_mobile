@@ -1,4 +1,5 @@
 import 'package:ivse1_gymlife/common/http/response.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_adapter.dart';
 
@@ -10,7 +11,7 @@ class ExerciseLogRepository implements IWorkoutRepository {
   final ExerciseLogDbAdapter dbAdapter;
 
   @override
-  Future<DataResponse<int>> createExercise(ExerciseData exercise) async {
+  Future<DataResponse<int>> createExercise(Exercise exercise) async {
     try {
       final int response = await dbAdapter.addExercise(exercise);
 
@@ -25,7 +26,7 @@ class ExerciseLogRepository implements IWorkoutRepository {
   }
 
   @override
-  Future<DataResponse<int>> deleteExercises(ExerciseData exercise) async {
+  Future<DataResponse<int>> deleteExercises(Exercise exercise) async {
     try {
       final int response = await dbAdapter.deleteExercise(exercise);
 
@@ -42,41 +43,41 @@ class ExerciseLogRepository implements IWorkoutRepository {
   }
 
   @override
-  Future<DataResponse<List<ExerciseData>>> getExercises() async {
+  Future<DataResponse<List<Exercise>>> getExercises() async {
     try {
       final Iterable<dynamic> response = await dbAdapter.getExercises();
 
       if (response.isEmpty) {
-        return DataResponse<List<ExerciseData>>.success([]);
+        return DataResponse<List<Exercise>>.success([]);
       }
 
-      final List<ExerciseData> exercises =
-          response.map((item) => item as ExerciseData).toList();
+      final List<Exercise> exercises =
+          response.map((item) => item as Exercise).toList();
 
-      return DataResponse<List<ExerciseData>>.success(exercises);
+      return DataResponse<List<Exercise>>.success(exercises);
     } catch (e) {
       print(e);
 
-      return DataResponse<List<ExerciseData>>.error('Error', error: e);
+      return DataResponse<List<Exercise>>.error('Error', error: e);
     }
   }
 
   @override
-  Future<DataResponse<ExerciseData>> getExercise(int id) async {
+  Future<DataResponse<Exercise>> getExercise(int id) async {
     try {
       final dynamic response = await dbAdapter.getExercise(id);
 
       if (response.isEmpty) {
-        return DataResponse<ExerciseData>.connectivityError();
+        return DataResponse<Exercise>.connectivityError();
       }
 
-      final ExerciseData exerciseRes = response as ExerciseData;
+      final Exercise exerciseRes = response as Exercise;
 
-      return DataResponse<ExerciseData>.success(exerciseRes);
+      return DataResponse<Exercise>.success(exerciseRes);
     } catch (e) {
       print(e);
 
-      return DataResponse<ExerciseData>.error('Error', error: e);
+      return DataResponse<Exercise>.error('Error', error: e);
     }
   }
 }

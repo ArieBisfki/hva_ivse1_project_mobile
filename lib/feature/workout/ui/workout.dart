@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:ivse1_gymlife/feature/workout/bloc/workout_bloc.dart';
 import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
@@ -12,8 +14,6 @@ class WorkoutPage extends StatefulWidget {
   WorkoutPage({required this.workoutLog});
 
   final WorkoutLog workoutLog;
-
-  // TODO voeg ID en Date toe aan workout lijst
 
   @override
   _WorkoutPageState createState() => _WorkoutPageState();
@@ -26,12 +26,12 @@ class _WorkoutPageState extends State<WorkoutPage> {
   late final ExerciseLogRepository repo =
       new ExerciseLogRepository(dbAdapter: adapter);
 
-  late ValueNotifier<List<ExerciseData>> _selectedExercise;
+  late ValueNotifier<List<Exercise>> _selectedExercise;
 
-  List<ExerciseData> exercisesForWorkout = [];
-  List<ExerciseData> selectedExercise = [];
+  List<Exercise> exercisesForWorkout = [];
+  List<Exercise> selectedExercise = [];
 
-  List<ExerciseData> get list => exercisesForWorkout;
+  List<Exercise> get list => exercisesForWorkout;
 
   var isDialOpen = ValueNotifier<bool>(false);
 
@@ -39,10 +39,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
   void initState() {
     super.initState();
     selectedExercise = [];
-    _selectedExercise = ValueNotifier(_getExerciseDataForWorkout());
+    _selectedExercise = ValueNotifier(_getExerciseForWorkout());
   }
 
-  List<ExerciseData> _getExerciseDataForWorkout() {
+  List<Exercise> _getExerciseForWorkout() {
     return selectedExercise.toList();
   }
 
@@ -52,15 +52,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
     super.dispose();
   }
 
-  ExerciseData getExerciseItem() {
-    ExerciseData exercise = new ExerciseData(
-        id: "1",
-        image: '',
-        title: 'a',
-        sets: null,
-        description: '',
-        weight: null,
-        reps: null);
+  Exercise getExerciseItem() {
+    Exercise exercise = new Exercise(id: 1, category: 1, name: "Kast zijn", sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa');
     return exercise;
   }
 
@@ -74,7 +67,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
     BlocProvider.of<WorkoutBloc>(context).add(LoadExercisesEvent());
   }
 
-  updateExercise(List<ExerciseData> state) {
+  updateExercise(List<Exercise> state) {
     selectedExercise = state;
     exercisesForWorkout = state.toList();
   }
@@ -125,7 +118,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '(Name of workout)',
+                            'Workout ID: ' + widget.workoutLog.id.toString(),
                             style: TextStyle(fontSize: 17.0),
                           ),
                           Text(
@@ -136,8 +129,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                     ),
                     Expanded(
-                      child: ValueListenableBuilder<List<ExerciseData>>(
-                        valueListenable: ValueNotifier(exercisesForWorkout),
+                      child: ValueListenableBuilder<List<ExerciseLog>>(
+                        valueListenable: ValueNotifier(widget.workoutLog.exerciseLogs),
                         builder: (context, value, _) {
                           return ListView.builder(
                             physics: BouncingScrollPhysics(),
@@ -146,7 +139,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                               return Card(
                                 child: ListTile(
                                   onTap: () {},
-                                  title: Text('Workout ID: ${value[index].id}'),
+                                  title: Text(getExerciseItem().name.toString()),
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
                                     onPressed: () {
@@ -160,6 +153,19 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         },
                       ),
                     ),
+                    TextButton(
+                      style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                      ),
+                      onPressed: () => addExercisesToList(),
+                      child: Text('Add exercise to list'),
+                    ),
+                    FloatingActionButton(
+                      onPressed:() => addExercisesToList(),
+                      tooltip: 'Add an exercise',
+                      child: Icon(Icons.add),
+                    ),
+
                     // Expanded(
                     //   child: ListView.builder(
                     //     physics: BouncingScrollPhysics(),
@@ -227,11 +233,9 @@ class _WorkoutPageState extends State<WorkoutPage> {
             child: const SizedBox.shrink(),
           );
         } else if (state is WorkoutDataState && state.dataState is StateError) {
-          return SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: 250,
-            child: const SizedBox.shrink(),
-          );
+          _showSnackBar(context,
+              "Oeps! a wild error has appeared! Do you want to challenge the error?");
+          Navigator.of(context).pop();
         }
         return const SizedBox.shrink();
       },
