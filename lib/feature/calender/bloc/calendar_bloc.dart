@@ -63,6 +63,8 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
           default:
             print('Unknow state in ${toString()}: ${state.toString()}');
         }
+      } else {
+        yield CalendarDataState(StateError("oops"));
       }
     }
     if (event is GetWorkoutsEvent) {

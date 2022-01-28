@@ -1,10 +1,41 @@
-## Code snippets state management
+# Mini portfolio Kai van den Broek
 
-This code is used to fill the calendar with workouts. The listner and builder listen to a state which the code inside can take actions upon. The builder creates all of the front-end in a class.
 
-The Bloc is the brain of the operation, Events are sent to tell him what to do.
+## Individual contributions
 
-First, Calendar initial is the current state. In this state the listner sends an event to retrieve the workouts from the database. This eventually returns a dataState determined by the response, this state is checked by the listner and when the response is a succes it lets the Bloc know the workouts are ready to be retrieved.
+### What did I work on?
+Unfortunately, I only worked on the development of the mobile application, which in our case is the front end. I wanted to do some work for the backend but the goals of the app kept me .
+So what did i precisely do:
+- App routing
+- Calendar
+- Login
+- Bloc state management
+- SQlite save to device
+- Calls to backend
+- Adapter to switch between backend and device storage
+  
+### Who did I do it with?
+My main partner with the app was Costa. I gave him some simpler tasks since he is new to the language and not 100% healthy throughout the whole project. Arie helped me with the SQlite stuff since I
+forgot a lot about json formatting. He also assisted me with a lot of backend calls because he worked on the backend.
+
+### Fraction of my efforts
+The application is mostly my work, I gave Costa some easier tasks and Arie helped me with the models, backend calls and device database code. So to sum it up i would say the login screens were a collaboration and the calendar screen was my main project.
+
+### What took too long?
+I was stuck on the usage of RQlite for a while, that's why I asked Arie to help me. SQlite is a library that allows an application to store data on a device. It’s a new technology for me and it was a little difficult to make it work with the flutter state management.
+
+
+## Snippet best quality - state management
+
+From my point of view quality code is readable, easy to use and relatively quick to deploy. The usage of the Flutter Bloc library is a good example.
+
+This implementation of state management supplies the calendar overview with its workouts. Being a form of state management makes the code a lot more testable, because you can always find out in what state the programm is.
+
+To initiate the bloc and add it to the app you must declare it it do you main file. To use it in the UI you can create a bloc object to react to new states. In our project we primarily use a BlocConsumer, this includes a listner and a builder. The listner and builder listen to a state which the code inside can take actions upon. The builder can create and alter front-end widgets in a class.
+
+Now the UI is listning, we can create some business logic. We need States, events and a Bloc class. The Bloc is the brain of the operation, Events are sent to tell him what to do, and states are returned to the UI.
+
+First, Calendar initial is the current state. In this state an event to retrieve the workouts from the database is sent to the bloc. This eventually returns a dataState(or error) determined by the response, this state is checked by the listner and when the response is a succes it lets the Bloc know the workouts are ready to be retrieved.
 
 Finally, the workoutsLoaded state is returned. This state contains all the data needed for this page, so it can be used throughout the builder method.
 
@@ -26,23 +57,23 @@ Finally, the workoutsLoaded state is returned. This state contains all the data 
           // fill local list with state data
           selectedWorkouts = state.data;
 ```
+link to repository: 
+- UI: https://github.com/ArieBisfki/hva_ivse1_project_mobile/blob/master/lib/feature/calender/ui/calendar_overview.dart
+- Bloc logic: https://github.com/ArieBisfki/hva_ivse1_project_mobile/tree/master/lib/feature/calender/bloc
 
+link to library: https://pub.dev/packages/flutter_bloc
 
-## Json formatter
+## Snippet highest complexity - Json formatter
+
 
 This code formats an object to Json and back. It is used in combination with the local database from the SQlite library.
 
 ```
   WorkoutLog.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        exerciseLogs = (jsonDecode(json['exerciseLogs']) as List)
-            .map((exerciseLog) => ExerciseLog.fromJson(exerciseLog))
-            .toList(),
-        //exerciseLogs = jsonDecode(json["exerciseLogs"]),
-        date = json['date'];
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'exerciseLogs': jsonEncode(exerciseLogs),
-        'date': date,
-      };
+```
+
+TODO add link to repo code
+
+## Unit tests
+nothing yet

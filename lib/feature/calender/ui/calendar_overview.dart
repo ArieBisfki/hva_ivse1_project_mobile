@@ -340,6 +340,8 @@ class _State extends State<Calendar> {
           );
         } else if (state is CalendarDataState &&
             state.dataState is StateError) {
+          // Navigator.popAndPushNamed(context, "/login");
+          // logout(); // TODO
           return SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 250,

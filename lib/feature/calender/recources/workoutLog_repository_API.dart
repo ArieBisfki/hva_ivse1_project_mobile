@@ -27,8 +27,8 @@ class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
               .post(Uri.parse('$URL/'),
                   headers: requestHeaders,
                   body: jsonEncode({
-                    "exerciseLogs": workout.exerciseLogs,
                     "date": workout.date,
+                    "exerciseLogs": workout.exerciseLogs,
                   }));
 
       switch (response.statusCode) {
@@ -68,13 +68,15 @@ class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
       switch (response.statusCode) {
         case 200:
           var jsonResponse = jsonDecode(response.body);
+          List<WorkoutLog> workouts = [];
 
-          if (jsonResponse) {
-            return Right(DataResponse.success([]));
-          }
-
-          final List<WorkoutLog> workouts =
-              jsonResponse.map((item) => item as WorkoutLog).toList();
+          workouts = jsonResponse
+              .map((item) => {
+                    item.exerciseLogs = jsonResponse['workoutLogs'],
+                    item.id = jsonResponse['workoutLogs'],
+                    item.date = jsonResponse['workoutLogs'],
+                  })
+              .toList();
 
           return Right(DataResponse.success(workouts));
         case 401:
@@ -89,6 +91,7 @@ class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
     }
   }
 
+// TODO not implemented
   Future<Either<DataResponseE, DataResponse<int>>> deleteWorkout(
     WorkoutLog workout,
   ) async {

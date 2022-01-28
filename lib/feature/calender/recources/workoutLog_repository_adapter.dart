@@ -12,6 +12,7 @@ class WorkoutLogRepositoryAdapter {
   final WorkoutLogRepositoryDevice deviceRepo;
 
   bool isLoggedIn() {
+    // TODO not implemented
     return true;
   }
 
@@ -28,7 +29,8 @@ class WorkoutLogRepositoryAdapter {
   Future<Either<DataResponseE, DataResponse<List<WorkoutLog>>>>
       getWorkouts() async {
     if (isLoggedIn()) {
-      return apiRepo.getWorkouts();
+      //return apiRepo.getWorkouts();
+      return deviceRepo.getWorkouts();
     } else {
       return deviceRepo.getWorkouts();
     }
