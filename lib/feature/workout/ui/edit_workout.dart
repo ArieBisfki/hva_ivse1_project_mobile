@@ -17,7 +17,7 @@ class _EditWorkoutState extends State<EditWorkout>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Exercise List'),
+        title: Text('Edit exercise'),
         actions: [],
       ),
       body: Container(
