@@ -59,16 +59,14 @@ class _WorkoutPageState extends State<WorkoutPage> {
   ExerciseLog getExerciseItem() {
     ExerciseLog exercise = new ExerciseLog(
       exercise: Exercise(
-        id: 1,
-        category: 1,
-        name: "Kast zijn",
-        sets: 1,
-        description: 'aa',
-        reps: 1,
-        weight: 2,
-        image: 'aa'
-      ),
-
+          id: 1,
+          category: 1,
+          name: "Kast zijn",
+          sets: 1,
+          description: 'aa',
+          reps: 1,
+          weight: 2,
+          image: 'aa'),
     );
     return exercise;
   }
@@ -122,6 +120,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       child: IconButton(
                           onPressed: () {
                             Navigator.of(context).pop();
+                            BlocProvider.of<WorkoutBloc>(context)
+                                .add(ResetExercise());
                           },
                           padding: EdgeInsets.all(30.0),
                           icon:
@@ -149,8 +149,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     ),
                     Expanded(
                       child: ValueListenableBuilder<List<ExerciseLog>>(
-                        valueListenable:
-                            ValueNotifier(widget.workoutLog.exerciseLogs),
+                        valueListenable: ValueNotifier(exercisesForWorkout),
                         builder: (context, value, _) {
                           return ListView.builder(
                             physics: BouncingScrollPhysics(),
@@ -158,14 +157,24 @@ class _WorkoutPageState extends State<WorkoutPage> {
                             itemBuilder: (context, index) {
                               return Card(
                                 child: ListTile(
-                                  onTap: () {Navigator.pushNamed(context, Routes.edit_workout,
-                                      arguments: ExerciseData(id: _workoutLogId, exerciseLog: value[index]));},
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, Routes.edit_workout,
+                                        arguments: ExerciseData(
+                                            id: _workoutLogId,
+                                            exerciseLog: value[index]));
+                                  },
                                   title: Text(value[index].exercise.name),
-                                  subtitle: Text("Weight: " + value[index].exercise.weight.toString() +
-                                      "\nSets:" + value[index].exercise.sets.toString() +
-                                      "\nReps:" + value[index].exercise.reps.toString() +
-                                      "\nDescription:" + value[index].exercise.description +
-                                      "\nID:" + value[index].exercise.id.toString() ),
+                                  subtitle: Text("Weight: " +
+                                      value[index].exercise.weight.toString() +
+                                      "\nSets:" +
+                                      value[index].exercise.sets.toString() +
+                                      "\nReps:" +
+                                      value[index].exercise.reps.toString() +
+                                      "\nDescription:" +
+                                      value[index].exercise.description +
+                                      "\nID:" +
+                                      value[index].exercise.id.toString()),
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
                                     onPressed: () {
@@ -180,7 +189,23 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                     ),
                     FloatingActionButton(
-                      onPressed: () => {Navigator.pushNamed(context, Routes.edit_workout)},
+                      onPressed: () => {
+                        Navigator.pushNamed(context, Routes.edit_workout,
+                            arguments: ExerciseData(
+                              id: _workoutLogId,
+                              exerciseLog: ExerciseLog(
+                                exercise: Exercise(
+                                    id: 0,
+                                    category: 0,
+                                    name: "",
+                                    description: "",
+                                    image: "",
+                                    sets: 0,
+                                    reps: 0,
+                                    weight: 0),
+                              ),
+                            ))
+                      },
                       tooltip: 'Add an exercise',
                       child: Icon(Icons.add),
                     ),

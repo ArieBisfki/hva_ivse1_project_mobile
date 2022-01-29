@@ -35,23 +35,25 @@ class RouteGenerator {
                 ));
       case Routes.edit_workout:
         return MaterialPageRoute<dynamic>(
-            builder: (_) => EditWorkout(
-                exerciseData: args is ExerciseData
-                    ? args
-                    : ExerciseData(
-                        id: 0,
-                        exerciseLog: ExerciseLog(
-                          exercise: Exercise(
-                              id: 0,
-                              category: 0,
-                              name: "",
-                              description: "",
-                              image: "",
-                              sets: 0,
-                              reps: 0,
-                              weight: 0),
-                        ),
-                      )));
+          builder: (_) => EditWorkout(
+            exerciseData: args is ExerciseData
+                ? args
+                : ExerciseData(
+                    id: 0,
+                    exerciseLog: ExerciseLog(
+                      exercise: Exercise(
+                          id: 0,
+                          category: 0,
+                          name: "",
+                          description: "",
+                          image: "",
+                          sets: 0,
+                          reps: 0,
+                          weight: 0),
+                    ),
+                  ),
+          ),
+        );
       case Routes.exercisepicker:
         return MaterialPageRoute<dynamic>(builder: (_) => ExercisePicker());
       case Routes.login:

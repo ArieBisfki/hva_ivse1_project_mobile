@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
+import 'package:ivse1_gymlife/feature/workout/bloc/workout_bloc.dart';
 import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_adapter.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart';
@@ -49,10 +51,10 @@ class _EditWorkoutState extends State<EditWorkout> {
   //
   // }
 
-  void addExerciseLog() {
-    print(_exerciseDataId);
-    _exerciseDataId = widget.exerciseData.id!;
-    print(_exerciseDataId);
+  void addExerciseLog(int id) {
+    // print(_exerciseDataId);
+    // _exerciseDataId = widget.exerciseData.id!;
+    // print(_exerciseDataId);
 
     ExerciseLog exercise = ExerciseLog(
         exercise: Exercise(
@@ -65,7 +67,8 @@ class _EditWorkoutState extends State<EditWorkout> {
             image: "g",
             description: descController.text));
     setState(() {
-      repo.createExercise(exercise, _exerciseDataId);
+      repo.createExercise(exercise, id);
+      BlocProvider.of<WorkoutBloc>(context).add(ResetExercise());
     });
     Navigator.pop(context);
   }
@@ -113,7 +116,7 @@ class _EditWorkoutState extends State<EditWorkout> {
               controller: repController,
             ),
             FloatingActionButton(
-              onPressed: () => addExerciseLog(),
+              onPressed: () => addExerciseLog(_exerciseDataId),
               tooltip: 'Update database',
               child: Icon(Icons.update),
             ),
