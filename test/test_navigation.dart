@@ -1,0 +1,37 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
+import 'package:ivse1_gymlife/feature/calender/ui/calendar_overview.dart';
+import 'package:ivse1_gymlife/feature/calender/ui/workoutLogs_overview.dart';
+import 'package:ivse1_gymlife/feature/workout/ui/workout.dart';
+import 'package:mockito/mockito.dart';
+
+class TestObserver extends Mock implements NavigatorObserver {}
+
+void main() {
+  testWidgets('navigation should work', (WidgetTester tester) async {
+    final mockObserver = TestObserver();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Calendar(
+          loggedIn: false,
+        ),
+        navigatorObservers: [mockObserver],
+      ),
+    );
+
+    expect(find.byType(WorkoutLogsOverview), findsOneWidget);
+    await tester.tap(find.byType(WorkoutLogsOverview));
+    await tester.pumpAndSettle();
+
+    /// Verify that a push event happened
+    verify(mockObserver.didPush(
+        MaterialPageRoute<dynamic>(
+            builder: (_) => WorkoutPage(
+                  workoutLog: WorkoutLog(exerciseLogs: [], id: 0, date: ""),
+                )),
+        any));
+
+    expect(find.byType(WorkoutPage), findsOneWidget);
+  });
+}

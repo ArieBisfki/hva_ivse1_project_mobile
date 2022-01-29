@@ -63,7 +63,7 @@ link to repository:
 
 link to library: https://pub.dev/packages/flutter_bloc
 
-## Snippet highest complexity - Json formatter
+## Snippet highest complexity - todo
 
 
 This code formats an object to Json and back. It is used in combination with the local database from the SQlite library.
@@ -76,4 +76,34 @@ This code formats an object to Json and back. It is used in combination with the
 TODO add link to repo code
 
 ## Unit tests
-nothing yet
+In my opinion, writing unit tests for flutter isn't best practice. I would prefer to do integration testing, but unfortunately i couldn't make time for it since it would be an entire new learning curve.
+
+To avoid having empty hands i created a unit tests that tests the validity and workings of the routing in the app. This piece of code mocks an observer and call runApp on the widget i want to start. With the keys inserted in the widgets i can find certain tiles or buttons so i can test them. After i mock a tap to a new page i check if the push to a new page actually appeared.
+
+```
+  testWidgets('navigation should work', (WidgetTester tester) async {
+    final mockObserver = TestObserver();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Calendar(
+          loggedIn: false,
+        ),
+        navigatorObservers: [mockObserver],
+      ),
+    );
+
+    expect(find.byType(WorkoutLogsOverview), findsOneWidget);
+    await tester.tap(find.byType(WorkoutLogsOverview));
+    await tester.pumpAndSettle();
+
+    /// Verify that a push event happened
+    verify(mockObserver.didPush(
+        MaterialPageRoute<dynamic>(
+            builder: (_) => WorkoutPage(
+                  workoutLog: WorkoutLog(exerciseLogs: [], id: 0, date: ""),
+                )),
+        any));
+
+    expect(find.byType(WorkoutPage), findsOneWidget);
+  });
+```
