@@ -22,6 +22,14 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
 
   List<ExerciseLog> get exercises => _exercises;
 
+  // void toggleExercise(Exercise exercise) {
+  //   if (_exercises.contains(exercise)) {
+  //     _exercises.remove(exercise);
+  //   } else {
+  //     _exercises.add(exercise);
+  //   }
+  // }
+
   @override
   Stream<WorkoutState> mapEventToState(
     WorkoutEvent event,

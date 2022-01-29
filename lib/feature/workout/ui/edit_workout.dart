@@ -26,6 +26,7 @@ class _EditWorkoutState extends State<EditWorkout> {
   final descController = TextEditingController();
   final setController = TextEditingController();
   final repController = TextEditingController();
+  final weightController = TextEditingController();
 
   int _exerciseDataId = 0;
 
@@ -43,6 +44,8 @@ class _EditWorkoutState extends State<EditWorkout> {
     descController.dispose();
     setController.dispose();
     repController.dispose();
+    weightController.dispose();
+
     super.dispose();
   }
 
@@ -52,18 +55,14 @@ class _EditWorkoutState extends State<EditWorkout> {
   // }
 
   void addExerciseLog(int id) {
-    // print(_exerciseDataId);
-    // _exerciseDataId = widget.exerciseData.id!;
-    // print(_exerciseDataId);
-
     ExerciseLog exercise = ExerciseLog(
         exercise: Exercise(
             id: 100,
             category: 1,
             name: nameController.text,
-            sets: 6,
-            reps: 2,
-            weight: 3,
+            sets: int.parse(setController.text),
+            reps: int.parse(repController.text),
+            weight: double.parse(weightController.text),
             image: "g",
             description: descController.text));
     setState(() {
@@ -87,9 +86,10 @@ class _EditWorkoutState extends State<EditWorkout> {
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText:
-                    "Name: " + widget.exerciseData.exerciseLog.exercise.name,
+                    "Exercise name: " + widget.exerciseData.exerciseLog.exercise.name,
               ),
               controller: nameController,
+              keyboardType: TextInputType.text,
             ),
             TextField(
               decoration: InputDecoration(
@@ -98,6 +98,7 @@ class _EditWorkoutState extends State<EditWorkout> {
                     widget.exerciseData.exerciseLog.exercise.description,
               ),
               controller: descController,
+              keyboardType: TextInputType.text,
             ),
             TextField(
               decoration: InputDecoration(
@@ -106,6 +107,7 @@ class _EditWorkoutState extends State<EditWorkout> {
                     widget.exerciseData.exerciseLog.exercise.sets.toString(),
               ),
               controller: setController,
+              keyboardType: TextInputType.number,
             ),
             TextField(
               decoration: InputDecoration(
@@ -114,10 +116,20 @@ class _EditWorkoutState extends State<EditWorkout> {
                     widget.exerciseData.exerciseLog.exercise.reps.toString(),
               ),
               controller: repController,
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Weight: " +
+                    widget.exerciseData.exerciseLog.exercise.weight.toString() + "KG",
+              ),
+              controller: weightController,
+              keyboardType: TextInputType.number,
             ),
             FloatingActionButton(
               onPressed: () => addExerciseLog(_exerciseDataId),
-              tooltip: 'Update database',
+              tooltip: 'Add an exercise.',
               child: Icon(Icons.update),
             ),
           ],

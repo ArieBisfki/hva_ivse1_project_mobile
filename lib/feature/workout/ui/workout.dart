@@ -85,6 +85,13 @@ class _WorkoutPageState extends State<WorkoutPage> {
     exercisesForWorkout = state.toList();
   }
 
+  deleteExercise(Exercise exercise) {
+    setState(() {
+      BlocProvider.of<WorkoutBloc>(context)
+          .add(DeleteExerciseEvent(exercise));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<WorkoutBloc, WorkoutState>(
@@ -172,13 +179,12 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                       "\nReps:" +
                                       value[index].exercise.reps.toString() +
                                       "\nDescription:" +
-                                      value[index].exercise.description +
-                                      "\nID:" +
-                                      value[index].exercise.id.toString()),
+                                      value[index].exercise.description),
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
                                     onPressed: () {
-                                      // _showSnackBar(context, "Deleted");
+                                      deleteExercise(value[index].exercise);
+                                       //_showSnackBar(context, "Deleted");
                                     },
                                   ),
                                 ),
