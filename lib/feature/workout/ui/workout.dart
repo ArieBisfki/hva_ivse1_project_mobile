@@ -159,7 +159,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                               return Card(
                                 child: ListTile(
                                   onTap: () {Navigator.pushNamed(context, Routes.edit_workout,
-                                      arguments: value[index]);},
+                                      arguments: ExerciseData(id: _workoutLogId, exerciseLog: value[index]));},
                                   title: Text(value[index].exercise.name),
                                   subtitle: Text("Weight: " + value[index].exercise.weight.toString() +
                                       "\nSets:" + value[index].exercise.sets.toString() +
@@ -180,7 +180,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                     ),
                     FloatingActionButton(
-                      onPressed: () => addExercisesToList(),
+                      onPressed: () => {Navigator.pushNamed(context, Routes.edit_workout)},
                       tooltip: 'Add an exercise',
                       child: Icon(Icons.add),
                     ),

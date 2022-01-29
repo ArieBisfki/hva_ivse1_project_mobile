@@ -22,14 +22,6 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
 
   List<ExerciseLog> get exercises => _exercises;
 
-  // void toggleExercise(Exercise exercise) {
-  //   if (_exercises.contains(exercise)) {
-  //     _exercises.remove(exercise);
-  //   } else {
-  //     _exercises.add(exercise);
-  //   }
-  // }
-
   @override
   Stream<WorkoutState> mapEventToState(
     WorkoutEvent event,
@@ -70,7 +62,7 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
     }
     if (event is NewExerciseEvent) {
       final DataResponse<dynamic> result =
-          await workoutRepository.createExercise(event.exercise);
+          await workoutRepository.createExercise(event.exercise, event.workoutLogId);
       final DataResponse<List<ExerciseLog>> recall =
           await workoutRepository.getExercises(event.workoutLogId);
 

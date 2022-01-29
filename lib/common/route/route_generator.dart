@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:ivse1_gymlife/common/route/routes.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:ivse1_gymlife/feature/calender/ui/calendar_overview.dart';
 import 'package:ivse1_gymlife/feature/login/ui/forgot_password.dart';
 import 'package:ivse1_gymlife/feature/login/ui/login_screen.dart';
 import 'package:ivse1_gymlife/feature/login/ui/signup_screen.dart';
+import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
 import 'package:ivse1_gymlife/feature/workout/ui/edit_workout.dart';
 import 'package:ivse1_gymlife/feature/workout/ui/workout.dart';
 import 'package:ivse1_gymlife/feature/workout_category/ui/exercise_picker.dart';
@@ -34,19 +36,22 @@ class RouteGenerator {
       case Routes.edit_workout:
         return MaterialPageRoute<dynamic>(
             builder: (_) => EditWorkout(
-                  exercise: args is Exercise
-                      ? args
-                      : Exercise(
-                          id: 0,
-                          category: 0,
-                          name: "",
-                          description: "",
-                          image: "",
-                          sets: 0,
-                          reps: 0,
-                          weight: 0
-                  ),
-                ));
+                exerciseData: args is ExerciseData
+                    ? args
+                    : ExerciseData(
+                        id: 0,
+                        exerciseLog: ExerciseLog(
+                          exercise: Exercise(
+                              id: 0,
+                              category: 0,
+                              name: "",
+                              description: "",
+                              image: "",
+                              sets: 0,
+                              reps: 0,
+                              weight: 0),
+                        ),
+                      )));
       case Routes.exercisepicker:
         return MaterialPageRoute<dynamic>(builder: (_) => ExercisePicker());
       case Routes.login:

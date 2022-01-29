@@ -33,9 +33,9 @@ class ExerciseLogDbAdapter {
     return q;
   }
 
-  Future addExercise(ExerciseLog ed) async {
+  Future addExercise(WorkoutLog ed) async {
     final Database db = await LocalDatabase().db;
-    return db.insert('workouts', ed.toJson());
+    return db.update('workouts', ed.toJson(), where: "id = ${ed.id}");
   }
 
   Future deleteExercise(Exercise ed) async {
@@ -43,10 +43,10 @@ class ExerciseLogDbAdapter {
     return db.delete('workouts', where: "id = ${ed.id}");
   }
 
-  // Future updateExercise(Exercise ed) async { // TODO
-  //   final Database db = await LocalDatabase().db;
-  //   return db.update('exercises', where: "id = ${ed.id}");
-  // }
+  Future updateExercise(Exercise ed) async {
+    final Database db = await LocalDatabase().db;
+    return db.update('workouts', ed.toJson(), where: "id = ${ed.id}");
+  }
 
   Future<Exercise> getExercise(int id) async {
     final Database db = await LocalDatabase().db;

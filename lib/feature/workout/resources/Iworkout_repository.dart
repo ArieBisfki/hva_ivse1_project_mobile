@@ -7,6 +7,7 @@ import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 abstract class IWorkoutRepository {
   Future<DataResponse<int>> createExercise(
     ExerciseLog exercise,
+      int id
   );
 
   Future<DataResponse<List<ExerciseLog>>> getExercises(int id);

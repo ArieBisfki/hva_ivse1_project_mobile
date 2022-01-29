@@ -12,9 +12,13 @@ class ExerciseLogRepository implements IWorkoutRepository {
   final ExerciseLogDbAdapter dbAdapter;
 
   @override
-  Future<DataResponse<int>> createExercise(ExerciseLog exercise) async {
+  Future<DataResponse<int>> createExercise(
+      ExerciseLog exerciseLog, int? id) async {
     try {
-      final int response = await dbAdapter.addExercise(exercise);
+      final WorkoutLog request = await dbAdapter.getWorkout(id!);
+      request.exerciseLogs.add(exerciseLog);
+
+      final int response = await dbAdapter.addExercise(request);
 
       if (response == 0) {
         return DataResponse<int>.connectivityError();
