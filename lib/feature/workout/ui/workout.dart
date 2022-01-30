@@ -12,6 +12,8 @@ import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_adapter.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart';
 
+/// Workout page
+/// @author Costa
 class WorkoutPage extends StatefulWidget {
   WorkoutPage({required this.workoutLog, required this.exerciseData});
 
@@ -22,7 +24,7 @@ class WorkoutPage extends StatefulWidget {
   _WorkoutPageState createState() => _WorkoutPageState();
 }
 
-final snackBar = SnackBar(content: Text('Exercise deleted'));
+final snackBarDelete = SnackBar(content: Text('Exercise deleted'));
 
 class _WorkoutPageState extends State<WorkoutPage> {
   ExerciseLogDbAdapter adapter = new ExerciseLogDbAdapter();
@@ -59,29 +61,29 @@ class _WorkoutPageState extends State<WorkoutPage> {
     super.dispose();
   }
 
-  ExerciseLog getExerciseItem() {
-    ExerciseLog exercise = new ExerciseLog(
-      exercise: Exercise(
-          id: 1,
-          category: 1,
-          name: "Kast zijn",
-          sets: 1,
-          description: 'aa',
-          reps: 1,
-          weight: 2,
-          image: 'aa'),
-    );
-    return exercise;
-  }
-
-  addExercisesToList() {
-    exercisesForWorkout.add(getExerciseItem());
-
-    BlocProvider.of<WorkoutBloc>(context)
-        .add(NewExerciseEvent(getExerciseItem(), _workoutLogId));
-    BlocProvider.of<WorkoutBloc>(context)
-        .add(LoadExercisesEvent(_workoutLogId));
-  }
+  // ExerciseLog getExerciseItem() {
+  //   ExerciseLog exercise = new ExerciseLog(
+  //     exercise: Exercise(
+  //         id: 1,
+  //         category: 1,
+  //         name: "Kast zijn",
+  //         sets: 1,
+  //         description: 'aa',
+  //         reps: 1,
+  //         weight: 2,
+  //         image: 'aa'),
+  //   );
+  //   return exercise;
+  // }
+  //
+  // addExercisesToList() {
+  //   exercisesForWorkout.add(getExerciseItem());
+  //
+  //   BlocProvider.of<WorkoutBloc>(context)
+  //       .add(NewExerciseEvent(getExerciseItem(), _workoutLogId));
+  //   BlocProvider.of<WorkoutBloc>(context)
+  //       .add(LoadExercisesEvent(_workoutLogId));
+  // }
 
   updateExercise(List<ExerciseLog> state) {
     selectedExercise = state;
@@ -176,7 +178,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                 child: ListTile(
                                   onTap: () {
                                     Navigator.pushNamed(
-                                        context, Routes.edit_workout,
+                                        context, Routes.add_workout,
                                         arguments: ExerciseData(
                                             id: _workoutLogId,
                                             exerciseLog: value[index]));
@@ -268,7 +270,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
               ),
                 floatingActionButton: FloatingActionButton.extended(
                   onPressed: () => {
-                    Navigator.pushNamed(context, Routes.edit_workout,
+                    Navigator.pushNamed(context, Routes.add_workout,
                         arguments: ExerciseData(
                           id: _workoutLogId,
                           exerciseLog: ExerciseLog(

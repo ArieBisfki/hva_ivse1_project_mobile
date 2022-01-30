@@ -8,7 +8,7 @@ import 'package:ivse1_gymlife/feature/login/ui/forgot_password.dart';
 import 'package:ivse1_gymlife/feature/login/ui/login_screen.dart';
 import 'package:ivse1_gymlife/feature/login/ui/signup_screen.dart';
 import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
-import 'package:ivse1_gymlife/feature/workout/ui/edit_workout.dart';
+import 'package:ivse1_gymlife/feature/workout/ui/add_workout.dart';
 import 'package:ivse1_gymlife/feature/workout/ui/workout.dart';
 import 'package:ivse1_gymlife/feature/workout_category/ui/exercise_picker.dart';
 
@@ -47,9 +47,9 @@ class RouteGenerator {
                     ),
                   ),
                 ));
-      case Routes.edit_workout:
+      case Routes.add_workout:
         return MaterialPageRoute<dynamic>(
-          builder: (_) => EditWorkout(
+          builder: (_) => AddWorkout(
             exerciseData: args is ExerciseData
                 ? args
                 : ExerciseData(

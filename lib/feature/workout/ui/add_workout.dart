@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,20 +10,26 @@ import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_adapter.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart';
 
-class EditWorkout extends StatefulWidget {
-  const EditWorkout({Key? key, required this.exerciseData}) : super(key: key);
+///Add workout class
+///@author Costa
+class AddWorkout extends StatefulWidget {
+  const AddWorkout({Key? key, required this.exerciseData}) : super(key: key);
 
   final ExerciseData exerciseData;
 
   @override
-  State<EditWorkout> createState() => _EditWorkoutState();
+  State<AddWorkout> createState() => _AddWorkoutState();
 }
 
-class _EditWorkoutState extends State<EditWorkout> {
+class _AddWorkoutState extends State<AddWorkout> {
+  //adapter
   ExerciseLogDbAdapter adapter = new ExerciseLogDbAdapter();
+
+  //repository
   late final ExerciseLogRepository repo =
       new ExerciseLogRepository(dbAdapter: adapter);
 
+  //the text controllers to add a exercise
   final nameController = TextEditingController();
   final descController = TextEditingController();
   final setController = TextEditingController();
@@ -30,16 +38,24 @@ class _EditWorkoutState extends State<EditWorkout> {
 
   int _exerciseDataId = 0;
 
+  Random random = new Random();
+  static const int RANDOM_INT_MAX = 999;
+
+  //because we only have 1 category for now
+  int category = 1;
+  String image = "";
+
+  /// init state
   @override
   void initState() {
     _exerciseDataId = widget.exerciseData.id!;
     super.initState();
   }
 
+  /// dispose
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the widget tree.
-    // This also removes the _printLatestValue listener.
     nameController.dispose();
     descController.dispose();
     setController.dispose();
@@ -49,21 +65,20 @@ class _EditWorkoutState extends State<EditWorkout> {
     super.dispose();
   }
 
-  // //TODO: create update func
-  // void updateDB() {
-  //
-  // }
-
+  /// addExerciseLog(int id)
+  /// This method adds and exercise to the workout
   void addExerciseLog(int id) {
+    int randomId = random.nextInt(RANDOM_INT_MAX);
+    // create an exercise log to put the exercise in
     ExerciseLog exercise = ExerciseLog(
         exercise: Exercise(
-            id: 100,
-            category: 1,
+            id: randomId,
+            category: category,
             name: nameController.text,
             sets: int.parse(setController.text),
             reps: int.parse(repController.text),
             weight: double.parse(weightController.text),
-            image: "g",
+            image: image,
             description: descController.text));
     setState(() {
       repo.createExercise(exercise, id);
@@ -76,7 +91,7 @@ class _EditWorkoutState extends State<EditWorkout> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add your exercise'),
+        title: const Text('Add an exercise'),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -146,15 +161,14 @@ class _EditWorkoutState extends State<EditWorkout> {
                 keyboardType: TextInputType.number,
               ),
             ),
-
           ],
         ),
       ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => addExerciseLog(_exerciseDataId),
-          tooltip: 'Add an exercise.',
-          child: Icon(Icons.save),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => addExerciseLog(_exerciseDataId),
+        tooltip: 'Add an exercise',
+        child: Icon(Icons.save),
+      ),
     );
   }
 }
