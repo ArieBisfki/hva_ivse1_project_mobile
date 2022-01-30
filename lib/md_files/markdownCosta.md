@@ -1,6 +1,5 @@
 # Mini portfolio Costa van Elsas
 
-
 ## Individual contributions to Gymlife
 
 ### Introduction
@@ -9,7 +8,7 @@ Welcome to my mini-portfolio for the project Software Engineering. I worked on t
 Gymlife application. The original plan was for us all to do some of the front-end and some of the
 back-end. This did not work out for us. So me and Kai focussed on the front-end, Arie and Soufiane
 focussed on the back-end of the Gymlife application. During the project I had a lot of health
-issues. This made it very hard to keep up with all the work. I had surgery for my back. Luckily my
+issues. This made it very hard to keep up with all the work. I had a back surgery. Luckily my
 teammates were very supportive. I made up for a whole lot of lost time near the end of the project.
 Kai was my partner for the front-end. We had great communication and since he made a lot of progress
 in my absence he showed me how the project was structured since it was changed a lot from where we
@@ -23,7 +22,7 @@ of things that I did:
 - Workout page
 - Add a workout
 - Delete a workout
-- Created model for the database
+- ExerciseData model
 - Workout category's (*not used*)
 - Exercise picker (*not used*)
 
@@ -38,24 +37,31 @@ supposed to do.
 ### Fraction of my efforts
 
 The most of my efforts went in to the Workout page. In the workout page you can see, add and delete
-exercises within a workout. I also styled the pages.
+exercises within a workout. I also styled the workout pages.
 
 ### What took too long?
 
-*Everything*, I say that because in my opinion almost all my tasks took too long.
-The reason behind is that as I stated in my introduction I had back surgery. Which caused some 
-absence. Kai created a whole new project structure which took me some time to understand. It was
-pretty complex to understand. It was a completely new technology for me, and when I came back from my
-recovery there already was a complex structure. I needed time to adapt.
+*'Everything'*, I say that because in my opinion almost all my tasks took too long. The reason
+behind is that as I stated in my introduction I had back surgery. Which caused some absence. Kai
+created a whole new project structure which took me some time to understand. It was pretty complex
+to understand. It was a completely new technology for me, and when I came back from my recovery
+there already was a complex structure. I needed time to adapt. Kai was there to help but he of
+course had problems and school of his own. So a lot of time I had to sort it out for my self.
 
-## Code snippet - adding an exercise to a workout
+## Code snippet
 
-When you add an exercise to a specific workout you will need a couple of things. The ID of the workout
-the ID of the exercise log and the exercise it self. 
+When you add an exercise to a specific workout you will need a couple of things. The ID of the
+workout the exercise log and the exercise it self.
 
-When you are in the workout page, I created a Floating Action Button (FAB).
-The FAB passes the context, a route (that leads to add workout). As arguments I pass an empty 
+- ExerciseData
+    - workoutId
+    - ExerciseLog
+        - Exercise
+
+When you are in the workout page, I created a Floating Action Button (hereinafter referred to as
+FAB). The FAB passes the context, a route (that leads to add workout). As arguments I pass an empty
 ExerciseData, in the exercise data is an exercise log with the exercise in the log.
+
 ```
  floatingActionButton: FloatingActionButton.extended(
                   onPressed: () => {
@@ -80,8 +86,10 @@ ExerciseData, in the exercise data is an exercise log with the exercise in the l
                   icon: Icon(Icons.add),
                 ),
 ```
+
 In the add_workout class I can call upon the ExerciseData which in first instance is empty because
-we passed and empty one. In the add_workout class the ExerciseData is filled by using the next method:
+we passed and empty one. In the add_workout class the ExerciseData is filled by using the next
+method:
 
 ```
   void addExerciseLog(int id) {
@@ -105,7 +113,7 @@ we passed and empty one. In the add_workout class the ExerciseData is filled by 
   }
 ```
 
-This method is called upon when all the data is filled in the text boxes on the page and the FAB is 
+This method is called upon when all the data is filled in the text boxes on the page and the FAB is
 clicked to add the exercise. This method uses the createExercise method from the workout repository.
 
 ```
@@ -129,9 +137,9 @@ clicked to add the exercise. This method uses the createExercise method from the
   }
 ```
 
-This method passes an ExerciseLog and an ID. The ID is the workout ID so the application knows where
-to add the exercise. The ExerciseLog is the log that we passed in the add_workout class.
-This method uses the adapter to call upon our database.
+This method passes an ExerciseLog and an ID. The ID is the workout ID so the application knows in
+which workout the exercise should be added. The ExerciseLog is the log that we passed in the
+add_workout class. This method uses the adapter to call upon our database.
 
 ```
  Future addExercise(WorkoutLog ed) async {
@@ -142,4 +150,85 @@ This method uses the adapter to call upon our database.
 
 This method updates our database with the new data that is added.
 
+
+
 ## Code snippet
+
+Once you understand the basics and the whole structure of a bloc it is actually pretty good to
+understand. But at first its a bit complicated. In the workout_bloc are a couple of methods.
+
+> #### Why Bloc?
+> Bloc makes it easy to separate presentation from business logic, making your code fast, easy to test, and reusable.
+>
+> (https://bloclibrary.dev/#/whybloc)
+
+The bloc is used to handle states of our application. Bloc principle uses the bloc, a event and a
+state. The bloc is the logic, the events are communicating to the bloc what to do and the state
+sends the state to the frond-end.
+
+First you will have to initiate the bloc in the main.dart file:
+
+```
+BlocProvider<WorkoutBloc>(
+    create: (BuildContext context) => WorkoutBloc(
+        workoutRepository: RepositoryProvider.of<ExerciseLogRepository>(context)),
+    ),
+```
+
+When the bloc is initiated, it can be called upon in our front-end. The bloc uses the
+ExerciseLogRepository In the method below we create an workout event which are declared in the
+workout_event file. The method LoadExercisesEvent returns a list of exercise logs (exercises) within
+a workout log.
+
+```
+  @override
+  Stream<WorkoutState> mapEventToState(
+    WorkoutEvent event,
+  ) async* {
+    if (event is ResetExercise) {
+      yield WorkoutInitial();
+    }
+    if (event is LoadExercisesEvent) {
+      yield WorkoutDataState(StateLoading());
+
+      final DataResponse<List<ExerciseLog>> result =
+          await workoutRepository.getExercises(event.workoutLogId);
+
+      if (result.data != null) {
+        _exercises = result.data!;
+      }
+
+      switch (result.status) {
+        case Status.Error:
+          yield WorkoutDataState(StateError(result.message.toString()));
+          break;
+        case Status.Loading:
+          yield WorkoutDataState(StateLoading());
+          break;
+        case Status.Success:
+          if (result.data == null || result.data!.isEmpty) {
+            yield WorkoutDataState(StateEmpty());
+          } else {
+            yield WorkoutDataState(StateSuccess(result));
+          }
+          break;
+        default:
+          print('Unknow state in ${toString()}: ${state.toString()}');
+      }
+    }
+```
+
+This way we can load our exercises in the workout page by using our bloc. In the front-end we call
+upon the Bloc consumer which calls our WorkoutBloc and WorkoutState. From here we can call upon the
+GetExercises method to return all the exercises bound to that specific workout.
+
+```
+return BlocConsumer<WorkoutBloc, WorkoutState>(
+      listener: (context, state) {
+        if (state is WorkoutDataState && state.dataState is StateSuccess ||
+            state is WorkoutDataState && state.dataState is StateEmpty) {
+          // retrieve data from database
+          BlocProvider.of<WorkoutBloc>(context).add(GetExercisesEvent());
+        }
+      },
+```

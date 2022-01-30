@@ -61,30 +61,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
     super.dispose();
   }
 
-  // ExerciseLog getExerciseItem() {
-  //   ExerciseLog exercise = new ExerciseLog(
-  //     exercise: Exercise(
-  //         id: 1,
-  //         category: 1,
-  //         name: "Kast zijn",
-  //         sets: 1,
-  //         description: 'aa',
-  //         reps: 1,
-  //         weight: 2,
-  //         image: 'aa'),
-  //   );
-  //   return exercise;
-  // }
-  //
-  // addExercisesToList() {
-  //   exercisesForWorkout.add(getExerciseItem());
-  //
-  //   BlocProvider.of<WorkoutBloc>(context)
-  //       .add(NewExerciseEvent(getExerciseItem(), _workoutLogId));
-  //   BlocProvider.of<WorkoutBloc>(context)
-  //       .add(LoadExercisesEvent(_workoutLogId));
-  // }
-
   updateExercise(List<ExerciseLog> state) {
     selectedExercise = state;
     exercisesForWorkout = state.toList();
