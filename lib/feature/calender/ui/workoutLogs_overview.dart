@@ -63,6 +63,8 @@ class _WorkoutLogsOverviewState extends State<WorkoutLogsOverview> {
                   onTap: () {
                     Navigator.pushNamed(context, "/workout",
                         arguments: value[index]);
+                      BlocProvider.of<WorkoutBloc>(context)
+                          .add(ResetExercise());
                   },
                   title: Text('Workout ID: ${value[index].id}'),
                   trailing: IconButton(

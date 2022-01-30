@@ -38,9 +38,9 @@ class ExerciseLogDbAdapter {
     return db.update('workouts', ed.toJson(), where: "id = ${ed.id}");
   }
 
-  Future deleteExercise(Exercise ed) async {
+  Future deleteExercise(WorkoutLog ed) async {
     final Database db = await LocalDatabase().db;
-    return db.delete('workouts', where: "id = ${ed.id}");
+    return db.update('workouts', ed.toJson(), where: "id = ${ed.id}");
   }
 
   Future updateExercise(Exercise ed) async {

@@ -11,6 +11,8 @@ part 'workout_event.dart';
 
 part 'workout_state.dart';
 
+///@author Costa
+///Workout bloc
 class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
   final ExerciseLogRepository workoutRepository;
 
@@ -21,14 +23,6 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
   List<ExerciseLog> _exercises = [];
 
   List<ExerciseLog> get exercises => _exercises;
-
-  // void toggleExercise(Exercise exercise) {
-  //   if (_exercises.contains(exercise)) {
-  //     _exercises.remove(exercise);
-  //   } else {
-  //     _exercises.add(exercise);
-  //   }
-  // }
 
   @override
   Stream<WorkoutState> mapEventToState(
@@ -93,7 +87,7 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
     }
     if (event is DeleteExerciseEvent) {
       final DataResponse<dynamic> result =
-          await workoutRepository.deleteExercises(event.exercise);
+          await workoutRepository.deleteExercises(event.exercise, event.workoutLogId);
 
       _exercises.remove(event.exercise);
 

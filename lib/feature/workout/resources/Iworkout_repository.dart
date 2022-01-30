@@ -13,7 +13,8 @@ abstract class IWorkoutRepository {
   Future<DataResponse<List<ExerciseLog>>> getExercises(int id);
 
   Future<DataResponse<int>> deleteExercises(
-    Exercise exercise,
+    ExerciseLog exercise,
+      int id
   );
 
   Future<DataResponse<Exercise>> getExercise(

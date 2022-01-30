@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:ivse1_gymlife/common/http/response.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
@@ -31,9 +33,13 @@ class ExerciseLogRepository implements IWorkoutRepository {
   }
 
   @override
-  Future<DataResponse<int>> deleteExercises(Exercise exercise) async {
+  Future<DataResponse<int>> deleteExercises(ExerciseLog exercise, int? id) async {
     try {
-      final int response = await dbAdapter.deleteExercise(exercise);
+      final WorkoutLog request = await dbAdapter.getWorkout(id!);
+      request.exerciseLogs.remove(exercise);
+      //
+      // final Exercise request = await dbAdapter.getExercise(exercise.id!);
+      final int response = await dbAdapter.deleteExercise(request);
 
       if (response == 0) {
         return DataResponse<int>.connectivityError();

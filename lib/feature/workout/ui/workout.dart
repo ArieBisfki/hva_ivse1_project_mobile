@@ -13,9 +13,10 @@ import 'package:ivse1_gymlife/feature/workout/resources/workout_adapter.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart';
 
 class WorkoutPage extends StatefulWidget {
-  WorkoutPage({required this.workoutLog});
+  WorkoutPage({required this.workoutLog, required this.exerciseData});
 
   final WorkoutLog workoutLog;
+  final ExerciseData exerciseData;
 
   @override
   _WorkoutPageState createState() => _WorkoutPageState();
@@ -33,6 +34,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
   List<ExerciseLog> exercisesForWorkout = [];
   List<ExerciseLog> selectedExercise = [];
   int _workoutLogId = 0;
+  int _exerciseDataId = 0;
 
   List<ExerciseLog> get list => exercisesForWorkout;
 
@@ -44,6 +46,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
     selectedExercise = [];
     _selectedExercise = ValueNotifier(_getExerciseForWorkout());
     _workoutLogId = widget.workoutLog.id!;
+    _exerciseDataId = widget.exerciseData.id!;
   }
 
   List<ExerciseLog> _getExerciseForWorkout() {
@@ -85,12 +88,19 @@ class _WorkoutPageState extends State<WorkoutPage> {
     exercisesForWorkout = state.toList();
   }
 
-  deleteExercise(Exercise exercise) {
-    setState(() {
-      BlocProvider.of<WorkoutBloc>(context)
-          .add(DeleteExerciseEvent(exercise));
-    });
-  }
+  // deleteExercise(Exercise exercise) {
+  //   setState(() {
+  //     BlocProvider.of<WorkoutBloc>(context)
+  //         .add(DeleteExerciseEvent(exercise, _workoutLogId));
+  //   });
+  // }
+
+  // void deleteExerciseLog(int id) {
+  //   setState(() {
+  //     repo.deleteExercises(exercise, id);
+  //     BlocProvider.of<WorkoutBloc>(context).add(ResetExercise());
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +193,9 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
                                     onPressed: () {
-                                      deleteExercise(value[index].exercise);
+                                      //deleteExercise(value[index].exercise);
+                                      repo.deleteExercises(value[index], _workoutLogId);
+                                      BlocProvider.of<WorkoutBloc>(context).add(ResetExercise());
                                        //_showSnackBar(context, "Deleted");
                                     },
                                   ),
@@ -193,27 +205,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
                           );
                         },
                       ),
-                    ),
-                    FloatingActionButton(
-                      onPressed: () => {
-                        Navigator.pushNamed(context, Routes.edit_workout,
-                            arguments: ExerciseData(
-                              id: _workoutLogId,
-                              exerciseLog: ExerciseLog(
-                                exercise: Exercise(
-                                    id: 0,
-                                    category: 0,
-                                    name: "",
-                                    description: "",
-                                    image: "",
-                                    sets: 0,
-                                    reps: 0,
-                                    weight: 0),
-                              ),
-                            ))
-                      },
-                      tooltip: 'Add an exercise',
-                      child: Icon(Icons.add),
                     ),
 
                     // Expanded(
@@ -274,7 +265,31 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     // ),
                   ],
                 ),
-              )));
+              ),
+                floatingActionButton: FloatingActionButton.extended(
+                  onPressed: () => {
+                    Navigator.pushNamed(context, Routes.edit_workout,
+                        arguments: ExerciseData(
+                          id: _workoutLogId,
+                          exerciseLog: ExerciseLog(
+                            exercise: Exercise(
+                                id: 0,
+                                category: 0,
+                                name: "",
+                                description: "",
+                                image: "",
+                                sets: 0,
+                                reps: 0,
+                                weight: 0),
+                          ),
+                        ))
+                  },
+                  tooltip: 'Add an exercise',
+                  label: Text("Add exercise"),
+                  icon: Icon(Icons.add),
+                ),
+              ),
+          );
         } else if (state is WorkoutDataState &&
             state.dataState is StateLoading) {
           return SizedBox(

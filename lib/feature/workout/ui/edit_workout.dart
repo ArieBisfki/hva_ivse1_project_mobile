@@ -76,65 +76,85 @@ class _EditWorkoutState extends State<EditWorkout> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Retrieve Text Input'),
+        title: const Text('Add your exercise'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        child: ListView(
           children: [
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText:
-                    "Exercise name: " + widget.exerciseData.exerciseLog.exercise.name,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Exercise name: " +
+                      widget.exerciseData.exerciseLog.exercise.name,
+                ),
+                controller: nameController,
+                keyboardType: TextInputType.text,
               ),
-              controller: nameController,
-              keyboardType: TextInputType.text,
             ),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Description: " +
-                    widget.exerciseData.exerciseLog.exercise.description,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Description: " +
+                      widget.exerciseData.exerciseLog.exercise.description,
+                ),
+                controller: descController,
+                keyboardType: TextInputType.text,
+                minLines: 3,
+                maxLines: 7,
               ),
-              controller: descController,
-              keyboardType: TextInputType.text,
             ),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Sets: " +
-                    widget.exerciseData.exerciseLog.exercise.sets.toString(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Sets: " +
+                      widget.exerciseData.exerciseLog.exercise.sets.toString(),
+                ),
+                controller: setController,
+                keyboardType: TextInputType.number,
               ),
-              controller: setController,
-              keyboardType: TextInputType.number,
             ),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Reps: " +
-                    widget.exerciseData.exerciseLog.exercise.reps.toString(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Reps: " +
+                      widget.exerciseData.exerciseLog.exercise.reps.toString(),
+                ),
+                controller: repController,
+                keyboardType: TextInputType.number,
               ),
-              controller: repController,
-              keyboardType: TextInputType.number,
             ),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Weight: " +
-                    widget.exerciseData.exerciseLog.exercise.weight.toString() + "KG",
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Weight: " +
+                      widget.exerciseData.exerciseLog.exercise.weight
+                          .toString() +
+                      "KG",
+                ),
+                controller: weightController,
+                keyboardType: TextInputType.number,
               ),
-              controller: weightController,
-              keyboardType: TextInputType.number,
             ),
-            FloatingActionButton(
-              onPressed: () => addExerciseLog(_exerciseDataId),
-              tooltip: 'Add an exercise.',
-              child: Icon(Icons.update),
-            ),
+
           ],
         ),
       ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => addExerciseLog(_exerciseDataId),
+          tooltip: 'Add an exercise.',
+          child: Icon(Icons.save),
+        ),
     );
   }
 }

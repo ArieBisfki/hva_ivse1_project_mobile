@@ -32,9 +32,10 @@ class NewExerciseEvent extends WorkoutEvent {
 }
 
 class DeleteExerciseEvent extends WorkoutEvent {
-  const DeleteExerciseEvent(this.exercise);
+  const DeleteExerciseEvent(this.exercise, this.workoutLogId);
 
-  final Exercise exercise;
+  final int workoutLogId;
+  final ExerciseLog exercise;
 
   List<Object> get props => [exercise];
 }
