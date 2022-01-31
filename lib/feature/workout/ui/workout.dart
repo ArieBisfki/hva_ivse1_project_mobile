@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
-import 'package:ivse1_gymlife/common/local_database/local_database.dart';
 import 'package:ivse1_gymlife/common/route/routes.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
@@ -66,19 +66,25 @@ class _WorkoutPageState extends State<WorkoutPage> {
     exercisesForWorkout = state.toList();
   }
 
-  // deleteExercise(Exercise exercise) {
-  //   setState(() {
-  //     BlocProvider.of<WorkoutBloc>(context)
-  //         .add(DeleteExerciseEvent(exercise, _workoutLogId));
-  //   });
-  // }
-
-  // void deleteExerciseLog(int id) {
-  //   setState(() {
-  //     repo.deleteExercises(exercise, id);
-  //     BlocProvider.of<WorkoutBloc>(context).add(ResetExercise());
-  //   });
-  // }
+  /// deleteExerciseLog(int id)
+  /// This method removes and exercise from the workout
+  void deleteExerciseLog(ExerciseData exerciseData) {
+    ExerciseLog exerciseLog = ExerciseLog(
+        exercise: Exercise(
+            id: widget.exerciseData.exerciseLog.exercise.id,
+            category: widget.exerciseData.exerciseLog.exercise.category,
+            name: widget.exerciseData.exerciseLog.exercise.name,
+            sets: widget.exerciseData.exerciseLog.exercise.sets,
+            reps: widget.exerciseData.exerciseLog.exercise.reps,
+            weight: widget.exerciseData.exerciseLog.exercise.weight,
+            image: widget.exerciseData.exerciseLog.exercise.image,
+            description: widget.exerciseData.exerciseLog.exercise.description));
+    setState(() {
+      repo.deleteExercises(exerciseLog, exerciseData.id);
+      BlocProvider.of<WorkoutBloc>(context).add(ResetExercise());
+    });
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,15 +103,15 @@ class _WorkoutPageState extends State<WorkoutPage> {
         } else if (state is ExercisesLoadedState) {
           updateExercise(state.data);
           return WillPopScope(
-              onWillPop: () async {
-                if (isDialOpen.value) {
-                  isDialOpen.value = false;
-                  return false;
-                }
-                return true;
-              },
-              child: Scaffold(
-                  body: Container(
+            onWillPop: () async {
+              if (isDialOpen.value) {
+                isDialOpen.value = false;
+                return false;
+              }
+              return true;
+            },
+            child: Scaffold(
+              body: Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
                 child: Column(
@@ -150,123 +156,90 @@ class _WorkoutPageState extends State<WorkoutPage> {
                             physics: BouncingScrollPhysics(),
                             itemCount: value.length,
                             itemBuilder: (context, index) {
-                              return Card(
-                                child: ListTile(
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                        context, Routes.add_workout,
-                                        arguments: ExerciseData(
-                                            id: _workoutLogId,
-                                            exerciseLog: value[index]));
+                              return Slidable(
+                                key: UniqueKey(),
+                                actionPane: SlidableDrawerActionPane(),
+                                actionExtentRatio: 0.25,
+                                dismissal: SlidableDismissal(
+                                  child: SlidableDrawerDismissal(),
+                                  onDismissed: (actionType) {
+                                    _showSnackBar(
+                                        context,
+                                        actionType == SlideActionType.primary
+                                            ? 'Deleted'
+                                            : 'Dimiss Archive');
+                                    setState(() {
+                                      deleteExerciseLog(_exerciseDataId);
+                                    });
                                   },
-                                  title: Text(value[index].exercise.name),
-                                  subtitle: Text("Weight: " +
-                                      value[index].exercise.weight.toString() +
-                                      "\nSets:" +
-                                      value[index].exercise.sets.toString() +
-                                      "\nReps:" +
-                                      value[index].exercise.reps.toString() +
-                                      "\nDescription:" +
-                                      value[index].exercise.description),
-                                  trailing: IconButton(
-                                    icon: Icon(Icons.delete),
-                                    onPressed: () {
-                                      //deleteExercise(value[index].exercise);
-                                      repo.deleteExercises(value[index], _workoutLogId);
-                                      BlocProvider.of<WorkoutBloc>(context).add(ResetExercise());
-                                       //_showSnackBar(context, "Deleted");
-                                    },
+                                  onWillDismiss: (direction) => promptUser(),
+                                ),
+                                child: Container(
+                                  color: Colors.white,
+                                  child: ListTile(
+                                    isThreeLine: true,
+                                    title: Text(value[index].exercise.name),
+                                    subtitle: Text("Weight: " +
+                                        value[index]
+                                            .exercise
+                                            .weight
+                                            .toString() +
+                                        "\nSets:" +
+                                        value[index].exercise.sets.toString() +
+                                        "\nReps:" +
+                                        value[index].exercise.reps.toString() +
+                                        "\nDescription:" +
+                                        value[index].exercise.description),
+                                    trailing: IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () {
+                                        deleteExerciseLog(widget.exerciseData);
+                                        //_showSnackBar(context, "Deleted");
+                                      },
+                                    ),
                                   ),
                                 ),
+                                actions: <Widget>[
+                                  IconSlideAction(
+                                    caption: 'Swipe to delete →',
+                                    color: Colors.red,
+                                    icon: Icons.delete,
+                                    onTap: () =>
+                                        _showSnackBar(context, 'Deleted'),
+                                  ),
+                                ],
                               );
                             },
                           );
                         },
                       ),
                     ),
-
-                    // Expanded(
-                    //   child: ListView.builder(
-                    //     physics: BouncingScrollPhysics(),
-                    //     itemCount: workout.length,
-                    //     itemBuilder: (BuildContext context, int index) {
-                    //       return Slidable(
-                    //         key: UniqueKey(),
-                    //         actionPane: SlidableDrawerActionPane(),
-                    //         actionExtentRatio: 0.25,
-                    //         dismissal: SlidableDismissal(
-                    //           child: SlidableDrawerDismissal(),
-                    //           onDismissed: (actionType) {
-                    //             _showSnackBar(
-                    //                 context,
-                    //                 actionType == SlideActionType.primary
-                    //                     ? 'Deleted'
-                    //                     : 'Dimiss Archive');
-                    //             setState(() {
-                    //               workout.removeAt(index);
-                    //             });
-                    //           },
-                    //           onWillDismiss: (direction) => promptUser(),
-                    //         ),
-                    //         child: Container(
-                    //           color: Colors.white,
-                    //           child: ListTile(
-                    //             isThreeLine: true,
-                    //             leading: Container(
-                    //               width: 90.0,
-                    //               decoration: BoxDecoration(
-                    //                 image: DecorationImage(
-                    //                   image: AssetImage(
-                    //                       workout[index]['leading'][0]),
-                    //                   fit: BoxFit.cover,
-                    //                 ),
-                    //                 borderRadius: BorderRadius.circular(10.0),
-                    //               ),
-                    //             ),
-                    //             title: Text(workout[index]['title']),
-                    //             subtitle: Text(
-                    //                 '${workout[index]['subtitle']}\n${workout[index]['leading'][1]}'),
-                    //             trailing: workout[index]['trailing'],
-                    //           ),
-                    //         ),
-                    //         actions: <Widget>[
-                    //           IconSlideAction(
-                    //             caption: 'Swipe to delete →',
-                    //             color: Colors.red,
-                    //             icon: Icons.delete,
-                    //             onTap: () => _showSnackBar(context, 'Deleted'),
-                    //           ),
-                    //         ],
-                    //       );
-                    //     },
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
-                floatingActionButton: FloatingActionButton.extended(
-                  onPressed: () => {
-                    Navigator.pushNamed(context, Routes.add_workout,
-                        arguments: ExerciseData(
-                          id: _workoutLogId,
-                          exerciseLog: ExerciseLog(
-                            exercise: Exercise(
-                                id: 0,
-                                category: 0,
-                                name: "",
-                                description: "",
-                                image: "",
-                                sets: 0,
-                                reps: 0,
-                                weight: 0),
-                          ),
-                        ))
-                  },
-                  tooltip: 'Add an exercise',
-                  label: Text("Add exercise"),
-                  icon: Icon(Icons.add),
-                ),
+              floatingActionButton: FloatingActionButton.extended(
+                onPressed: () => {
+                  Navigator.pushNamed(context, Routes.add_workout,
+                      arguments: ExerciseData(
+                        id: _workoutLogId,
+                        exerciseLog: ExerciseLog(
+                          exercise: Exercise(
+                              id: 0,
+                              category: 0,
+                              name: "",
+                              description: "",
+                              image: "",
+                              sets: 0,
+                              reps: 0,
+                              weight: 0),
+                        ),
+                      ))
+                },
+                tooltip: 'Add an exercise',
+                label: Text("Add exercise"),
+                icon: Icon(Icons.add),
               ),
+            ),
           );
         } else if (state is WorkoutDataState &&
             state.dataState is StateLoading) {
@@ -305,7 +278,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                 onPressed: () {
                   // Dismiss the dialog and
                   // also dismiss the swiped item
-                  Navigator.of(context).pop(true);
+                  Navigator.of(context).pop(false);
                 },
               ),
               CupertinoDialogAction(

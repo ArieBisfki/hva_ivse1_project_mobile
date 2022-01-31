@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:ivse1_gymlife/common/http/response.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
@@ -33,7 +31,8 @@ class ExerciseLogRepository implements IWorkoutRepository {
   }
 
   @override
-  Future<DataResponse<int>> deleteExercises(ExerciseLog exercise, int? id) async {
+  Future<DataResponse<int>> deleteExercises(
+      ExerciseLog exercise, int? id) async {
     try {
       final WorkoutLog request = await dbAdapter.getWorkout(id!);
       request.exerciseLogs.remove(exercise);

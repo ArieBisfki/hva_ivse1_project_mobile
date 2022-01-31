@@ -27,7 +27,7 @@ class _AddWorkoutState extends State<AddWorkout> {
 
   //repository
   late final ExerciseLogRepository repo =
-      new ExerciseLogRepository(dbAdapter: adapter);
+  new ExerciseLogRepository(dbAdapter: adapter);
 
   //the text controllers to add a exercise
   final nameController = TextEditingController();
@@ -36,6 +36,8 @@ class _AddWorkoutState extends State<AddWorkout> {
   final repController = TextEditingController();
   final weightController = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
+  
   int _exerciseDataId = 0;
 
   Random random = new Random();
@@ -90,85 +92,127 @@ class _AddWorkoutState extends State<AddWorkout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add an exercise'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-        child: ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Exercise name: " +
-                      widget.exerciseData.exerciseLog.exercise.name,
-                ),
-                controller: nameController,
-                keyboardType: TextInputType.text,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Description: " +
-                      widget.exerciseData.exerciseLog.exercise.description,
-                ),
-                controller: descController,
-                keyboardType: TextInputType.text,
-                minLines: 3,
-                maxLines: 7,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Sets: " +
-                      widget.exerciseData.exerciseLog.exercise.sets.toString(),
-                ),
-                controller: setController,
-                keyboardType: TextInputType.number,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Reps: " +
-                      widget.exerciseData.exerciseLog.exercise.reps.toString(),
-                ),
-                controller: repController,
-                keyboardType: TextInputType.number,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Weight: " +
-                      widget.exerciseData.exerciseLog.exercise.weight
-                          .toString() +
-                      "KG",
-                ),
-                controller: weightController,
-                keyboardType: TextInputType.number,
-              ),
-            ),
-          ],
+        appBar: AppBar(
+          title: const Text('Add an exercise'),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => addExerciseLog(_exerciseDataId),
-        tooltip: 'Add an exercise',
-        child: Icon(Icons.save),
-      ),
+        body: Form(
+          key: _formKey,
+          //padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 8, vertical: 16),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "Exercise name: " +
+                        widget.exerciseData.exerciseLog.exercise.name,
+                  ),
+                  controller: nameController,
+                  keyboardType: TextInputType.text,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a name';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 8, vertical: 16),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "Description: " +
+                        widget.exerciseData.exerciseLog.exercise.description,
+                  ),
+                  controller: descController,
+                  keyboardType: TextInputType.text,
+                  minLines: 3,
+                  maxLines: 7,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 8, vertical: 16),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "Sets: " +
+                        widget.exerciseData.exerciseLog.exercise.sets
+                            .toString(),
+                  ),
+                  controller: setController,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter Sets';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 8, vertical: 16),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "Reps: " +
+                        widget.exerciseData.exerciseLog.exercise.reps
+                            .toString(),
+                  ),
+                  controller: repController,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter reps';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 8, vertical: 16),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "Weight: " +
+                        widget.exerciseData.exerciseLog.exercise.weight
+                            .toString() +
+                        "KG",
+                  ),
+                  controller: weightController,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter amount of Weight in KiloGrams (KG)';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                addExerciseLog(_exerciseDataId);
+              }
+            },
+    tooltip: 'Add an exercise',
+    child: Icon(Icons.save),
+    ),
     );
   }
 }
