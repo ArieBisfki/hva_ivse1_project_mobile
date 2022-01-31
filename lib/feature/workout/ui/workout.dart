@@ -71,8 +71,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
   void deleteExerciseLog(ExerciseData exerciseData) {
     setState(() async {
       await repo.deleteExercises(exerciseData.exerciseLog, exerciseData.id);
-      BlocProvider.of<WorkoutBloc>(context).add(ResetExercise());
     });
+    BlocProvider.of<WorkoutBloc>(context).add(ResetExercise());
   }
 
   @override
@@ -187,18 +187,15 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                         deleteExerciseLog(ExerciseData(
                                             id: _workoutLogId,
                                             exerciseLog: value[index]));
-                                        //_showSnackBar(context, "Deleted");
                                       },
                                     ),
                                   ),
                                 ),
                                 actions: <Widget>[
                                   IconSlideAction(
-                                    caption: 'Swipe to delete →',
+                                    caption: 'Swipe right to delete ->',
                                     color: Colors.red,
                                     icon: Icons.delete,
-                                    onTap: () =>
-                                        _showSnackBar(context, 'Deleted'),
                                   ),
                                 ],
                               );
@@ -271,7 +268,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                 onPressed: () {
                   // Dismiss the dialog and
                   // also dismiss the swiped item
-                  Navigator.of(context).pop(false);
+                  Navigator.of(context).pop(true);
                 },
               ),
               CupertinoDialogAction(
