@@ -3,6 +3,11 @@ class DataResponse<T> {
 
   DataResponse.success(this.data) : status = Status.Success;
 
+  DataResponse.error(this.message, {required this.error})
+      : status = Status.Error;
+
+  DataResponse.connectivityError() : status = Status.ConnectivityError;
+
   Status? status;
   T? data;
   String? message;

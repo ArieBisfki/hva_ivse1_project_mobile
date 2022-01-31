@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 
 final List<Map<String, dynamic>> workout = [
   {
@@ -62,3 +63,4 @@ final List<Map<String, dynamic>> workout = [
     'trailing': Icon(Icons.chevron_right, size: 25),
   },
 ];
+

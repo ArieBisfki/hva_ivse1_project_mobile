@@ -4,6 +4,9 @@ import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/recources/workoutLog_db_adapter.dart';
 import 'package:ivse1_gymlife/feature/calender/recources/workoutLog_repository_API.dart';
 import 'package:ivse1_gymlife/feature/login/recources/login_api.dart';
+import 'package:ivse1_gymlife/feature/workout/bloc/workout_bloc.dart';
+import 'package:ivse1_gymlife/feature/workout/resources/workout_adapter.dart';
+import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart';
 
 import 'common/route/route_generator.dart';
 import 'common/route/routes.dart';
@@ -34,7 +37,12 @@ class _AppState extends State<MyApp> {
           lazy: true,
         ),
         RepositoryProvider<LoginApi>(
-          create: (BuildContext context) => LoginApi(),
+          create: (BuildContext context) => LoginApi()
+          ),
+        RepositoryProvider<ExerciseLogRepository>(
+          create: (BuildContext context) => ExerciseLogRepository(
+            dbAdapter: ExerciseLogDbAdapter(),
+          ),
           lazy: true,
         ),
       ],
@@ -48,6 +56,11 @@ class _AppState extends State<MyApp> {
                   RepositoryProvider.of<WorkoutLogRepositoryAPI>(context),
               loginApi: RepositoryProvider.of<LoginApi>(context),
             ),
+          ),
+          BlocProvider<WorkoutBloc>(
+            create: (BuildContext context) => WorkoutBloc(
+                workoutRepository:
+                    RepositoryProvider.of<ExerciseLogRepository>(context)),
           ),
         ],
         child: MaterialApp(

@@ -1,38 +1,22 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:ivse1_gymlife/common/route/routes.dart';
+import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 
-class WorkoutCategoryScreen extends StatefulWidget {
-  const WorkoutCategoryScreen({Key? key}) : super(key: key);
-
-  @override
-  State<WorkoutCategoryScreen> createState() => _WorkoutCategoryScreenState();
-}
-
-class _WorkoutCategoryScreenState extends State<WorkoutCategoryScreen> {
-  List<String> someList = [
-    "Chest",
-    "Back",
-    "Legs",
-    "Core",
-    "Shoulders",
-    "Arms"
-  ];
+class ExercisePicker extends StatelessWidget {
+  const ExercisePicker({Key? key}) : super(key: key);
 
   List<Widget> _createChildren() {
-    return new List<Widget>.generate(someList.length, (int index) {
+    List<Exercise> specificExerciselist = [
+      Exercise(
+        id: 1, category: 1, name: "Kastzijn",
+        sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa'
+      )
+    ];
 
+    return new List<Widget>.generate(specificExerciselist.length, (int index) {
       return Card(
-        child: InkWell(
-          onTap: () {
-            Navigator.pushNamed(context, Routes.exercisepicker);
-          },
-          child: ListTile(
-               title: Text(someList[index].toString())
-          ),
-        ),
-      );
+          child: ListTile(title: Text(specificExerciselist[index].toString())));
     });
   }
 
@@ -40,7 +24,7 @@ class _WorkoutCategoryScreenState extends State<WorkoutCategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Exercise Categories'),
+        title: Text('Exercise List'),
         actions: [],
       ),
       body: SingleChildScrollView(
