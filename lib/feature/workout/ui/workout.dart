@@ -69,21 +69,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
   /// deleteExerciseLog(int id)
   /// This method removes and exercise from the workout
   void deleteExerciseLog(ExerciseData exerciseData) {
-    ExerciseLog exerciseLog = ExerciseLog(
-        exercise: Exercise(
-            id: widget.exerciseData.exerciseLog.exercise.id,
-            category: widget.exerciseData.exerciseLog.exercise.category,
-            name: widget.exerciseData.exerciseLog.exercise.name,
-            sets: widget.exerciseData.exerciseLog.exercise.sets,
-            reps: widget.exerciseData.exerciseLog.exercise.reps,
-            weight: widget.exerciseData.exerciseLog.exercise.weight,
-            image: widget.exerciseData.exerciseLog.exercise.image,
-            description: widget.exerciseData.exerciseLog.exercise.description));
-    setState(() {
-      repo.deleteExercises(exerciseLog, exerciseData.id);
+    setState(() async {
+      await repo.deleteExercises(exerciseData.exerciseLog, exerciseData.id);
       BlocProvider.of<WorkoutBloc>(context).add(ResetExercise());
     });
-    Navigator.pop(context);
   }
 
   @override
@@ -169,7 +158,9 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                             ? 'Deleted'
                                             : 'Dimiss Archive');
                                     setState(() {
-                                      deleteExerciseLog(_exerciseDataId);
+                                      deleteExerciseLog(ExerciseData(
+                                          id: _workoutLogId,
+                                          exerciseLog: value[index]));
                                     });
                                   },
                                   onWillDismiss: (direction) => promptUser(),
@@ -193,7 +184,9 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                     trailing: IconButton(
                                       icon: Icon(Icons.delete),
                                       onPressed: () {
-                                        deleteExerciseLog(widget.exerciseData);
+                                        deleteExerciseLog(ExerciseData(
+                                            id: _workoutLogId,
+                                            exerciseLog: value[index]));
                                         //_showSnackBar(context, "Deleted");
                                       },
                                     ),

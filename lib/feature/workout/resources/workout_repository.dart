@@ -32,13 +32,13 @@ class ExerciseLogRepository implements IWorkoutRepository {
 
   @override
   Future<DataResponse<int>> deleteExercises(
-      ExerciseLog exercise, int? id) async {
+      ExerciseLog exerciseLog, int? id) async {
     try {
-      final WorkoutLog request = await dbAdapter.getWorkout(id!);
-      request.exerciseLogs.remove(exercise);
-      //
-      // final Exercise request = await dbAdapter.getExercise(exercise.id!);
-      final int response = await dbAdapter.deleteExercise(request);
+      final WorkoutLog workoutLog = await dbAdapter.getWorkout(id!);
+      workoutLog.exerciseLogs.removeWhere(
+          (element) => element.exercise.id == exerciseLog.exercise.id);
+
+      final int response = await dbAdapter.deleteExercise(workoutLog);
 
       if (response == 0) {
         return DataResponse<int>.connectivityError();
