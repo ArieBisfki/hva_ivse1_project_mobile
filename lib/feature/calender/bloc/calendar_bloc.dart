@@ -9,6 +9,7 @@ import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:ivse1_gymlife/feature/calender/recources/workoutLog_repository_API.dart';
 import 'package:ivse1_gymlife/feature/calender/recources/workoutLog_repository_adapter.dart';
 import 'package:ivse1_gymlife/feature/calender/recources/workoutLog_repository_device.dart';
+import 'package:ivse1_gymlife/feature/login/recources/login_api.dart';
 
 part 'calendar_event.dart';
 part 'calendar_state.dart';
@@ -16,10 +17,12 @@ part 'calendar_state.dart';
 class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
   final WorkoutLogRepositoryDevice calendarDeviceRepository;
   final WorkoutLogRepositoryAPI calendarAPIRepository;
+  final LoginApi loginApi;
 
   CalendarBloc({
     required this.calendarDeviceRepository,
     required this.calendarAPIRepository,
+    required this.loginApi,
   }) : super(CalendarInitial());
 
   CalendarState get initialState => CalendarInitial();
@@ -42,9 +45,9 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
 
       // logged user uses api, free used stores on device
       WorkoutLogRepositoryAdapter repo = new WorkoutLogRepositoryAdapter(
-          calendarAPIRepository, calendarDeviceRepository);
+          calendarAPIRepository, calendarDeviceRepository, loginApi);
       final Either<DataResponseE, DataResponse<List<WorkoutLog>>> result =
-          await repo.getWorkouts();
+          await repo.getWorkouts(event.loggedIn);
 
       if (result.isRight) {
         _workouts = result.right.data!;
@@ -72,12 +75,12 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     }
     if (event is NewCalendarEvent) {
       WorkoutLogRepositoryAdapter repo = new WorkoutLogRepositoryAdapter(
-          calendarAPIRepository, calendarDeviceRepository);
+          calendarAPIRepository, calendarDeviceRepository, loginApi);
       final Either<DataResponseE, DataResponse<dynamic>> result =
           await repo.createWorkout(event.workout);
 
       final Either<DataResponseE, DataResponse<List<WorkoutLog>>> recall =
-          await repo.getWorkouts();
+          await repo.getWorkouts(event.loggedIn);
 
       if (recall.isRight) {
         _workouts = recall.right.data!;
@@ -95,7 +98,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     }
     if (event is DeleteCalendarEvent) {
       WorkoutLogRepositoryAdapter repo = new WorkoutLogRepositoryAdapter(
-          calendarAPIRepository, calendarDeviceRepository);
+          calendarAPIRepository, calendarDeviceRepository, loginApi);
       final Either<DataResponseE, DataResponse<int>> result =
           await repo.deleteWorkout(event.workout);
 

@@ -9,7 +9,7 @@ import 'package:ivse1_gymlife/feature/login/recources/api.dart';
 import 'package:ivse1_gymlife/feature/login/models/login_response_S.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class RealApi implements Api {
+class LoginApi implements Api {
   // Create device storage
   final storage = new FlutterSecureStorage();
   static const String URL = "http://10.0.2.2:6060/auth";
@@ -87,15 +87,18 @@ class RealApi implements Api {
         'Content-type': 'application/json',
         'Accept': 'application/json',
       };
-
-      final String refreshToken = storage.read(key: 'refreshToken').toString();
+      String? refreshToken = await storage.read(key: 'refreshToken');
+      if (refreshToken == null) {
+        return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
+      }
+      print(refreshToken.toString());
 
       final response =
           await InterceptedHttp.build(interceptors: [LoggerInterceptor()])
               .post(Uri.parse('$URL/login'),
                   headers: requestHeaders,
                   body: jsonEncode({
-                    "refreshToken": refreshToken,
+                    "refreshToken": refreshToken.toString(),
                   }));
 
       switch (response.statusCode) {
@@ -105,20 +108,20 @@ class RealApi implements Api {
 
           loginResponse.accessToken = jsonResponse['accessToken'];
           loginResponse.refreshToken = jsonResponse['refreshToken'];
-          loginResponse.accessTokenExpiresIn =
-              jsonResponse['accessTokenExpiresIn'];
-          loginResponse.refreshTokenExpiresIn =
-              jsonResponse['refreshTokenExpiresIn'];
+          // loginResponse.accessTokenExpiresIn =
+          //     jsonResponse['accessTokenExpiresIn'];
+          // loginResponse.refreshTokenExpiresIn =
+          //     jsonResponse['refreshTokenExpiresIn'];
 
           // store token
           storage.write(key: "accessToken", value: loginResponse.accessToken);
           storage.write(key: "refreshToken", value: loginResponse.refreshToken);
-          storage.write(
-              key: "accessTokenExpiresIn",
-              value: loginResponse.accessTokenExpiresIn);
-          storage.write(
-              key: "refreshTokenExpiresIn",
-              value: loginResponse.refreshTokenExpiresIn);
+          // storage.write(
+          //     key: "accessTokenExpiresIn",
+          //     value: loginResponse.accessTokenExpiresIn);
+          // storage.write(
+          //     key: "refreshTokenExpiresIn",
+          //     value: loginResponse.refreshTokenExpiresIn);
           return Right(loginResponse);
         case 401:
           return Left(LoginCredsResponseE.INVALID_CREDENTIALS);

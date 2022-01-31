@@ -8,7 +8,10 @@ abstract class Api {
     return Future.value(); // TODO
   }
 
-  loginWithRefreshToken() async {}
+  Future<Either<LoginCredsResponseE, LoginResponseS>>
+      loginWithRefreshToken() async {
+    return Future.value(); // TODO
+  }
 
   Future<Either<LoginCredsResponseE, LoginResponseS>> register(
       String username,
@@ -21,8 +24,4 @@ abstract class Api {
   }
 
   forgotPassword(String username) async {}
-
-  // Future<LoginResponse> resetPassword(String password) async {
-  //   return LoginResponse("", "");
-  // }
 }

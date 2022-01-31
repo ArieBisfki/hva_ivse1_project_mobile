@@ -4,22 +4,22 @@ import 'package:ivse1_gymlife/common/base/data_state.dart';
 import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
+import 'package:ivse1_gymlife/feature/calender/models/login_info.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:ivse1_gymlife/feature/calender/ui/workoutLogs_overview.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Calendar extends StatefulWidget {
-  Calendar({Key? key, required this.loggedIn}) : super(key: key);
+  Calendar({Key? key, required this.loginInfo}) : super(key: key);
 
-  final bool loggedIn;
+  final LoginInfo loginInfo;
 
   @override
   _State createState() => _State();
 }
 
 // TODO extract widgets
-// TODO write tests
 // TODO improve code?
 // TODO think about security
 
@@ -36,6 +36,7 @@ class _State extends State<Calendar> {
   DateTime? _rangeEnd;
   bool _addWorkoutButton = true;
   bool _loggedIn = false;
+  bool _ready = false;
 
   var isDialOpen = ValueNotifier<bool>(false);
 
@@ -44,7 +45,9 @@ class _State extends State<Calendar> {
   @override
   void initState() {
     super.initState();
-    _loggedIn = widget.loggedIn;
+    _loggedIn = widget.loginInfo.loggenIn;
+    _ready = widget.loginInfo.ready;
+
     selectedWorkouts = [];
     _selectedDay = _focusedDay;
     _selectedWorkouts = ValueNotifier(_getWorkoutLogsForDay(_selectedDay!));
@@ -135,7 +138,7 @@ class _State extends State<Calendar> {
     );
 
     BlocProvider.of<CalendarBloc>(context)
-        .add(NewCalendarEvent(getWorkoutItem()));
+        .add(NewCalendarEvent(getWorkoutItem(), _loggedIn));
     BlocProvider.of<CalendarBloc>(context).add(GetWorkoutsEvent());
 
     setState(() {
@@ -185,8 +188,10 @@ class _State extends State<Calendar> {
       },
       builder: (context, state) {
         if (state is CalendarInitial) {
-          BlocProvider.of<CalendarBloc>(context)
-              .add(GetCalendarEvent(widget.loggedIn));
+          _ready
+              ? BlocProvider.of<CalendarBloc>(context)
+                  .add(GetCalendarEvent(_loggedIn))
+              : _ready = false;
         } else if (state is WorkoutsLoadedState) {
           updateCalendar(state.data);
 
@@ -340,13 +345,45 @@ class _State extends State<Calendar> {
           );
         } else if (state is CalendarDataState &&
             state.dataState is StateError) {
-          Navigator.popAndPushNamed(context, "/login");
-          logout();
-          return SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: 250,
-            child: const SizedBox.shrink(),
-          );
+          //Navigator.pushNamed(context, "/login");
+          //logout();
+          return Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                title: Text('Gymlife'),
+                automaticallyImplyLeading: false,
+              ),
+              body: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 30.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'please go back',
+                            style: TextStyle(fontSize: 17.0),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: IconButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          padding: EdgeInsets.all(30.0),
+                          icon:
+                              Icon(Icons.close, color: Colors.black, size: 30)),
+                    ),
+                  ],
+                ),
+              ));
         }
         return const SizedBox.shrink();
       },

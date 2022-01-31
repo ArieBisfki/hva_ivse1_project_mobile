@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/recources/workoutLog_db_adapter.dart';
 import 'package:ivse1_gymlife/feature/calender/recources/workoutLog_repository_API.dart';
+import 'package:ivse1_gymlife/feature/login/recources/login_api.dart';
 
 import 'common/route/route_generator.dart';
 import 'common/route/routes.dart';
@@ -32,15 +33,21 @@ class _AppState extends State<MyApp> {
           create: (BuildContext context) => WorkoutLogRepositoryAPI(),
           lazy: true,
         ),
+        RepositoryProvider<LoginApi>(
+          create: (BuildContext context) => LoginApi(),
+          lazy: true,
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider<CalendarBloc>(
             create: (BuildContext context) => CalendarBloc(
-                calendarDeviceRepository:
-                    RepositoryProvider.of<WorkoutLogRepositoryDevice>(context),
-                calendarAPIRepository:
-                    RepositoryProvider.of<WorkoutLogRepositoryAPI>(context)),
+              calendarDeviceRepository:
+                  RepositoryProvider.of<WorkoutLogRepositoryDevice>(context),
+              calendarAPIRepository:
+                  RepositoryProvider.of<WorkoutLogRepositoryAPI>(context),
+              loginApi: RepositoryProvider.of<LoginApi>(context),
+            ),
           ),
         ],
         child: MaterialApp(

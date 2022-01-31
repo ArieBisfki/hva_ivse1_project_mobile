@@ -23,9 +23,10 @@ class GetWorkoutsEvent extends CalendarEvent {
 }
 
 class NewCalendarEvent extends CalendarEvent {
-  const NewCalendarEvent(this.workout);
+  const NewCalendarEvent(this.workout, this.loggedIn);
 
   final WorkoutLog workout;
+  final bool loggedIn;
 
   List<Object> get props => [workout];
 }

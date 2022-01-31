@@ -1,10 +1,12 @@
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:ivse1_gymlife/common/route/routes.dart';
 import 'package:ivse1_gymlife/common/widget/costum_textfield.dart';
+import 'package:ivse1_gymlife/feature/calender/models/login_info.dart';
 import 'package:ivse1_gymlife/feature/login/models/login_creds_response_E.dart';
 import 'package:ivse1_gymlife/feature/login/models/login_response_S.dart';
-import 'package:ivse1_gymlife/feature/login/recources/real_api.dart';
+import 'package:ivse1_gymlife/feature/login/recources/login_api.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -19,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Create storage
   final storage = new FlutterSecureStorage();
-  final RealApi api = new RealApi();
+  final LoginApi api = new LoginApi();
 
   bool _validate = false;
 
@@ -69,7 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
             return;
         }
       }
-      Navigator.popAndPushNamed(context, "/", arguments: true);
+      Navigator.pushNamed(context, "/",
+          arguments: LoginInfo(loggenIn: true, ready: true));
     } else {
       _validate = true;
     }
@@ -171,7 +174,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       MaterialStateProperty.all<Color>(Colors.blue),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, "/landing");
+                  //Navigator.pushNamed(context, "/landing");
+                  Navigator.pushNamed(context, Routes.landing,
+                      arguments: LoginInfo(loggenIn: false, ready: true));
                 },
                 child: Text(
                   "Continue without account",

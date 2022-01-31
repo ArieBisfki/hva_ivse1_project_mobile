@@ -1,9 +1,10 @@
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:ivse1_gymlife/common/widget/costum_textfield.dart';
+import 'package:ivse1_gymlife/feature/calender/models/login_info.dart';
 import 'package:ivse1_gymlife/feature/login/models/login_creds_response_E.dart';
 import 'package:ivse1_gymlife/feature/login/models/login_response_S.dart';
-import 'package:ivse1_gymlife/feature/login/recources/real_api.dart';
+import 'package:ivse1_gymlife/feature/login/recources/login_api.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -23,7 +24,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _validate = false;
 
   register() async {
-    RealApi api = new RealApi();
+    LoginApi api = new LoginApi();
 
     if (nameController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
@@ -47,7 +48,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ));
             return;
         }
-        Navigator.popAndPushNamed(context, "/", arguments: true);
+        Navigator.popAndPushNamed(context, "/",
+            arguments: LoginInfo(loggenIn: true, ready: true));
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Yay! Register succes'),
         ));
