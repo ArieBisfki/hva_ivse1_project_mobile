@@ -19,10 +19,6 @@ class Calendar extends StatefulWidget {
   _State createState() => _State();
 }
 
-// TODO extract widgets
-// TODO improve code?
-// TODO think about security
-
 class _State extends State<Calendar> {
   late ValueNotifier<List<WorkoutLog>> _selectedWorkouts;
   List<WorkoutLog> selectedWorkouts = [];
@@ -45,6 +41,7 @@ class _State extends State<Calendar> {
   @override
   void initState() {
     super.initState();
+    BlocProvider.of<CalendarBloc>(context).add(ResetCalendar());
     _loggedIn = widget.loginInfo.loggenIn;
     _ready = widget.loginInfo.ready;
 
@@ -142,7 +139,6 @@ class _State extends State<Calendar> {
     BlocProvider.of<CalendarBloc>(context).add(GetWorkoutsEvent());
 
     setState(() {
-      //workoutLogsForDay = _getWorkoutLogsForDay(_selectedDay!);
       _selectedWorkouts.value = _getWorkoutLogsForDay(_selectedDay!);
     });
   }
@@ -188,10 +184,10 @@ class _State extends State<Calendar> {
       },
       builder: (context, state) {
         if (state is CalendarInitial) {
-          _ready
-              ? BlocProvider.of<CalendarBloc>(context)
-                  .add(GetCalendarEvent(_loggedIn))
-              : _ready = false;
+          if (_ready) {
+            BlocProvider.of<CalendarBloc>(context)
+                .add(GetCalendarEvent(_loggedIn));
+          }
         } else if (state is WorkoutsLoadedState) {
           updateCalendar(state.data);
 

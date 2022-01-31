@@ -31,8 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
     //attemptRefreshTokenLogin();
   }
 
-  // TODO protected client voor elk scherm aanroepen
-
   attemptRefreshTokenLogin() async {
     final Either<LoginCredsResponseE, LoginResponseS> loginResponse =
         await api.loginWithRefreshToken();
