@@ -48,7 +48,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ));
             return;
         }
-        Navigator.popAndPushNamed(context, "/",
+        Navigator.popAndPushNamed(context, "/login",
             arguments: LoginInfo(loggenIn: true, ready: true));
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Yay! Register succes'),

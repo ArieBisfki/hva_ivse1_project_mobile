@@ -82,7 +82,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       final Either<DataResponseE, DataResponse<List<WorkoutLog>>> recall =
           await repo.getWorkouts(event.loggedIn);
 
-      if (recall.isRight) {
+      if (recall.isRight && result.isRight) {
         _workouts = recall.right.data!;
         switch (result.right.status) {
           case Status.Loading:
@@ -94,6 +94,10 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
             break;
           default:
         }
+      }
+
+      if (result.isLeft) {
+        yield CalendarDataState(StateError("error"));
       }
     }
     if (event is DeleteCalendarEvent) {

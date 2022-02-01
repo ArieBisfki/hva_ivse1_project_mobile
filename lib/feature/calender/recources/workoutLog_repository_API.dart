@@ -17,9 +17,12 @@ class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
     WorkoutLog workout,
   ) async {
     try {
+      String? accessToken = await storage.read(key: 'accessToken');
+
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
         'Accept': 'application/json',
+        'authorization': 'Bearer ' + accessToken.toString(),
       };
 
       final response =
@@ -28,14 +31,24 @@ class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
                   headers: requestHeaders,
                   body: jsonEncode({
                     "date": workout.date,
-                    "exerciseLogs": workout.exerciseLogs,
+                    // "exerciseLogs": workout.exerciseLogs,
+                    "exerciseLogs": {
+                      "exercise": {"id": 23},
+                      "sets": [
+                        {"reps": 8, "weight": 100},
+                        {"reps": 8, "weight": 100},
+                        {"reps": 8, "weight": 100}
+                      ]
+                    },
                   }));
 
       switch (response.statusCode) {
         case 200:
           var jsonResponse = jsonDecode(response.body);
-          var workoutLog =
-              WorkoutLog(exerciseLogs: [], id: jsonResponse["id"], date: "");
+          var workoutLog = WorkoutLog(
+              exerciseLogs: jsonResponse["exerciseLogs"],
+              id: jsonResponse["id"],
+              date: jsonResponse["date"]);
           return Right(DataResponse.success(workoutLog.id));
         case 401:
           return Left(DataResponseE.INVALID_CREDENTIALS);
@@ -53,7 +66,6 @@ class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
       getWorkouts() async {
     try {
       String? accessToken = await storage.read(key: 'accessToken');
-      if (accessToken == null) {}
 
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
@@ -70,15 +82,18 @@ class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
       switch (response.statusCode) {
         case 200:
           var jsonResponse = jsonDecode(response.body);
+
+          List<dynamic> logs = jsonResponse['workoutLogs'];
           List<WorkoutLog> workouts = [];
 
-          workouts = jsonResponse
-              .map((item) => {
-                    item.exerciseLogs = jsonResponse['workoutLogs'],
-                    item.id = jsonResponse['workoutLogs'],
-                    item.date = jsonResponse['workoutLogs'],
-                  })
-              .toList();
+          if (logs.isEmpty) {
+            // cant read/map an empty json list, so return an empty list
+            return Right(DataResponse.success(workouts));
+          }
+
+          var logs2 = jsonResponse.map((e) => WorkoutLog.fromJson(e)).toList();
+
+          workouts = logs2;
 
           return Right(DataResponse.success(workouts));
         case 401:
@@ -96,12 +111,33 @@ class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
   Future<Either<DataResponseE, DataResponse<int>>> deleteWorkout(
     WorkoutLog workout,
   ) async {
-    if (workout.id == null) {
-      if (workout.id!.isEven) {
-        return await Right(DataResponse.loading("fake"));
+    try {
+      int? id = workout.id;
+      String? accessToken = await storage.read(key: 'accessToken');
+
+      Map<String, String> requestHeaders = {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+        'authorization': 'Bearer ' + accessToken.toString(),
+      };
+
+      final response =
+          await InterceptedHttp.build(interceptors: [LoggerInterceptor()])
+              .delete(Uri.parse('$URL/$id'), headers: requestHeaders);
+
+      switch (response.statusCode) {
+        case 200:
+          return Right(DataResponse.success(1));
+        case 401:
+          return Left(DataResponseE.INVALID_CREDENTIALS);
+        case 500:
+          return Left(DataResponseE.INTERNAL_SERVER_ERROR);
+        default:
+          return Left(DataResponseE.INTERNAL_SERVER_ERROR);
       }
+    } catch (e) {
+      return Left(DataResponseE.INTERNAL_SERVER_ERROR);
     }
-    return Left(DataResponseE.INTERNAL_SERVER_ERROR);
   }
 
   Future<Either<DataResponseE, DataResponse<WorkoutLog>>> getWorkout(

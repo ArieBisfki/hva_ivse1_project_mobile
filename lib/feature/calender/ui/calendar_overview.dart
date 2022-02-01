@@ -371,7 +371,7 @@ class _State extends State<Calendar> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'please go back',
+                            'Please go back',
                             style: TextStyle(fontSize: 17.0),
                           ),
                         ],

@@ -91,7 +91,6 @@ class LoginApi implements Api {
       if (refreshToken == null) {
         return Left(LoginCredsResponseE.INTERNAL_SERVER_ERROR);
       }
-      print(refreshToken.toString());
 
       final response =
           await InterceptedHttp.build(interceptors: [LoggerInterceptor()])
