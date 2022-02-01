@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
@@ -104,12 +105,17 @@ class _AddWorkoutState extends State<AddWorkout> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
               child: TextFormField(
                 decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.accessibility_sharp,
+                    color: Colors.grey,
+                  ),
                   border: OutlineInputBorder(),
                   labelText: "Exercise name: " +
                       widget.exerciseData.exerciseLog.exercise.name,
                 ),
                 controller: nameController,
                 keyboardType: TextInputType.text,
+                inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a name';
@@ -122,6 +128,10 @@ class _AddWorkoutState extends State<AddWorkout> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
               child: TextFormField(
                 decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.description,
+                    color: Colors.grey,
+                  ),
                   border: OutlineInputBorder(),
                   labelText: "Description: " +
                       widget.exerciseData.exerciseLog.exercise.description,
@@ -147,6 +157,7 @@ class _AddWorkoutState extends State<AddWorkout> {
                       widget.exerciseData.exerciseLog.exercise.sets.toString(),
                 ),
                 controller: setController,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -165,6 +176,7 @@ class _AddWorkoutState extends State<AddWorkout> {
                       widget.exerciseData.exerciseLog.exercise.reps.toString(),
                 ),
                 controller: repController,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -182,9 +194,10 @@ class _AddWorkoutState extends State<AddWorkout> {
                   labelText: "Weight: " +
                       widget.exerciseData.exerciseLog.exercise.weight
                           .toString() +
-                      "KG",
+                      " KG",
                 ),
                 controller: weightController,
+                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?\.?\d{0,1}'))],
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {

@@ -36,7 +36,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
   List<ExerciseLog> exercisesForWorkout = [];
   List<ExerciseLog> selectedExercise = [];
   int _workoutLogId = 0;
-  int _exerciseDataId = 0;
 
   List<ExerciseLog> get list => exercisesForWorkout;
 
@@ -48,7 +47,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
     selectedExercise = [];
     _selectedExercise = ValueNotifier(_getExerciseForWorkout());
     _workoutLogId = widget.workoutLog.id!;
-    _exerciseDataId = widget.exerciseData.id!;
   }
 
   List<ExerciseLog> _getExerciseForWorkout() {
@@ -84,8 +82,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
   void deleteExerciseLog(ExerciseData exerciseData) {
     setState(() async {
       await repo.deleteExercises(exerciseData.exerciseLog, exerciseData.id);
+      BlocProvider.of<WorkoutBloc>(context).add(ResetExercise());
     });
-    BlocProvider.of<WorkoutBloc>(context).add(ResetExercise());
   }
 
   @override
@@ -179,27 +177,49 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                 ),
                                 child: Container(
                                   color: Colors.white,
-                                  child: ListTile(
-                                    isThreeLine: true,
-                                    title: Text(value[index].exercise.name),
-                                    subtitle: Text("Weight: " +
-                                        value[index]
-                                            .exercise
-                                            .weight
-                                            .toString() +
-                                        "\nSets:" +
-                                        value[index].exercise.sets.toString() +
-                                        "\nReps:" +
-                                        value[index].exercise.reps.toString() +
-                                        "\nDescription:" +
-                                        value[index].exercise.description),
-                                    trailing: IconButton(
-                                      icon: Icon(Icons.delete),
-                                      onPressed: () {
-                                        deleteExerciseLog(ExerciseData(
-                                            id: _workoutLogId,
-                                            exerciseLog: value[index]));
-                                      },
+                                  child: Tooltip(
+                                    message: 'Swipe right to delete!',
+                                    showDuration: const Duration(seconds: 2),
+                                    waitDuration: const Duration(seconds: 0),
+                                    child: Card(
+                                      elevation: 4,
+                                      shadowColor: Colors.black,
+                                      child: ListTile(
+                                        isThreeLine: true,
+                                        leading: Icon(
+                                          Icons.accessibility_sharp,
+                                          color: Colors.grey,
+                                        ),
+                                        title: Text(value[index].exercise.name,
+                                          style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                        subtitle: Text("Description:" +
+                                            value[index].exercise.description +
+                                            "\nSets:" +
+                                            value[index]
+                                                .exercise
+                                                .sets
+                                                .toString() +
+                                            "\nReps:" +
+                                            value[index]
+                                                .exercise
+                                                .reps
+                                                .toString() +
+                                            "\nWeight: " +
+                                            value[index]
+                                                .exercise
+                                                .weight
+                                                .toString() +
+                                            " KG"),
+                                        // trailing: IconButton(
+                                        //   icon: Icon(Icons.delete),
+                                        //   onPressed: () {
+                                        //     deleteExerciseLog(ExerciseData(
+                                        //         id: _workoutLogId,
+                                        //         exerciseLog: value[index]));
+                                        //   },
+                                        // ),
+                                      ),
                                     ),
                                   ),
                                 ),
