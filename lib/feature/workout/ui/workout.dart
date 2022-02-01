@@ -192,16 +192,16 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                           color: Colors.grey,
                                         ),
                                         title: Text(value[index].exercise.name,
-                                          style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
-                                        subtitle: Text("Description:" +
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        subtitle: Text("Description: " +
                                             value[index].exercise.description +
-                                            "\nSets:" +
+                                            "\nSets: " +
                                             value[index]
                                                 .exercise
                                                 .sets
                                                 .toString() +
-                                            "\nReps:" +
+                                            "\nReps: " +
                                             value[index]
                                                 .exercise
                                                 .reps

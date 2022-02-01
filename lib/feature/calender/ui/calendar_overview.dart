@@ -73,7 +73,7 @@ class _State extends State<Calendar> {
   }
 
   WorkoutLog getWorkoutItem() {
-    // create with empty workout format
+    // create example workout
     Exercise exercise = new Exercise(
       id: 1,
       category: 2,

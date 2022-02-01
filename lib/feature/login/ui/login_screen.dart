@@ -54,7 +54,11 @@ class _LoginScreenState extends State<LoginScreen> {
   login() async {
     if (nameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       final Either<LoginCredsResponseE, LoginResponseS> loginResponse =
-          await api.login("Kai", "Yeetyeet1!");
+          //await api.login("Kai", "Yeetyeet1!");
+          await api.login(
+        nameController.text.toString(),
+        passwordController.text.toString(),
+      );
       if (api.responseIsError(loginResponse)) {
         switch (loginResponse.left) {
           case LoginCredsResponseE.INVALID_CREDENTIALS:
@@ -101,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     CostumTextField(
                         controller: nameController,
                         validate: _validate,
-                        text: "User name"),
+                        text: "Mail Adress"),
                     CostumTextField(
                         controller: passwordController,
                         validate: _validate,

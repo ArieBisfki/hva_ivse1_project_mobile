@@ -32,8 +32,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
         firstnameController.text.isNotEmpty &&
         lastnameController.text.isNotEmpty) {
       final Either<LoginCredsResponseE, LoginResponseS> registerResponse =
-          await api.register("Kai", "Yeetyeet1!", "Kaivandenbroek@hotmail.com",
-              "Kai", "Broek", "van den");
+          // await api.register("Kai", "Yeetyeet1!", "Kaivandenbroek@hotmail.com",
+          //     "Kai", "Broek", "van den");
+          await api.register(
+        nameController.text.toString(),
+        passwordController.text.toString(),
+        emailController.text.toString(),
+        firstnameController.text.toString(),
+        lastnameController.text.toString(),
+        prefixController.text.toString(),
+      );
 
       if (api.responseIsError(registerResponse)) {
         switch (registerResponse) {
