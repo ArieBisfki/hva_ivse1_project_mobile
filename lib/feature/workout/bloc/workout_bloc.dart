@@ -4,7 +4,6 @@ import 'package:ivse1_gymlife/common/base/data_state.dart';
 import 'package:ivse1_gymlife/common/http/response.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
-import 'package:ivse1_gymlife/feature/workout/models/exercise_data.dart';
 import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart';
 
 part 'workout_event.dart';
@@ -63,8 +62,8 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
       yield ExercisesLoadedState(_exercises);
     }
     if (event is NewExerciseEvent) {
-      final DataResponse<dynamic> result =
-          await workoutRepository.createExercise(event.exercise, event.workoutLogId);
+      final DataResponse<dynamic> result = await workoutRepository
+          .createExercise(event.exercise, event.workoutLogId);
       final DataResponse<List<ExerciseLog>> recall =
           await workoutRepository.getExercises(event.workoutLogId);
 
@@ -86,8 +85,8 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
       }
     }
     if (event is DeleteExerciseEvent) {
-      final DataResponse<dynamic> result =
-          await workoutRepository.deleteExercises(event.exercise, event.workoutLogId);
+      final DataResponse<dynamic> result = await workoutRepository
+          .deleteExercises(event.exercise, event.workoutLogId);
 
       _exercises.remove(event.exercise);
 

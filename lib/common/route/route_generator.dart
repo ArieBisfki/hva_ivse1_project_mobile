@@ -1,4 +1,3 @@
-import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:ivse1_gymlife/common/route/routes.dart';
 import 'package:ivse1_gymlife/feature/calender/models/login_info.dart';
@@ -6,9 +5,6 @@ import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:ivse1_gymlife/feature/calender/ui/calendar_overview.dart';
-import 'package:ivse1_gymlife/feature/login/models/login_creds_response_E.dart';
-import 'package:ivse1_gymlife/feature/login/models/login_response_S.dart';
-import 'package:ivse1_gymlife/feature/login/recources/login_api.dart';
 import 'package:ivse1_gymlife/feature/login/ui/forgot_password.dart';
 import 'package:ivse1_gymlife/feature/login/ui/login_screen.dart';
 import 'package:ivse1_gymlife/feature/login/ui/signup_screen.dart';
@@ -21,7 +17,6 @@ class RouteGenerator {
   static _authGuard() async {
     return true;
 
-    // TODO
     /*
       wordt al aangeroepen bij start
       wordt ook aangeroepen bij niet ingelogde users

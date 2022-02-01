@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:ivse1_gymlife/common/local_database/local_database.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
-import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:sqflite/sqflite.dart';
 

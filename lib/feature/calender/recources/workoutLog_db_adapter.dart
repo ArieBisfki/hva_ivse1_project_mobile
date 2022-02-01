@@ -25,9 +25,4 @@ class WorkoutLogDbAdapter {
         (await db.query("workouts", where: "id = $id")) as WorkoutLog;
     return queryResult;
   }
-
-  // updateWorkout(WorkoutLog workout) async { // TODO
-  //   final Database db = await LocalDatabase().db;
-  //    db.update("workouts", workout, where: "id = ${workout.id}");
-  // }
 }

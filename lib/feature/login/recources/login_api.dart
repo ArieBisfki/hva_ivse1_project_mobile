@@ -93,7 +93,6 @@ class LoginApi implements Api {
       }
       print(refreshToken.toString());
 
-// TODO code 500
       final response =
           await InterceptedHttp.build(interceptors: [LoggerInterceptor()])
               .post(Uri.parse('$URL/login'),
@@ -109,6 +108,7 @@ class LoginApi implements Api {
 
           loginResponse.accessToken = jsonResponse['accessToken'];
           loginResponse.refreshToken = jsonResponse['refreshToken'];
+          // TODO ask arie klopt token key naam wel?
           // loginResponse.accessTokenExpiresIn =
           //     jsonResponse['accessTokenExpiresIn'];
           // loginResponse.refreshTokenExpiresIn =

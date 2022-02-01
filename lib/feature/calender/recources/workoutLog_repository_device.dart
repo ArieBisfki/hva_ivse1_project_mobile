@@ -11,9 +11,6 @@ class WorkoutLogRepositoryDevice implements IWorkoutLogRepositoryDevice {
 
   final WorkoutLogDbAdapter dbAdapter;
 
-  // TODO insert authorisation
-  // TODO dp injection
-
   @override
   Future<Either<DataResponseE, DataResponse<int>>> createWorkout(
     WorkoutLog workout,

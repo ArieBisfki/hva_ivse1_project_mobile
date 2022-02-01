@@ -66,6 +66,19 @@ class _WorkoutPageState extends State<WorkoutPage> {
     exercisesForWorkout = state.toList();
   }
 
+  String transformCategory(int id) {
+    switch (id) {
+      case 1:
+        return "Cardio";
+      case 2:
+        return "Strength";
+      case 3:
+        return "Agility";
+      default:
+        return "Strength";
+    }
+  }
+
   /// deleteExerciseLog(int id)
   /// This method removes and exercise from the workout
   void deleteExerciseLog(ExerciseData exerciseData) {
@@ -129,9 +142,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
                           ),
                           Text(
                             'Type: ' +
-                                widget.workoutLog.exerciseLogs.first.exercise
-                                    .category
-                                    .toString(),
+                                transformCategory(widget.workoutLog.exerciseLogs
+                                    .first.exercise.category),
                             style: TextStyle(fontSize: 17.0),
                           )
                         ],

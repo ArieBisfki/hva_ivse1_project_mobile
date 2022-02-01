@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 
 class ExerciseData {

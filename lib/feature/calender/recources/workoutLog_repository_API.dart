@@ -52,14 +52,13 @@ class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
   Future<Either<DataResponseE, DataResponse<List<WorkoutLog>>>>
       getWorkouts() async {
     try {
-      String? refreshToken = await storage.read(key: 'refreshToken');
-      if (refreshToken == null) {}
-      print(refreshToken.toString());
+      String? accessToken = await storage.read(key: 'accessToken');
+      if (accessToken == null) {}
 
       Map<String, String> requestHeaders = {
         'Content-type': 'application/json',
         'Accept': 'application/json',
-        'authorization': 'bearer ' + refreshToken.toString(),
+        'authorization': 'Bearer ' + accessToken.toString(),
       };
 
       final response =
@@ -94,7 +93,6 @@ class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
     }
   }
 
-// TODO not implemented
   Future<Either<DataResponseE, DataResponse<int>>> deleteWorkout(
     WorkoutLog workout,
   ) async {

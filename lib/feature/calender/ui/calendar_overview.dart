@@ -73,19 +73,20 @@ class _State extends State<Calendar> {
 
   WorkoutLog getWorkoutItem() {
     // create with empty workout format
-    // TODO personalize format
     Exercise exercise = new Exercise(
-      id: 1, category: 1, name: "Kastzijn", sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa'
-    );
-    Exercise exercise2 = new Exercise(
-      id: 2, category: 2, name: "bench", sets: 1, description: 'aa', reps: 1, weight: 2, image: 'aa'
+      id: 1,
+      category: 2,
+      name: "Squats",
+      sets: 3,
+      description:
+          ' A strength exercise in which the trainee lowers their hips from a standing position and then stands back up',
+      reps: 12,
+      weight: 40,
+      image: 'none',
     );
     ExerciseLog exLog = new ExerciseLog(exercise: exercise);
-    ExerciseLog exLog2 = new ExerciseLog(exercise: exercise2);
     WorkoutLog workoutLog = new WorkoutLog(
-        exerciseLogs: [exLog, exLog2],
-        id: null,
-        date: _selectedDay!.toIso8601String());
+        exerciseLogs: [exLog], id: null, date: _selectedDay!.toIso8601String());
     return workoutLog;
   }
 
@@ -138,6 +139,7 @@ class _State extends State<Calendar> {
 
   // Add event to date
   dialAction(String title) {
+    // add example workoutlog
     selectedWorkouts.add(
       getWorkoutItem(),
     );
