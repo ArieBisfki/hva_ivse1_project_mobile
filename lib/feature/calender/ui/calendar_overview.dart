@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
+import 'package:ivse1_gymlife/common/widget/splash_screen.dart';
 import 'package:ivse1_gymlife/feature/calender/bloc/calendar_bloc.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
@@ -313,7 +314,7 @@ class _State extends State<Calendar> {
                   ),
                   const SizedBox(height: 8.0),
                   // display list of workouts on a day
-                  WorkoutLogsOverview(workoutLogsForDay, context),
+                  WorkoutLogsOverview(workoutLogsForDay, context, _loggedIn),
                   _loggedIn
                       ? const SizedBox.shrink()
                       : Container(
@@ -347,12 +348,10 @@ class _State extends State<Calendar> {
           return SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 250,
-            child: const SizedBox.shrink(),
+            child: const SplashScreen(),
           );
         } else if (state is CalendarDataState &&
             state.dataState is StateError) {
-          //Navigator.pushNamed(context, "/login");
-          //logout();
           return Scaffold(
               appBar: AppBar(
                 centerTitle: true,
@@ -391,7 +390,7 @@ class _State extends State<Calendar> {
                 ),
               ));
         }
-        return const SizedBox.shrink();
+        return const SplashScreen();
       },
     );
   }

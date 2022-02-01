@@ -77,7 +77,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       WorkoutLogRepositoryAdapter repo = new WorkoutLogRepositoryAdapter(
           calendarAPIRepository, calendarDeviceRepository, loginApi);
       final Either<DataResponseE, DataResponse<dynamic>> result =
-          await repo.createWorkout(event.workout);
+          await repo.createWorkout(event.workout, event.loggedIn);
 
       final Either<DataResponseE, DataResponse<List<WorkoutLog>>> recall =
           await repo.getWorkouts(event.loggedIn);
@@ -104,7 +104,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       WorkoutLogRepositoryAdapter repo = new WorkoutLogRepositoryAdapter(
           calendarAPIRepository, calendarDeviceRepository, loginApi);
       final Either<DataResponseE, DataResponse<int>> result =
-          await repo.deleteWorkout(event.workout);
+          await repo.deleteWorkout(event.workout, event.loggedIn);
 
       _workouts.remove(event.workout);
 

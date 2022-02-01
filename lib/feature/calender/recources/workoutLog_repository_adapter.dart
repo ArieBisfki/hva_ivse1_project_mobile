@@ -25,9 +25,8 @@ class WorkoutLogRepositoryAdapter {
   }
 
   Future<Either<DataResponseE, DataResponse<int>>> createWorkout(
-    WorkoutLog workout,
-  ) async {
-    if (await isLoggedIn()) {
+      WorkoutLog workout, bool loggedIn) async {
+    if (await isLoggedIn() && loggedIn) {
       return apiRepo.createWorkout(workout);
     } else {
       return deviceRepo.createWorkout(workout);
@@ -44,9 +43,8 @@ class WorkoutLogRepositoryAdapter {
   }
 
   Future<Either<DataResponseE, DataResponse<int>>> deleteWorkout(
-    WorkoutLog workout,
-  ) async {
-    if (await isLoggedIn()) {
+      WorkoutLog workout, bool loggedIn) async {
+    if (await isLoggedIn() && loggedIn) {
       return apiRepo.deleteWorkout(workout);
     } else {
       return deviceRepo.deleteWorkout(workout);

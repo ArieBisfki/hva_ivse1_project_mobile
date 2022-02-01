@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:ivse1_gymlife/common/base/data_state.dart';
 import 'package:ivse1_gymlife/common/route/routes.dart';
+import 'package:ivse1_gymlife/common/widget/splash_screen.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise.dart';
 import 'package:ivse1_gymlife/feature/calender/models/exercise_log.dart';
 import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
@@ -268,7 +269,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
           return SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 250,
-            child: const SizedBox.shrink(),
+            child: const SplashScreen(),
           );
         } else if (state is WorkoutDataState && state.dataState is StateError) {
           _showSnackBar(context,

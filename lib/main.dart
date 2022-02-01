@@ -37,8 +37,7 @@ class _AppState extends State<MyApp> {
           lazy: true,
         ),
         RepositoryProvider<LoginApi>(
-          create: (BuildContext context) => LoginApi()
-          ),
+            create: (BuildContext context) => LoginApi()),
         RepositoryProvider<ExerciseLogRepository>(
           create: (BuildContext context) => ExerciseLogRepository(
             dbAdapter: ExerciseLogDbAdapter(),

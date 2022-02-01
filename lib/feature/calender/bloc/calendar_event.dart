@@ -36,9 +36,10 @@ class LogoutEvent extends CalendarEvent {
 }
 
 class DeleteCalendarEvent extends CalendarEvent {
-  const DeleteCalendarEvent(this.workout);
+  const DeleteCalendarEvent(this.workout, this.loggedIn);
 
   final WorkoutLog workout;
+  final bool loggedIn;
 
   List<Object> get props => [workout];
 }

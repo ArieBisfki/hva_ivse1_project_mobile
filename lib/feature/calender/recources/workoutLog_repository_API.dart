@@ -32,14 +32,16 @@ class WorkoutLogRepositoryAPI implements IWorkoutLogRepositoryAPI {
                   body: jsonEncode({
                     "date": workout.date,
                     // "exerciseLogs": workout.exerciseLogs,
-                    "exerciseLogs": {
-                      "exercise": {"id": 23},
-                      "sets": [
-                        {"reps": 8, "weight": 100},
-                        {"reps": 8, "weight": 100},
-                        {"reps": 8, "weight": 100}
-                      ]
-                    },
+                    "exerciseLogs": [
+                      {
+                        "exercise": {"id": 1},
+                        "sets": [
+                          {"reps": 8, "weight": 101},
+                          {"reps": 8, "weight": 100},
+                          {"reps": 8, "weight": 100}
+                        ]
+                      }
+                    ],
                   }));
 
       switch (response.statusCode) {

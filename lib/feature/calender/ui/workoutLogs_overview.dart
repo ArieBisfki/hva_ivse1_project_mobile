@@ -5,10 +5,12 @@ import 'package:ivse1_gymlife/feature/calender/models/workoutLog.dart';
 import 'package:ivse1_gymlife/feature/workout/bloc/workout_bloc.dart';
 
 class WorkoutLogsOverview extends StatefulWidget {
-  const WorkoutLogsOverview(this.workoutLogs, this.context, {Key? key})
+  const WorkoutLogsOverview(this.workoutLogs, this.context, this.loggedIn,
+      {Key? key})
       : super(key: key);
   final List<WorkoutLog> workoutLogs;
   final BuildContext context;
+  final bool loggedIn;
 
   @override
   State<WorkoutLogsOverview> createState() => _WorkoutLogsOverviewState();
@@ -18,7 +20,7 @@ class _WorkoutLogsOverviewState extends State<WorkoutLogsOverview> {
   deleteWorkout(WorkoutLog workout) {
     setState(() {
       BlocProvider.of<CalendarBloc>(widget.context)
-          .add(DeleteCalendarEvent(workout));
+          .add(DeleteCalendarEvent(workout, widget.loggedIn));
     });
     Navigator.pop(widget.context);
   }
