@@ -16,10 +16,9 @@ import 'package:ivse1_gymlife/feature/workout/resources/workout_repository.dart'
 /// Workout page
 /// @author Costa
 class WorkoutPage extends StatefulWidget {
-  WorkoutPage({required this.workoutLog, required this.exerciseData});
+  WorkoutPage({required this.workoutLog});
 
   final WorkoutLog workoutLog;
-  final ExerciseData exerciseData;
 
   @override
   _WorkoutPageState createState() => _WorkoutPageState();
@@ -212,14 +211,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                                 .weight
                                                 .toString() +
                                             " KG"),
-                                        // trailing: IconButton(
-                                        //   icon: Icon(Icons.delete),
-                                        //   onPressed: () {
-                                        //     deleteExerciseLog(ExerciseData(
-                                        //         id: _workoutLogId,
-                                        //         exerciseLog: value[index]));
-                                        //   },
-                                        // ),
                                       ),
                                     ),
                                   ),
